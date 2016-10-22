@@ -10,14 +10,14 @@
                 tools:context="sirs.grupo7.securepayment.LoginActivity"
                 android:id="@+id/RelativeLayout">
 
-    <Button android:id="@+id/dummy_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
-                android:text="@string/initial_activity_button_login"
+    <Button android:id="@+id/buttonLogin" style="?metaButtonBarButtonStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:text="@string/initial_activity_button_login"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="25dp"/>
+            android:layout_marginBottom="25dp"
+            android:onClick="loginUser" />
 
     <Button
         style="?android:attr/buttonStyleSmall"

@@ -13,21 +13,20 @@
         android:layout_height="wrap_content"
         android:text="@string/buttonBalance"
         android:id="@+id/buttonTransaction"
-        android:layout_marginBottom="80dp"
-        android:layout_above="@+id/buttonBalance"
-        android:layout_alignStart="@+id/buttonBalance"
+        android:layout_marginBottom="75dp"
         android:onClick="goToBalance"
-        android:layout_alignEnd="@+id/buttonBalance"/>
+        android:layout_above="@+id/buttonBalance"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/buttonTransaction"
         android:id="@+id/buttonBalance"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/buttonEN"
         android:onClick="goToTransaction"
-        android:layout_marginBottom="172dp"/>
+        android:layout_marginBottom="165dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"

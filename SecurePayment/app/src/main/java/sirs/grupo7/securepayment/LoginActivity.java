@@ -1,6 +1,8 @@
 package sirs.grupo7.securepayment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 
@@ -15,7 +18,8 @@ public class LoginActivity extends Activity {
     private int count;
     private TextView[] textViews;
     private String password;
-
+    private String USER_PASSWORD = "9513";
+    private int BAD_PASSWORD_TRIES = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +64,45 @@ public class LoginActivity extends Activity {
 
     private void passwordControl(String number) {
         if (this.count == 4) {
-            password = "";
-            for (TextView textView : this.textViews) {
-                textView.setText("");
-            }
-            this.count = 0;
+            resetPassword();
         }
         this.password += number;
         textViews[this.count].setText("*");
         this.count += 1;
+    }
+
+    public void loginUser(View view) {
+        if (BAD_PASSWORD_TRIES == -1) {
+            toastPrinter("       Account Blocked\n     Please contact your\nbank for more information", Toast.LENGTH_LONG);
+        } else if (this.password.length() == 0) {
+            toastPrinter("You need to provide a password", Toast.LENGTH_SHORT);
+        } else {
+            if (this.password.length() == 4 && this.password.equals(this.USER_PASSWORD)) {
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+            } else {
+                resetPassword();
+                if (BAD_PASSWORD_TRIES == 0) {
+                    toastPrinter("       Account Blocked\n     Please contact your\nbank for more information", Toast.LENGTH_LONG);
+                } else {
+                    toastPrinter("      Bad Password\nYou have " + BAD_PASSWORD_TRIES + " more tries", Toast.LENGTH_SHORT);
+                }
+                BAD_PASSWORD_TRIES -= 1;
+            }
+        }
+    }
+
+    private void resetPassword() {
+        password = "";
+        for (TextView textView : this.textViews) {
+            textView.setText("");
+        }
+        this.count = 0;
+    }
+
+    private void toastPrinter(CharSequence text, int duration){
+        Context context = getApplicationContext();
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 }

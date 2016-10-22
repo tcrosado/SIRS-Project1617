@@ -3,15 +3,8 @@
     <string name="action_settings">Definições</string>
     <string name="buttonTransaction">Fazer Transferência</string>
     <string name="buttonBalance">Mostrar Saldo</string>
-    <string name="initial_activity_button_login" translatable="false">Iniciar Sessão</string>
+    <string name="initial_activity_button_login">Iniciar Sessão</string>
     <string name="title_activity_balance">Saldo</string>
-    <string name="initial_1">1</string>
-    <string name="initial_2">2</string>
-    <string name="initial_3">3</string>
-    <string name="initial_4">4</string>
-    <string name="initial_5">5</string>
-    <string name="initial_6">6</string>
-    <string name="initial_7">7</string>
-    <string name="initial_8">8</string>
-    <string name="initial_9">9</string>
+    <string name="transaction_qrcode">Ler IBAN com QRCode</string>
+    <string name="transactionWrite">Escrever IBAN</string>
 </resources>
