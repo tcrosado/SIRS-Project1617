@@ -38,7 +38,18 @@
         </activity>
         <activity
             android:name=".QrActivity"
-            android:label="@string/title_activity_qr" >
+            android:label="@string/title_activity_qr"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".Transaction2Activity"
+            android:label="@string/title_activity_transaction2"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".TransactionConfirmationActivity"
+            android:label="@string/title_activity_transaction_confirmation"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

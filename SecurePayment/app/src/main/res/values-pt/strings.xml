@@ -12,4 +12,7 @@
     <string name="title_activity_qr">Meu IBAN</string>
     <string name="my_qrcode">Mostrar o meu IBAN</string>
     <string name="title_activity_show_qrcode">Meu IBAN</string>
+    <string name="title_activity_transaction2">Transferência</string>
+    <string name="transaction2_transfer">Transferir</string>
+    <string name="transfer2_to">para a conta</string>
 </resources>

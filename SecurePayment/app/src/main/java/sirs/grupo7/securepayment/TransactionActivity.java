@@ -69,7 +69,15 @@ public class TransactionActivity extends Activity {
 
     public void transactionSubmitIBAN(View view) {
         // TODO send destiny IBAN to server
-        parseIBAN();
+        if (parseIBAN()) {
+            goToNextActivity();
+        }
+    }
+
+    private void goToNextActivity() {
+        Intent intent = new Intent(this, Transaction2Activity.class);
+        intent.putExtra("destIBAN", destIBAN);
+        startActivity(intent);
     }
 
     public void goToQRCode(View view) {
@@ -88,9 +96,8 @@ public class TransactionActivity extends Activity {
                 //Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 if (isIBAN(result.getContents())) {
                     destIBAN = result.getContents();
-                    Toast.makeText(this, "Success\nDestiny IBAN: " + result.getContents(), Toast.LENGTH_LONG).show();
-                    Toast.makeText(this, "Success\nDestiny IBAN: " + result.getContents(), Toast.LENGTH_LONG).show();
-                    Toast.makeText(this, "Success\nDestiny IBAN: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, "Success\nDestiny IBAN: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    goToNextActivity();
                 } else {
                     Toast.makeText(this, "Error\nInput is not an IBAN", Toast.LENGTH_LONG).show();
                 }
@@ -112,7 +119,7 @@ public class TransactionActivity extends Activity {
         return p.matches(patternIBAN, possibleIBAN);
     }
 
-    private void parseIBAN() {
+    private boolean parseIBAN() {
         TextView textViewRegion = (TextView) findViewById(R.id.iban_region);
         TextView textViewNumbers = (TextView) findViewById(R.id.iban_numbers);
 
@@ -130,6 +137,7 @@ public class TransactionActivity extends Activity {
 
         if (pR && pN) {
             destIBAN = region + numbers;
+            return true;
         } else if (!pR && !pN) {
             Toast.makeText(this, "Invalid IBAN", Toast.LENGTH_LONG).show();
         } else if (pR) {
@@ -137,5 +145,6 @@ public class TransactionActivity extends Activity {
         } else {
             Toast.makeText(this, "Invalid IBAN\nCheck the region", Toast.LENGTH_LONG).show();
         }
+        return false;
     }
 }
