@@ -22,6 +22,7 @@ public class LoginActivity extends Activity {
     private String password;
     private String USER_PASSWORD = "9513";
     private int BAD_PASSWORD_TRIES = 3;
+    private boolean fromTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,12 @@ public class LoginActivity extends Activity {
         this.textViews[1] = (TextView) findViewById(R.id.textPass1);
         this.textViews[2] = (TextView) findViewById(R.id.textPass2);
         this.textViews[3] = (TextView) findViewById(R.id.textPass3);
+
+        try {
+            fromTransaction = (Boolean) getIntent().getExtras().get("fromTransaction");
+        }catch(NullPointerException e ){
+            fromTransaction = false;
+        }
     }
 
     @Override
@@ -57,6 +64,11 @@ public class LoginActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Nothing
     }
 
     public void buttonPressed(View v) {
@@ -82,8 +94,13 @@ public class LoginActivity extends Activity {
             toastPrinter("You need to provide a password", Toast.LENGTH_SHORT);
         } else {
             if (this.password.length() == 4 && this.password.equals(this.USER_PASSWORD)) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+                if (fromTransaction) {
+                    Intent intent = new Intent(LoginActivity.this, MakingTransactionActivity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
             } else {
                 resetPassword();
                 if (BAD_PASSWORD_TRIES == 0) {

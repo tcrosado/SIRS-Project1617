@@ -79,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        // Nothing
+    }
+
     /** Called when the user clicks the Transaction button */
     public void goToTransaction(View view) {
         // Do something in response to button

@@ -2,32 +2,26 @@ package sirs.grupo7.securepayment;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
-public class QrActivity extends AppCompatActivity {
+public class MakingTransactionActivity extends AppCompatActivity {
 
-    private ImageView imageViewIBAN;
-    private Button buttonGoBack;
+    private Button buttonDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qr);
-        imageViewIBAN = (ImageView) this.findViewById(R.id.imageViewIBAN);
-        Bitmap bitmap = getIntent().getParcelableExtra("picIBAN");
-        imageViewIBAN.setImageBitmap(bitmap);
-        buttonGoBack = (Button) findViewById(R.id.button_qrcode_go_back);
-
+        setContentView(R.layout.activity_making_transaction);
         final Activity activity = this;
-        buttonGoBack.setOnClickListener(new View.OnClickListener() {
+
+        buttonDone = (Button) findViewById(R.id.button_done);
+
+        buttonDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(activity, MainActivity.class);
@@ -39,7 +33,7 @@ public class QrActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_qr, menu);
+        getMenuInflater().inflate(R.menu.menu_making_transaction, menu);
         return true;
     }
 

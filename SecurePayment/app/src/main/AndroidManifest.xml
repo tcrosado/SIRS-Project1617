@@ -51,6 +51,11 @@
             android:label="@string/title_activity_transaction_confirmation"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".MakingTransactionActivity"
+            android:label="@string/title_activity_making_transaction"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>

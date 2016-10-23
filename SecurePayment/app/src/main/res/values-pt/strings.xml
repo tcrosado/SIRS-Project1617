@@ -15,4 +15,18 @@
     <string name="title_activity_transaction2">Transferência</string>
     <string name="transaction2_transfer">Transferir</string>
     <string name="transfer2_to">para a conta</string>
+    <string name="title_activity_transaction_confirmation">Confirmar Transação</string>
+    <string name="transaction2_cancel">Cancelar</string>
+    <string name="transaction2_confirm">Confirmar</string>
+    <string name="transaction2_input_no_money">Erro\nNão pode transferir 0</string>
+    <string name="transaction_confirmaton_cancel">Não</string>
+    <string name="transaction_confirmaton_cancel_message1">Quer mesmo\ncancelar a transacção?</string>
+    <string name="transaction_confirmaton_confirm">Sim</string>
+    <string name="transaction_confirmaton_confirm_message1">Quer enviar\n</string>
+    <string name="transaction_confirmaton_confirm_message2">para a conta\n</string>
+    <string name="go_back">Voltar</string>
+    <string name="transaction_canceled">Transação Cancelada</string>
+    <string name="title_activity_making_transaction">Transação em Processamento</string>
+    <string name="transaction_done">Continuar</string>
+    <string name="text_transaction_done">\t\t\t\t\t\t\t TODO\nTransação Completa</string>
 </resources>

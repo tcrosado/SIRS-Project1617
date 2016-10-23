@@ -37,38 +37,56 @@ public class Transaction2Activity extends Activity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         destIBAN = (String) getIntent().getExtras().get("destIBAN");
+
         textViewDestIBAN = (TextView) findViewById(R.id.transactionTextViewDestIBAN);
         textViewDestIBAN.setText(destIBAN);
 
         currencyEditText = (CurrencyEditText) findViewById(R.id.editTextCurrencyInput);
 
+        try {
+            // Just to put the text in the currentEditText
+            currencyEditText.setText((String) getIntent().getExtras().get("text"));
+        } catch (NullPointerException e ){
+            // Nothing
+        }
+
         buttonConfirm = (Button) findViewById(R.id.button_transaction2_confirm);
         buttonCancel = (Button) findViewById(R.id.button_transaction2_cancel);
+
         final Activity activity = this;
         buttonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                current = Long.toString(currencyEditText.getRawValue());
-                //Toast.makeText(activity, current, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(activity, TransactionConfirmationActivity.class);
-                intent.putExtra("destIBAN", destIBAN);
-                intent.putExtra("current", current);
-                intent.putExtra("flag", true);
-                startActivity(intent);
+                buttonClickHelper(activity, true);
             }
         });
 
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                current = Long.toString(currencyEditText.getRawValue());
-                Intent intent = new Intent(activity, TransactionConfirmationActivity.class);
-                intent.putExtra("destIBAN", destIBAN);
-                intent.putExtra("current", current);
-                intent.putExtra("flag", false);
-                startActivity(intent);
+                buttonClickHelper(activity, false);
             }
         });
+    }
+
+    private void buttonClickHelper(Activity activity, boolean flag) {
+        current = Long.toString(currencyEditText.getRawValue());
+        if (!current.equals("0") || !flag) {
+            Intent intent = new Intent(activity, TransactionConfirmationActivity.class);
+            intent.putExtra("destIBAN", destIBAN);
+            intent.putExtra("current", current);
+            intent.putExtra("flag", flag);
+            intent.putExtra("text", currencyEditText.getText().toString());
+            startActivity(intent);
+        } else {
+            String message = getResources().getString(R.string.transaction2_input_no_money) + " " + currencyEditText.getCurrency();
+            Toast.makeText(activity, message , Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Nothing
     }
 
     @Override

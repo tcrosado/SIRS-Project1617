@@ -37,11 +37,17 @@
     <string name="transfer2_to">to account</string>
     <string name="transaction2_confirm">Confirm</string>
     <string name="transaction2_cancel">Cancel</string>
-    <string name="title_activity_transaction_confirmation">TransactionConfirmationActivity</string>
+    <string name="title_activity_transaction_confirmation">Transaction Confirmation</string>
     <string name="transaction_confirmaton_confirm">Yes</string>
     <string name="transaction_confirmaton_cancel">No</string>
     <string name="transaction_confirmaton_confirm_message1">Do you want to send\n</string>
-    <string name="transaction_confirmaton_confirm_message2"> to the account\n</string>
+    <string name="transaction_confirmaton_confirm_message2">to the account\n</string>
     <string name="transaction_confirmaton_cancel_message1">Do you want to\ncancel the transaction?</string>
+    <string name="transaction2_input_no_money">Error\nYou cannot transfer 0</string>
+    <string name="title_activity_making_transaction">Making Transaction</string>
+    <string name="go_back">Go Back</string>
+    <string name="transaction_canceled">Transaction Canceled</string>
+    <string name="transaction_done">Continue</string>
+    <string name="text_transaction_done">\t\t\t\t\t\t TODO\nTransaction Done!</string>
 
 </resources>

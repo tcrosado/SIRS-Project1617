@@ -28,6 +28,7 @@ public class TransactionActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction);
+
         button = (Button) findViewById(R.id.transactionQRCode);
         final Activity activity = this;
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -65,6 +66,12 @@ public class TransactionActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     public void transactionSubmitIBAN(View view) {
