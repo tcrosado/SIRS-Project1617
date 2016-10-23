@@ -7,4 +7,6 @@
     <string name="title_activity_balance">Saldo</string>
     <string name="transaction_qrcode">Ler IBAN com QRCode</string>
     <string name="transactionWrite">Escrever IBAN</string>
+    <string name="button_submit_transaction">Submeter</string>
+    <string name="login_clear_text">Limpar</string>
 </resources>

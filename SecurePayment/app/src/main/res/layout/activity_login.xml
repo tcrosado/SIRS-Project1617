@@ -14,10 +14,10 @@
             android:layout_width="fill_parent"
             android:layout_height="50dp"
             android:text="@string/initial_activity_button_login"
+            android:onClick="loginUser"
+            android:background="#e0e0e0"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="25dp"
-            android:onClick="loginUser" />
+            android:layout_alignParentStart="true"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -25,11 +25,12 @@
         android:layout_height="60dp"
         android:text="@string/initial_2"
         android:id="@+id/button2"
-        android:layout_marginTop="128dp"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
+        android:layout_marginTop="102dp"
         android:onClick="buttonPressed"
-        android:tag="2"/>
+        android:tag="2"
+        android:background="#e0e0e0"
+        android:layout_below="@+id/textView"
+        android:layout_toStartOf="@+id/button9"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -37,10 +38,12 @@
         android:layout_height="60dp"
         android:text="@string/initial_1"
         android:id="@+id/button1"
-        android:layout_alignTop="@+id/button2"
-        android:layout_toStartOf="@+id/button2"
         android:onClick="buttonPressed"
-        android:tag="1"/>
+        android:tag="1"
+        android:background="#e0e0e0"
+        android:layout_marginEnd="8dp"
+        android:layout_alignTop="@+id/button2"
+        android:layout_toStartOf="@+id/button2"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -48,10 +51,11 @@
         android:layout_height="60dp"
         android:text="@string/initial_3"
         android:id="@+id/button3"
-        android:layout_alignTop="@+id/button2"
-        android:layout_toEndOf="@+id/button2"
         android:onClick="buttonPressed"
-        android:tag="3"/>
+        android:tag="3"
+        android:background="#e0e0e0"
+        android:layout_alignTop="@+id/button2"
+        android:layout_alignStart="@+id/button6"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -59,10 +63,11 @@
         android:layout_height="60dp"
         android:text="@string/initial_4"
         android:id="@+id/button4"
-        android:layout_below="@+id/button2"
-        android:layout_toStartOf="@+id/button2"
         android:onClick="buttonPressed"
-        android:tag="4"/>
+        android:tag="4"
+        android:background="#e0e0e0"
+        android:layout_above="@+id/button9"
+        android:layout_alignStart="@+id/button1"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -70,10 +75,12 @@
         android:layout_height="60dp"
         android:text="@string/initial_5"
         android:id="@+id/button5"
-        android:layout_below="@+id/button2"
-        android:layout_alignStart="@+id/button2"
         android:onClick="buttonPressed"
-        android:tag="5"/>
+        android:tag="5"
+        android:background="#e0e0e0"
+        android:layout_below="@+id/button2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -81,10 +88,11 @@
         android:layout_height="60dp"
         android:text="@string/initial_6"
         android:id="@+id/button6"
-        android:layout_below="@+id/button3"
-        android:layout_toEndOf="@+id/button5"
         android:onClick="buttonPressed"
-        android:tag="6"/>
+        android:tag="6"
+        android:background="#e0e0e0"
+        android:layout_alignTop="@+id/button5"
+        android:layout_alignStart="@+id/button9"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -92,10 +100,11 @@
         android:layout_height="60dp"
         android:text="@string/initial_7"
         android:id="@+id/button7"
-        android:layout_below="@+id/button5"
-        android:layout_alignStart="@+id/button4"
         android:onClick="buttonPressed"
-        android:tag="7"/>
+        android:tag="7"
+        android:background="#e0e0e0"
+        android:layout_alignTop="@+id/button8"
+        android:layout_alignStart="@+id/button4"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -103,10 +112,11 @@
         android:layout_height="60dp"
         android:text="@string/initial_8"
         android:id="@+id/button8"
-        android:layout_below="@+id/button5"
-        android:layout_toEndOf="@+id/button7"
         android:onClick="buttonPressed"
-        android:tag="8"/>
+        android:tag="8"
+        android:background="#e0e0e0"
+        android:layout_alignTop="@+id/button9"
+        android:layout_alignStart="@+id/button5"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -114,10 +124,13 @@
         android:layout_height="60dp"
         android:text="@string/initial_9"
         android:id="@+id/button9"
-        android:layout_below="@+id/button6"
-        android:layout_toEndOf="@+id/button8"
         android:onClick="buttonPressed"
-        android:tag="9"/>
+        android:tag="9"
+        android:background="#e0e0e0"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_below="@+id/button6"
+        android:layout_toEndOf="@+id/button8"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -129,7 +142,7 @@
         android:textStyle="bold"
         android:gravity="fill_horizontal|fill_vertical|clip_vertical"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
 
@@ -140,30 +153,30 @@
         android:id="@+id/textPass0"
         android:textStyle="bold"
         android:layout_marginBottom="29dp"
+        android:textColor="#ffffff"
         android:layout_above="@+id/button1"
-        android:layout_alignStart="@+id/button1"
-        android:textColor="#ffffff"/>
+        android:layout_alignStart="@+id/button1"/>
 
     <TextView
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/textPass1"
-        android:layout_alignTop="@+id/textPass0"
-        android:layout_toEndOf="@+id/textPass0"
         android:textColor="#ffffff"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:layout_alignTop="@+id/textPass0"
+        android:layout_toEndOf="@+id/button4"/>
 
     <TextView
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/textPass2"
-        android:layout_alignTop="@+id/textPass1"
-        android:layout_toEndOf="@+id/textPass1"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="11dp"
         android:textColor="#ffffff"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:layout_alignTop="@+id/textPass1"
+        android:layout_toEndOf="@+id/textPass1"/>
 
     <TextView
         android:layout_width="50dp"
@@ -173,6 +186,19 @@
         android:textColor="#ffffff"
         android:textStyle="bold"
         android:layout_alignTop="@+id/textPass2"
-        android:layout_toEndOf="@+id/textView"/>
+        android:layout_toEndOf="@+id/textView"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_clear_text"
+        android:id="@+id/button"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/button7"
+        android:layout_alignEnd="@+id/button9"
+        android:layout_alignStart="@+id/button7"
+        android:background="#e0e0e0"
+        android:onClick="clearKey"/>
 
 </RelativeLayout>

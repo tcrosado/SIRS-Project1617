@@ -13,9 +13,11 @@
         android:layout_height="wrap_content"
         android:text="@string/buttonBalance"
         android:id="@+id/buttonTransaction"
-        android:layout_marginBottom="75dp"
         android:onClick="goToBalance"
+        android:layout_marginBottom="70dp"
         android:layout_above="@+id/buttonBalance"
+        android:layout_alignStart="@+id/buttonBalance"
+        android:layout_alignEnd="@+id/buttonBalance"
         android:layout_centerHorizontal="true"/>
 
     <Button
@@ -24,8 +26,7 @@
         android:text="@string/buttonTransaction"
         android:id="@+id/buttonBalance"
         android:onClick="goToTransaction"
-        android:layout_marginBottom="165dp"
-        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"/>
 
     <Button
@@ -46,4 +47,15 @@
         android:layout_alignTop="@+id/buttonPT"
         android:layout_toStartOf="@+id/buttonPT"
         android:onClick="goToInitial" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/my_qrcode"
+        android:id="@+id/buttonShowIBAN"
+        android:layout_marginTop="70dp"
+        android:layout_below="@+id/buttonBalance"
+        android:layout_alignStart="@+id/buttonBalance"
+        android:layout_alignEnd="@+id/buttonBalance"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

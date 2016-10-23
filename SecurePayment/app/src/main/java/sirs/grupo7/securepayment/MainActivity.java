@@ -1,20 +1,55 @@
 package sirs.grupo7.securepayment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EdgeEffect;
 import android.widget.EditText;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+
 public class MainActivity extends AppCompatActivity {
+
+    public final static String MY_IBAN = "PT12345678912345678912345";
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
+    private Button buttonIBAN;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
+        final Context context = this;
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        buttonIBAN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+                try {
+                    BitMatrix bitMatrix = multiFormatWriter.encode(MY_IBAN, BarcodeFormat.QR_CODE, 200, 200);
+                    BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                    Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+                    Intent intent = new Intent(context, QrActivity.class);
+                    intent.putExtra("picIBAN", bitmap);
+                    context.startActivity(intent);
+                } catch (WriterException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

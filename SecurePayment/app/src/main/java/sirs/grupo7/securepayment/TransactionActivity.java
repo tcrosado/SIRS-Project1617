@@ -3,15 +3,19 @@ package sirs.grupo7.securepayment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import java.util.regex.Pattern;
 
 
 public class TransactionActivity extends Activity {
@@ -26,6 +30,7 @@ public class TransactionActivity extends Activity {
         setContentView(R.layout.activity_transaction);
         button = (Button) findViewById(R.id.transactionQRCode);
         final Activity activity = this;
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,8 +67,9 @@ public class TransactionActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void goToWrite(View view) {
-
+    public void transactionSubmitIBAN(View view) {
+        //TODO send IBAN to server
+        parseIBAN();
     }
 
     public void goToQRCode(View view) {
@@ -79,7 +85,15 @@ public class TransactionActivity extends Activity {
             if (result.getContents() == null) {
                 Toast.makeText(this, "You cancelled the scanning", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                if (isIBAN(result.getContents())) {
+                    destIBAN = result.getContents();
+                    Toast.makeText(this, "Success\nDestiny IBAN: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Success\nDestiny IBAN: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Success\nDestiny IBAN: " + result.getContents(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "Error\nInput is not an IBAN", Toast.LENGTH_LONG).show();
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, intent);
@@ -92,5 +106,36 @@ public class TransactionActivity extends Activity {
         toast.show();
     }
 
+    private boolean isIBAN(String possibleIBAN) {
+        String patternIBAN = "[A-Z]{2}[0-9]{23}";
+        Pattern p = Pattern.compile(patternIBAN);
+        return p.matches(patternIBAN, possibleIBAN);
+    }
 
+    private void parseIBAN() {
+        TextView textViewRegion = (TextView) findViewById(R.id.iban_region);
+        TextView textViewNumbers = (TextView) findViewById(R.id.iban_numbers);
+
+        String region = textViewRegion.getText().toString().toUpperCase();
+        String numbers = textViewNumbers.getText().toString();
+
+        String patternRegion = "[A-Z]{2}";
+        String patternNumbers = "[0-9]{23}";
+
+        Pattern pRegion = Pattern.compile(patternRegion);
+        Pattern pNumbers = Pattern.compile(patternNumbers);
+
+        boolean pR = pRegion.matches(patternRegion, region);
+        boolean pN = pNumbers.matches(patternNumbers, numbers);
+
+        if (pR && pN) {
+            destIBAN = region + numbers;
+        } else if (!pR && !pN) {
+            Toast.makeText(this, "Invalid IBAN", Toast.LENGTH_LONG).show();
+        } else if (pR) {
+            Toast.makeText(this, "Invalid IBAN\nCheck the numbers", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Invalid IBAN\nCheck the region", Toast.LENGTH_LONG).show();
+        }
+    }
 }

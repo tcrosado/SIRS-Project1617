@@ -2,7 +2,9 @@ package sirs.grupo7.securepayment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -64,16 +66,18 @@ public class LoginActivity extends Activity {
 
     private void passwordControl(String number) {
         if (this.count == 4) {
-            resetPassword();
+            return;
+        } else {
+            this.password += number;
+            textViews[this.count].setText("*");
+            this.count += 1;
         }
-        this.password += number;
-        textViews[this.count].setText("*");
-        this.count += 1;
     }
 
     public void loginUser(View view) {
         if (BAD_PASSWORD_TRIES == -1) {
             toastPrinter("       Account Blocked\n     Please contact your\nbank for more information", Toast.LENGTH_LONG);
+
         } else if (this.password.length() == 0) {
             toastPrinter("You need to provide a password", Toast.LENGTH_SHORT);
         } else {
@@ -92,6 +96,10 @@ public class LoginActivity extends Activity {
         }
     }
 
+    public void clearKey(View v) {
+        resetPassword();
+    }
+
     private void resetPassword() {
         password = "";
         for (TextView textView : this.textViews) {
@@ -105,4 +113,5 @@ public class LoginActivity extends Activity {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
+
 }

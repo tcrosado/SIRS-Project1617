@@ -13,18 +13,43 @@
         android:layout_height="wrap_content"
         android:text="@string/transaction_qrcode"
         android:id="@+id/transactionQRCode"
-        android:layout_marginTop="129dp"
+        android:onClick="goToQRCode"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="goToQRCode"/>
+        android:layout_centerHorizontal="true"/>
+
+    <EditText
+        android:layout_width="33dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/iban_region"
+        android:layout_marginTop="42dp"
+        android:textSize="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/transactionQRCode"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="8dp"
+        android:maxLength="2" />
+
+    <EditText
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/iban_numbers"
+        android:textSize="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_alignTop="@+id/iban_region"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="21dp"
+        android:maxLength="23"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/transactionWrite"
-        android:id="@+id/transactionWrite"
-        android:layout_marginTop="98dp"
-        android:layout_below="@+id/transactionQRCode"
-        android:layout_centerHorizontal="true"
-        android:onClick="goToWrite"/>
+        android:text="@string/button_submit_transaction"
+        android:id="@+id/transaction_submit"
+        android:layout_below="@+id/iban_numbers"
+        android:layout_marginTop="43dp"
+        android:layout_alignEnd="@+id/transactionQRCode"
+        android:layout_alignStart="@+id/transactionQRCode"
+        android:onClick="transactionSubmitIBAN"/>
 </RelativeLayout>

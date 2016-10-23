@@ -27,5 +27,10 @@
     <string name="title_activity_login" translatable="false">Login</string>
     <string name="transaction_qrcode">Scan IBAN with QRCode</string>
     <string name="transactionWrite">Write IBAN</string>
+    <string name="login_clear_text">Clear Key</string>
+    <string name="button_submit_transaction">Submit</string>
+    <string name="my_qrcode">Show my IBAN</string>
+    <string name="title_activity_show_qrcode">My IBAN</string>
+    <string name="title_activity_qr">My IBAN</string>
 
 </resources>
