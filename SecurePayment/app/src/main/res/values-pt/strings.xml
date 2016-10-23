@@ -9,4 +9,7 @@
     <string name="transactionWrite">Escrever IBAN</string>
     <string name="button_submit_transaction">Submeter</string>
     <string name="login_clear_text">Limpar</string>
+    <string name="title_activity_qr">Meu IBAN</string>
+    <string name="my_qrcode">Mostrar o meu IBAN</string>
+    <string name="title_activity_show_qrcode">Meu IBAN</string>
 </resources>

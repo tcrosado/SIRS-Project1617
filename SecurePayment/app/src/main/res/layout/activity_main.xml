@@ -10,23 +10,23 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="@string/buttonBalance"
         android:id="@+id/buttonTransaction"
         android:onClick="goToBalance"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="50dp"
         android:layout_above="@+id/buttonBalance"
         android:layout_alignStart="@+id/buttonBalance"
-        android:layout_alignEnd="@+id/buttonBalance"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignEnd="@+id/buttonBalance"/>
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="@string/buttonTransaction"
         android:id="@+id/buttonBalance"
         android:onClick="goToTransaction"
-        android:layout_centerVertical="true"
+        android:layout_marginBottom="50dp"
+        android:layout_above="@+id/buttonShowIBAN"
         android:layout_centerHorizontal="true"/>
 
     <Button
@@ -50,12 +50,24 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="@string/my_qrcode"
         android:id="@+id/buttonShowIBAN"
-        android:layout_marginTop="70dp"
-        android:layout_below="@+id/buttonBalance"
+        android:layout_marginBottom="50dp"
+        android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/buttonBalance"
-        android:layout_alignEnd="@+id/buttonBalance"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignEnd="@+id/buttonBalance"/>
+
+    <TextView
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textViewCurrentBalance"
+        android:layout_above="@+id/buttonTransaction"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textSize="35dp"
+        />
 </RelativeLayout>

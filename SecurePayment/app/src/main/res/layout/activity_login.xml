@@ -79,6 +79,7 @@
         android:tag="5"
         android:background="#e0e0e0"
         android:layout_below="@+id/button2"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="6dp"/>
 

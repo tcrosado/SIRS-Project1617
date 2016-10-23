@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EdgeEffect;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -26,11 +27,15 @@ public class MainActivity extends AppCompatActivity {
     public final static String MY_IBAN = "PT12345678912345678912345";
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
     private Button buttonIBAN;
+    private String CURRENT_BALANCE = "500,00 €";
+    private TextView textViewShowBalance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        textViewShowBalance = (TextView) findViewById(R.id.textViewCurrentBalance);
+        textViewShowBalance.setText(CURRENT_BALANCE);
         buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
         final Context context = this;
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -93,5 +98,9 @@ public class MainActivity extends AppCompatActivity {
         // Do something in response to button
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    public void showCurrentBalance() {
+        // TODO request current balance to the server
     }
 }

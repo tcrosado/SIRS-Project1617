@@ -68,7 +68,7 @@ public class TransactionActivity extends Activity {
     }
 
     public void transactionSubmitIBAN(View view) {
-        //TODO send IBAN to server
+        // TODO send destiny IBAN to server
         parseIBAN();
     }
 
