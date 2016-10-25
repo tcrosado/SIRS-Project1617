@@ -1,11 +1,15 @@
 package pt.ulisboa.tecnico.sirs.t07.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pt.ulisboa.tecnico.sirs.t07.models.Customer;
-import pt.ulisboa.tecnico.sirs.t07.models.dao.CustomerDao;
+import pt.ulisboa.tecnico.sirs.t07.dao.CustomerDAO;
+import pt.ulisboa.tecnico.sirs.t07.services.CustomerService;
 
 
 /**
@@ -13,38 +17,21 @@ import pt.ulisboa.tecnico.sirs.t07.models.dao.CustomerDao;
  */
 @Controller
 public class CustomerController {
-    @RequestMapping("/create")
-    @ResponseBody
-    public String create(String name,String phoneNumber) {
-        String customerId= "";
 
-        try{
-            Customer customer = new Customer(name,phoneNumber);
-            customerDao.save(customer);
-            customerId = String.valueOf(customer.getId());
-        }
-        catch (Exception ex) {
-            return "Error creating the user: " + ex.toString();
-        }
-        return "User succesfully created with id = " + customerId;
+
+    private CustomerService customerService;
+
+    @Autowired(required = true)
+    @Qualifier(value="customerService")
+    public void setCustomerService(CustomerService cs){
+        this.customerService = cs;
     }
 
-    @RequestMapping("/getByPhoneNumber")
-    @ResponseBody
-    public String getByPhoneNumber(String phoneNumber) {
-        String customerId = "";
-
-        try{
-            Customer customer = customerDao.findByPhoneNumber(phoneNumber);
-            customerId = String.valueOf(customer.getId());
-        }
-        catch (Exception ex) {
-            return "Customer not found";
-        }
-        return "The customer id is: " + customerId;
+    @RequestMapping(value = "/customers", method = RequestMethod.GET)
+    public String list(Model model){
+        model.addAttribute("customer",new Customer());
+        model.addAttribute("listCustomers",this.customerService.list());
+        return "customer";
     }
-
-    @Autowired
-    private CustomerDao customerDao;
 
 }
