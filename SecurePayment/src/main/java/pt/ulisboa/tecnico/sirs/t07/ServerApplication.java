@@ -3,11 +3,10 @@ package pt.ulisboa.tecnico.sirs.t07;
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 
+import static spark.Spark.*;
+
+	
 
 /**
  * Created by trosado on 03/11/16.
@@ -63,6 +62,8 @@ public class ServerApplication {
         CustomerData cd = new CustomerData();
         System.out.print(cd.ibanExists("NL73INGB0698363980"));
         cd.close();
+        
+        get("/hello", (req, res) -> "Hello World");
 
     }
 }
