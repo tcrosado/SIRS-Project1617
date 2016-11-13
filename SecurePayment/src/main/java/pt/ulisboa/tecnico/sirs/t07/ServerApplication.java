@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.sirs.t07;
 
+import pt.ulisboa.tecnico.sirs.t07.data.ContaData;
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
 
 import java.io.IOException;
@@ -63,7 +64,9 @@ public class ServerApplication {
         System.out.print(cd.ibanExists("NL73INGB0698363980"));
         cd.close();
         
-        get("/hello", (req, res) -> "Hello World");
+        ContaData contaD = new ContaData();
+        
+        get("/contas", (req, res) -> contaD.getContas());
 
     }
 }

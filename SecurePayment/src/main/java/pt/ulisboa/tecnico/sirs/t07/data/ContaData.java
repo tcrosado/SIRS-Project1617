@@ -6,13 +6,15 @@ package pt.ulisboa.tecnico.sirs.t07.data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
  * @author João
  *
  */
-public abstract class ContaData extends AbstractData{
+public class ContaData extends AbstractData{
 	//
 	//	/**
 	//	 * 
@@ -38,6 +40,31 @@ public abstract class ContaData extends AbstractData{
 		}
 
 		return result;
+	}
+	
+	
+	public List<Conta> getContas(){
+		
+		List<Conta> result = new ArrayList<Conta>();
+		Conta aux;
+		try {
+			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM conta");
+			
+			ResultSet rs = stmt.executeQuery();
+
+
+			while (rs.next()){
+				aux = new Conta(rs.getString("iban"),rs.getFloat("saldo"));
+				result.add(aux);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return result;
+		
 	}
 
 
