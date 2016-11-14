@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.sirs.t07;
 
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
 import pt.ulisboa.tecnico.sirs.t07.presentation.UDPConnectionManager;
+import pt.ulisboa.tecnico.sirs.t07.service.TransferConverterService;
 
 import java.io.IOException;
 
@@ -61,12 +62,7 @@ public class ServerApplication {
         /**
          *
          * 1 ~ Espera de conexões (porta)
-         * 2 - Se tiver conexão muda para serviçi
-         *
-         *
-         *
-         *
-         *
+         * 2 - Se tiver conexão muda para serviço
          */
 
         UDPConnectionManager cm = new UDPConnectionManager();
@@ -82,11 +78,10 @@ public class ServerApplication {
 
 
 
-
-
+/*
         CustomerData cd = new CustomerData();
         System.out.print(cd.ibanExists("NL73INGB0698363980"));
         cd.close();
-
+*/
     }
 }

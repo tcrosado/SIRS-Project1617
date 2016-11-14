@@ -5,10 +5,12 @@ package pt.ulisboa.tecnico.sirs.t07.service;
  */
 public class PacketParserService extends AbstractService {
 
+    public  PacketParserService(){
 
+    }
 
-    private
+    @Override
+    void dispatch() {
 
-
-
+    }
 }

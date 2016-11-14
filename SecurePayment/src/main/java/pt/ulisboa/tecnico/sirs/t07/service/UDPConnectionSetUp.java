@@ -21,7 +21,7 @@ public class UDPConnectionSetUp extends AbstractService {
     public UDPConnectionSetUp(Integer timeout, Optional<Integer> port) throws SocketException {
         this.socket = new DatagramSocket(port.orElse(5000));
         this.timeout = timeout;
-        this.threadLimit = 10;
+        this.threadLimit = 1;
         this.distributionPosition = 0;
         this.threadList = new Vector<Thread>();
     }
@@ -39,16 +39,17 @@ public class UDPConnectionSetUp extends AbstractService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            UDPStablishService test =  new UDPStablishService(this.socket,packet,timeout);
+            test.execute();
             // Assim que receber um pedido tem de criar uma thread ou mete em fila numa já existente para processar o pedido
-            if(threadList.size()<threadLimit){
-                Thread thread = new Thread(new UDPStablishService(packet,timeout));
-                threadList.add(thread);
-            }else{
+            //if(threadList.size()<threadLimit){
+                //Thread thread = new Thread(new UDPStablishService(this.socket,packet,timeout));
+                //threadList.add(thread);
+            /*}else{
                 Thread t = threadList.get(distributionPosition);//FIXME
             }
             distributionPosition = (distributionPosition+1)%threadLimit;
-
+            */
 
 
         }
