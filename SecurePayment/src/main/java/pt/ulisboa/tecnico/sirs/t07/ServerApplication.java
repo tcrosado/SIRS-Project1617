@@ -1,12 +1,9 @@
 package pt.ulisboa.tecnico.sirs.t07;
 
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
+import pt.ulisboa.tecnico.sirs.t07.presentation.UDPConnectionManager;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 
 
 /**
@@ -59,7 +56,34 @@ public class ServerApplication {
                     new DatagramPacket(sendData, sendData.length, IPAddress, port);
             serverSocket.send(sendPacket);
         }
-        */
+    */
+
+        /**
+         *
+         * 1 ~ Espera de conexões (porta)
+         * 2 - Se tiver conexão muda para serviçi
+         *
+         *
+         *
+         *
+         *
+         */
+
+        UDPConnectionManager cm = new UDPConnectionManager();
+        cm.execute();
+
+
+
+
+
+
+
+
+
+
+
+
+
         CustomerData cd = new CustomerData();
         System.out.print(cd.ibanExists("NL73INGB0698363980"));
         cd.close();
