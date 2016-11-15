@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.sirs.t07;
 
-import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
 import pt.ulisboa.tecnico.sirs.t07.presentation.UDPConnectionManager;
-import pt.ulisboa.tecnico.sirs.t07.service.TransferConverterService;
 
 import java.io.IOException;
 

@@ -41,7 +41,14 @@ public class UDPStablishService extends AbstractService implements Runnable{
         * 2 - receber confirmacao e fazer operacao
         * */
 
-        this.packet.getData();
+        //this.packet.getData();
+        PacketParserService p = null;
+        try {
+            p = new PacketParserService(this.packet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        p.execute();
 
         DatagramPacket sendPacket = new DatagramPacket(this.packet.getData(),this.packet.getLength(), this.packet.getAddress(),this.packet.getPort());
         try {
@@ -61,6 +68,7 @@ public class UDPStablishService extends AbstractService implements Runnable{
                 /** TODO
                  * tratar da operacao
                  */
+
 
             }else{
                 System.out.println("Aborted");

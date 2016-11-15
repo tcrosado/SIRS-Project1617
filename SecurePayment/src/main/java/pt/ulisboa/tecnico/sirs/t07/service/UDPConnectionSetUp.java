@@ -29,7 +29,7 @@ public class UDPConnectionSetUp extends AbstractService {
 
     @Override
     void dispatch() {
-        byte[] data = new byte[1024];
+        byte[] data = new byte[120];
 
         while(true){
             DatagramPacket packet = new DatagramPacket(data,data.length);
