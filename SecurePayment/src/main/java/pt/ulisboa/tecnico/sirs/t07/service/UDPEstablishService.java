@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 /**
  * Created by tiago on 12/11/2016.
  */
-public class UDPStablishService extends AbstractService implements Runnable{
+public class UDPEstablishService extends AbstractService implements Runnable{
 
     //private AbstractQueue<DatagramPacket> packets;
     private Integer timeout;
@@ -21,7 +21,7 @@ public class UDPStablishService extends AbstractService implements Runnable{
     private DatagramSocket socket;
 
 
-    public UDPStablishService(DatagramSocket socket, DatagramPacket packet, Integer timeout){
+    public UDPEstablishService(DatagramSocket socket, DatagramPacket packet, Integer timeout){
         //this.packets = new PriorityQueue<DatagramPacket>();
         this.packet = packet;
         this.timeout = timeout;

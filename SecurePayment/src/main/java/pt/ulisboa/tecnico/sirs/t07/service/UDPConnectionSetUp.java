@@ -39,11 +39,11 @@ public class UDPConnectionSetUp extends AbstractService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            UDPStablishService test =  new UDPStablishService(this.socket,packet,timeout);
+            UDPEstablishService test =  new UDPEstablishService(this.socket,packet,timeout);
             test.execute();
             // Assim que receber um pedido tem de criar uma thread ou mete em fila numa já existente para processar o pedido
             //if(threadList.size()<threadLimit){
-                //Thread thread = new Thread(new UDPStablishService(this.socket,packet,timeout));
+                //Thread thread = new Thread(new UDPEstablishService(this.socket,packet,timeout));
                 //threadList.add(thread);
             /*}else{
                 Thread t = threadList.get(distributionPosition);//FIXME
