@@ -58,7 +58,6 @@ public class ServerApplication {
     */
 
         /**
-         *
          * 1 ~ Espera de conexões (porta)
          * 2 - Se tiver conexão muda para serviço
          */

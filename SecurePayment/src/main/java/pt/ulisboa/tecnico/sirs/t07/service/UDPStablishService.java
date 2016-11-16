@@ -54,6 +54,10 @@ public class UDPStablishService extends AbstractService implements Runnable{
         try {
             this.socket.send(sendPacket);
             System.out.println("received");
+            /**
+             * TODO
+             *  aqui deve enviar-se tambem o challenge response
+             * */
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,7 +72,7 @@ public class UDPStablishService extends AbstractService implements Runnable{
                 /** TODO
                  * tratar da operacao
                  */
-
+                p.result();
 
             }else{
                 System.out.println("Aborted");

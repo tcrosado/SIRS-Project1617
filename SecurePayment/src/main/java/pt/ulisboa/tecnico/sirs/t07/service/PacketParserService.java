@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.sirs.t07.service;
 
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 
+import java.io.ByteArrayInputStream;
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.sql.Time;
@@ -24,16 +25,10 @@ public class PacketParserService extends AbstractService {
 
     @Override
     void dispatch() {
-       System.out.println(this.packet.getData().length);
-        byte[] uidbyte = Arrays.copyOf(this.packet.getData(),36);
-        byte[] timestampbyte = Arrays.copyOfRange(this.packet.getData(),36,49);
-        byte[] hashbyte = Arrays.copyOfRange(this.packet.getData(),49,62);
-        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),62,63);
 
-        UUID tuid = this.toUUID(uidbyte);
-        Timestamp time = this.toTimeStamp(timestampbyte);
-        String hash = hashbyte.toString();
-        char operation = (char)(opbyte[0]);
+        UUID tuid = this.getTId();
+        Timestamp time = this.getTime();
+        char operation = this.getOperation();
 
 
        switch (operation){
@@ -41,6 +36,7 @@ public class PacketParserService extends AbstractService {
            case 'S':
                //TODO definir serviço de saldo
                System.out.println("Saldo");
+
                break;
            case 'T':
                //TODO definir serviço de tranferencia
@@ -72,16 +68,51 @@ public class PacketParserService extends AbstractService {
     }
 
 
+    /**
+     *          Outra funcoes
+     *
+     * **/
 
-    private UUID toUUID(byte[] uidbyte){
-        String uids = new String(uidbyte);
-        return UUID.fromString(uids);
+
+    private UUID getTId(){
+        byte[] uidbyte1 = Arrays.copyOf(this.packet.getData(),8);
+        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),8,16);
+        ByteBuffer bb = ByteBuffer.wrap(uidbyte1);
+        long mostSignificant = bb.getLong();
+        bb = ByteBuffer.wrap(uidbyte2);
+        long leastSignificant = bb.getLong();
+        return new UUID(mostSignificant,leastSignificant);
     }
 
-
-    private Timestamp toTimeStamp(byte[] timestamp){
-        ByteBuffer bb = ByteBuffer.wrap(timestamp);
+    private Timestamp getTime(){
+        byte[] timestampbyte = Arrays.copyOfRange(this.packet.getData(),16,24);
+        ByteBuffer bb = ByteBuffer.wrap(timestampbyte);
         return new Timestamp(bb.getLong());
+    }
+
+    private byte[] getHash(){
+        return Arrays.copyOfRange(this.packet.getData(),24,44);
+    }
+
+    private char getOperation(){
+        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),44,45);
+        return (char)(opbyte[0]);
+    }
+
+    private String getOriginIBAN(){
+        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),45,70);
+        return new String(ibanb);
+    }
+
+    private String getDestinationIBAN(){
+        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),70,95);
+        return new String(ibanb);
+    }
+
+    private double getTransferValue(){
+        byte[] value = Arrays.copyOfRange(this.packet.getData(),95,103);
+        ByteBuffer b = ByteBuffer.wrap(value);
+        return b.getDouble();
     }
 }
 
