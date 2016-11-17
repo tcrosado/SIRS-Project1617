@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.sirs.t07.service;
 
+import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 import sun.security.x509.IPAddressName;
 
 import java.io.IOException;
@@ -64,6 +65,10 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         byte[] data = new byte[1024];
         DatagramPacket receiveConfirmation = new DatagramPacket(data,data.length);
         try {
+            OperationData opData = p.result();
+            opData.executeService();
+
+
             this.socket.setSoTimeout(this.timeout);
             this.socket.receive(receiveConfirmation);
             this.socket.setSoTimeout(0);

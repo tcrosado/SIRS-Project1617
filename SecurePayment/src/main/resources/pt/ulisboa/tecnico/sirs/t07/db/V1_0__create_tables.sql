@@ -4,19 +4,19 @@ CREATE TABLE `customers`(
   `phoneNumber` VARCHAR(9) NOT NULL,
   primary key (`iban`));
 
-CREATE TABLE conta(
+CREATE TABLE accounts(
   iban VARCHAR(34) NOT NULL,
-  saldo FLOAT NOT NULL,
+  balance DOUBLE NOT NULL,
   PRIMARY KEY  (iban),
   FOREIGN KEY (iban) REFERENCES customers(iban));
 
-CREATE TABLE historico(
-  uid VARCHAR(36) NOT NULL,
+CREATE TABLE transactionHistory(
+  tid VARCHAR(36) NOT NULL,
   time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   originIban VARCHAR(34) NOT NULL,
   destIban VARCHAR(34) NOT NULL,
-  valor FLOAT NOT NULL,
-  PRIMARY KEY (uid),
-  FOREIGN KEY (originIban) REFERENCES conta(iban),
-  FOREIGN KEY (destIban) REFERENCES conta(iban)
+  value DOUBLE NOT NULL,
+  PRIMARY KEY (tid),
+  FOREIGN KEY (originIban) REFERENCES accounts(iban),
+  FOREIGN KEY (destIban) REFERENCES accounts(iban)
 );

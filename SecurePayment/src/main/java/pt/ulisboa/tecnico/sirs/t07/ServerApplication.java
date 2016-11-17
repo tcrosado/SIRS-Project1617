@@ -16,14 +16,14 @@ public class ServerApplication {
 		System.out.print(cd.ibanExists("NL73INGB0698363980"));
 		cd.close();
 
-		ContaData contaD = new ContaData();
+		AccountData contaD = new AccountData();
 
 		get("/contas", (req, res) -> contaD.getContas());
 
 		get("/conta/:iban", (req, res) -> {
 
 			String iban = req.params(":iban");
-			Vector<Float> saldo = contaD.getSaldoFromIBAN(iban);
+			Vector<Float> saldo = contaD.getBalanceFromIBAN(iban);
 			return saldo;
 
 

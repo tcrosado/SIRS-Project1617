@@ -27,9 +27,12 @@ public class PacketParserService extends AbstractService {
     void dispatch() {
 
         UUID tuid = this.getTId();
+        System.out.println("tid: "+tuid);
         Timestamp time = this.getTime();
-        char operation = this.getOperation();
+        System.out.println("time: "+time);
 
+        char operation = this.getOperation();
+        System.out.println("op: "+operation);
 
        switch (operation){
 
@@ -41,7 +44,7 @@ public class PacketParserService extends AbstractService {
            case 'T':
                //TODO definir serviço de tranferencia
                System.out.println("Transferencias");
-               //this.resultData = new OperationData(tuid,time,new TransferService());
+               this.resultData = new OperationData(tuid,time,new TransferService(tuid,this.getOriginIBAN(),this.getDestinationIBAN(),this.getTransferValue()));
                 break;
            case 'H':
                //TODO definir serviço de historico

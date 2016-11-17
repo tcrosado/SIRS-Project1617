@@ -5,14 +5,14 @@ package pt.ulisboa.tecnico.sirs.t07.service;
  */
 abstract  public class OperationService extends AbstractService {
 
-    private String originIban;
+    private String ibanOrigin;
 
     public OperationService(String iban){
-        this.originIban=iban;
+        this.ibanOrigin =iban;
     }
 
-    public String getOriginIban() {
-        return originIban;
+    public String getIbanOrigin() {
+        return ibanOrigin;
     }
 
 

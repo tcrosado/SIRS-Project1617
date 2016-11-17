@@ -15,8 +15,12 @@ public class OperationData {
     private OperationService service;
 
     public OperationData(UUID uid,Timestamp time,OperationService service){
-
+        this.operationUid=uid;
+        this.timestamp=time;
+        this.service=service;
     }
 
-
+    public void executeService(){
+        this.service.execute();
+    }
 }
