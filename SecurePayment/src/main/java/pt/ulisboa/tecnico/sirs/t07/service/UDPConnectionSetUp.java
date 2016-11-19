@@ -1,5 +1,8 @@
 package pt.ulisboa.tecnico.sirs.t07.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,6 +14,8 @@ import java.util.Vector;
  * Created by tiago on 12/11/2016.
  */
 public class UDPConnectionSetUp extends AbstractService {
+
+    private final Logger logger = LoggerFactory.getLogger(UDPConnectionSetUp.class);
 
     private DatagramSocket socket;
     private Integer timeout;
@@ -31,6 +36,7 @@ public class UDPConnectionSetUp extends AbstractService {
     void dispatch() {
         byte[] data = new byte[120];
 
+        logger.info("Listening on UDP port {} for commands.",this.socket.getLocalPort());
         while(true){
             DatagramPacket packet = new DatagramPacket(data,data.length);
             //FIXME

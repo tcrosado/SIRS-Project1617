@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.sirs.t07.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.data.AccountData;
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
 import pt.ulisboa.tecnico.sirs.t07.data.TransferHistoryData;
@@ -11,6 +13,7 @@ import java.util.Vector;
  * Created by trosado on 15/11/16.
  */
 public class TransferService extends OperationService {
+    private final Logger logger = LoggerFactory.getLogger(TransferService.class);
     private  String tid;
     private String ibanDestination;
     private double value = 0;
@@ -44,11 +47,9 @@ public class TransferService extends OperationService {
 
         try {
             history.doTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value);
+            logger.debug("Transfer Completed");
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        System.out.print("Transfer");
     }
 }

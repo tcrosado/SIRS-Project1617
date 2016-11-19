@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.sirs.t07;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.presentation.UDPConnectionManager;
 
 import java.io.IOException;
@@ -57,6 +59,8 @@ public class ServerApplication {
          * 1 ~ Espera de conexões (porta)
          * 2 - Se tiver conexão muda para serviço
          */
+
+        System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
 
         UDPConnectionManager cm = new UDPConnectionManager();
         cm.execute();

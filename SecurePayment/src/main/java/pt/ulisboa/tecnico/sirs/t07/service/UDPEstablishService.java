@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.sirs.t07.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 import sun.security.x509.IPAddressName;
 
@@ -17,6 +19,7 @@ import java.util.PriorityQueue;
 public class UDPEstablishService extends AbstractService implements Runnable{
 
     //private AbstractQueue<DatagramPacket> packets;
+    private final Logger logger = LoggerFactory.getLogger(UDPEstablishService.class);
     private Integer timeout;
     private DatagramPacket packet;
     private DatagramSocket socket;
@@ -54,7 +57,6 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         DatagramPacket sendPacket = new DatagramPacket(this.packet.getData(),this.packet.getLength(), this.packet.getAddress(),this.packet.getPort());
         try {
             this.socket.send(sendPacket);
-            System.out.println("received");
             /**
              * TODO
              *  aqui deve enviar-se tambem o challenge response
@@ -73,14 +75,11 @@ public class UDPEstablishService extends AbstractService implements Runnable{
             this.socket.receive(receiveConfirmation);
             this.socket.setSoTimeout(0);
             if(Arrays.equals(receiveConfirmation.getData(),sendPacket.getData())){
-                System.out.println("Transaction Confirmed");
-                /** TODO
-                 * tratar da operacao
-                 */
+                //FIXME tratar de verificar confirmacao
                 p.result();
-
+                logger.debug("Operation executed");
             }else{
-                System.out.println("Aborted");
+                logger.debug("Operation aborted");
             }
             Arrays.fill( data, (byte) 0 );
 

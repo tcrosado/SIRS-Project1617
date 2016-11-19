@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.sirs.t07.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 
 import java.io.ByteArrayInputStream;
@@ -9,12 +11,14 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by tiago on 12/11/2016.
  */
 public class PacketParserService extends AbstractService {
 
+    private final Logger logger = LoggerFactory.getLogger(PacketParserService.class);
     private DatagramPacket packet;
     private OperationData resultData;
 
@@ -27,32 +31,34 @@ public class PacketParserService extends AbstractService {
     void dispatch() {
 
         UUID tuid = this.getTId();
-        System.out.println("tid: "+tuid);
         Timestamp time = this.getTime();
-        System.out.println("time: "+time);
-
         char operation = this.getOperation();
-        System.out.println("op: "+operation);
+
+        logger.debug("Packet Parsed");
+        logger.debug("Tid: {}",tuid);
+        logger.debug("Time: {}",time);
+
 
        switch (operation){
 
            case 'S':
                //TODO definir serviço de saldo
-               System.out.println("Saldo");
-
+               logger.debug("Operation: Balance");
                break;
            case 'T':
-               //TODO definir serviço de tranferencia
-               System.out.println("Transferencias");
+               logger.debug("Operation: Transfer");
+               logger.debug("Origin Iban: {}",this.getOriginIBAN());
+               logger.debug("Destination Iban: {}",this.getDestinationIBAN());
+               logger.debug("Transfer Value: {}",this.getTransferValue());
                this.resultData = new OperationData(tuid,time,new TransferService(tuid,this.getOriginIBAN(),this.getDestinationIBAN(),this.getTransferValue()));
                 break;
            case 'H':
                //TODO definir serviço de historico
-               System.out.println("Histórico");
+               logger.debug("Operation: History");
                break;
            default:
-               //TODO enviar excecao
-               System.out.println("Throw");
+               //FIXME eniviar excecao
+               logger.debug("Throw");
        }
 
     }
@@ -94,26 +100,26 @@ public class PacketParserService extends AbstractService {
     }
 
     private byte[] getHash(){
-        return Arrays.copyOfRange(this.packet.getData(),24,44);
+        return Arrays.copyOfRange(this.packet.getData(),24,40);
     }
 
     private char getOperation(){
-        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),44,45);
+        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),40,41);
         return (char)(opbyte[0]);
     }
 
     private String getOriginIBAN(){
-        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),45,70);
+        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),41,66);
         return new String(ibanb);
     }
 
     private String getDestinationIBAN(){
-        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),70,95);
+        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),66,91);
         return new String(ibanb);
     }
 
     private double getTransferValue(){
-        byte[] value = Arrays.copyOfRange(this.packet.getData(),95,103);
+        byte[] value = Arrays.copyOfRange(this.packet.getData(),91,99);
         ByteBuffer b = ByteBuffer.wrap(value);
         return b.getDouble();
     }
