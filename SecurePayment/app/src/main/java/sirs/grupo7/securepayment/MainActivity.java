@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
                     Intent intent = new Intent(context, QrActivity.class);
                     intent.putExtra("picIBAN", bitmap);
+                    intent.putExtra("textShowIBAN", MY_IBAN);
                     context.startActivity(intent);
                 } catch (WriterException e) {
                     e.printStackTrace();

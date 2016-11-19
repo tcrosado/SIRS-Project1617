@@ -21,6 +21,16 @@
         android:layout_height="400dp"
         android:id="@+id/imageViewIBAN"
         android:layout_below="@+id/button_qrcode_go_back"
-        android:layout_marginTop="15dp"
         android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="25dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/textShowIBAN"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:layout_below="@+id/imageViewIBAN"
+        android:layout_centerHorizontal="true"
+        android:text="ola"/>
 </RelativeLayout>

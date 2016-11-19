@@ -11,11 +11,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class QrActivity extends AppCompatActivity {
 
     private ImageView imageViewIBAN;
     private Button buttonGoBack;
+    private TextView textShowIBAN;
+    private String IBAN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,9 @@ public class QrActivity extends AppCompatActivity {
         Bitmap bitmap = getIntent().getParcelableExtra("picIBAN");
         imageViewIBAN.setImageBitmap(bitmap);
         buttonGoBack = (Button) findViewById(R.id.button_qrcode_go_back);
+        IBAN = (String) getIntent().getExtras().get("textShowIBAN");
+        textShowIBAN = (TextView) findViewById(R.id.textShowIBAN);
+        textShowIBAN.setText(IBAN);
 
         final Activity activity = this;
         buttonGoBack.setOnClickListener(new View.OnClickListener() {
