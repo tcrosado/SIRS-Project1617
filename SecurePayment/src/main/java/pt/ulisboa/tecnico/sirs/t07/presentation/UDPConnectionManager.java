@@ -22,11 +22,6 @@ public class UDPConnectionManager implements AbstractView{
 
 
     public void execute(){
-
         this.service.execute();
-
-
-
-
     }
 }

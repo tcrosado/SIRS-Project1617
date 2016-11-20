@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.sirs.t07.service.dto;
 
 
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.service.OperationService;
 
 import java.sql.Timestamp;
@@ -20,7 +21,7 @@ public class OperationData {
         this.service=service;
     }
 
-    public void executeService(){
+    public void executeService() throws ErrorMessageException {
         this.service.execute();
     }
 }

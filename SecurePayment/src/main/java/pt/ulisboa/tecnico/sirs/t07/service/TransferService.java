@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.data.AccountData;
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
 import pt.ulisboa.tecnico.sirs.t07.data.TransferHistoryData;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidIbanException;
 
 import java.util.UUID;
 import java.util.Vector;
@@ -26,30 +29,35 @@ public class TransferService extends OperationService {
     }
 
     @Override
-    void dispatch() {
+    void dispatch() throws ErrorMessageException {
         AccountData accountdb = new AccountData();
         CustomerData client = new CustomerData();
         TransferHistoryData history = new TransferHistoryData();
         Vector<Float> result =  accountdb.getBalanceFromIBAN(this.getIbanOrigin());
 
-        if (result.isEmpty())
-            // FIXME: 17/11/16 Add exception
-            return;
+        if(result.isEmpty()) {
+            logger.debug("Invalid Origin Iban {}.",this.getIbanOrigin());
+            throw new InvalidIbanException(this.getIbanOrigin());
+        }
 
-        if(result.firstElement()<this.value)
-            // FIXME: 17/11/16 Add exception
-            return;
+        if(result.firstElement()<this.value) {
+            logger.debug("Insufficient funds.");
+            throw new InsufficientFundsException(this.getIbanOrigin());
+        }
 
-        if(!client.ibanExists(this.ibanDestination))
-            // FIXME: 17/11/16 Add exception
-            return;
+
+        if(!client.ibanExists(this.ibanDestination)){
+            logger.debug("Invalid destination Iban.");
+            throw new InvalidIbanException(this.ibanDestination);
+        }
 
 
         try {
             history.doTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value);
-            logger.debug("Transfer Completed");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.debug("Transfer Completed");
+
     }
 }

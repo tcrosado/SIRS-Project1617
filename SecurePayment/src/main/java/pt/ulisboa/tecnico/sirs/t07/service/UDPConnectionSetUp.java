@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.sirs.t07.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

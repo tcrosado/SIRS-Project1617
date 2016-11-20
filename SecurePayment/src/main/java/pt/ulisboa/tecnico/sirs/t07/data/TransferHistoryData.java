@@ -1,5 +1,10 @@
 package pt.ulisboa.tecnico.sirs.t07.data;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,40 +18,42 @@ import java.util.Vector;
  */
 public class TransferHistoryData extends AbstractData {
 
-
-
-    public void doTransaction(String tid, String originIban,String destIban, double value) throws Exception {
+    public void doTransaction(String tid, String originIban,String destIban, double value) throws ErrorMessageException{
         AccountData accountDB = new AccountData();
         double balance;
-        conn.setAutoCommit(false);
+        try {
+            conn.setAutoCommit(false);
+            PreparedStatement recordTransaction = conn.prepareStatement("INSERT INTO transactionHistory VALUES (?,CURRENT_TIMESTAMP,?,?,?);");
 
-        PreparedStatement recordTransaction = conn.prepareStatement("INSERT INTO transactionHistory VALUES (?,CURRENT_TIMESTAMP,?,?,?);");
+            recordTransaction.setString(1,tid);
+            recordTransaction.setString(2,originIban);
+            recordTransaction.setString(3,destIban);
+            recordTransaction.setDouble(4,value);
+            recordTransaction.execute();
 
-        recordTransaction.setString(1,tid);
-        recordTransaction.setString(2,originIban);
-        recordTransaction.setString(3,destIban);
-        recordTransaction.setDouble(4,value);
-        recordTransaction.execute();
+            PreparedStatement updateBalanceOrigin = conn.prepareStatement("UPDATE accounts SET balance=? WHERE iban= ?;");
+            balance = accountDB.getBalanceFromIBAN(originIban).firstElement();
+            if(balance<value){
+                recordTransaction.cancel();
+                conn.setAutoCommit(true);
+                throw new InsufficientFundsException(originIban);
+            }
+            updateBalanceOrigin.setDouble(1,balance-value);
+            updateBalanceOrigin.setString(2,originIban);
+            updateBalanceOrigin.execute();
 
-        PreparedStatement updateBalanceOrigin = conn.prepareStatement("UPDATE accounts SET balance=? WHERE iban= ?;");
-        balance = accountDB.getBalanceFromIBAN(originIban).firstElement();
-        if(balance<value){
-            recordTransaction.cancel();
+            PreparedStatement updateBalanceDest = conn.prepareStatement("UPDATE accounts SET balance=? WHERE iban= ?;");
+            balance = accountDB.getBalanceFromIBAN(destIban).firstElement();
+
+            updateBalanceDest.setDouble(1,balance+value);
+            updateBalanceDest.setString(2,destIban);
+            updateBalanceDest.execute();
+            conn.commit();
             conn.setAutoCommit(true);
-            throw new Exception("Insufficient funds");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        updateBalanceOrigin.setDouble(1,balance-value);
-        updateBalanceOrigin.setString(2,originIban);
-        updateBalanceOrigin.execute();
-
-        PreparedStatement updateBalanceDest = conn.prepareStatement("UPDATE accounts SET balance=? WHERE iban= ?;");
-        balance = accountDB.getBalanceFromIBAN(destIban).firstElement();
-
-        updateBalanceDest.setDouble(1,balance+value);
-        updateBalanceDest.setString(2,destIban);
-        updateBalanceDest.execute();
-        conn.commit();
-        conn.setAutoCommit(true);
     }
 
     public Vector<TransferHistory> getLastTransactionFromIban(String iban,Optional<Integer> nr) throws SQLException {

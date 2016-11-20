@@ -2,12 +2,16 @@ package pt.ulisboa.tecnico.sirs.t07.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 import sun.security.x509.IPAddressName;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.ByteBuffer;
 import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.PriorityQueue;
@@ -45,14 +49,17 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         * 2 - receber confirmacao e fazer operacao
         * */
 
-        //this.packet.getData();
         PacketParserService p = null;
         try {
             p = new PacketParserService(this.packet);
+            p.execute();
+        } catch (ErrorMessageException e) {
+           handleError(e);
+            return;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        p.execute();
+
 
         DatagramPacket sendPacket = new DatagramPacket(this.packet.getData(),this.packet.getLength(), this.packet.getAddress(),this.packet.getPort());
         try {
@@ -70,8 +77,7 @@ public class UDPEstablishService extends AbstractService implements Runnable{
             OperationData opData = p.result();
             opData.executeService();
 
-
-            this.socket.setSoTimeout(this.timeout);
+       /*     this.socket.setSoTimeout(this.timeout);
             this.socket.receive(receiveConfirmation);
             this.socket.setSoTimeout(0);
             if(Arrays.equals(receiveConfirmation.getData(),sendPacket.getData())){
@@ -80,13 +86,31 @@ public class UDPEstablishService extends AbstractService implements Runnable{
                 logger.debug("Operation executed");
             }else{
                 logger.debug("Operation aborted");
-            }
+            }*/
             Arrays.fill( data, (byte) 0 );
 
-        } catch (IOException e) {
-            e.printStackTrace();
+       /* } catch (IOException e) {
+            e.printStackTrace();*/
+        } catch (ErrorMessageException e) {
+            handleError(e);
+            return;
         }
 
 
+    }
+
+
+
+    private void handleError(ErrorMessageException e){
+        ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
+        DataOutputStream daOp = new DataOutputStream(opBuffer);
+        try {
+            daOp.writeBytes(e.getMessage());
+            DatagramPacket errorPacket = new DatagramPacket(opBuffer.toByteArray(),opBuffer.toByteArray().length, this.packet.getAddress(),this.packet.getPort());
+            this.socket.send(errorPacket);
+
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 }

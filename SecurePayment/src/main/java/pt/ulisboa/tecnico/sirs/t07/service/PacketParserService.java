@@ -2,6 +2,9 @@ package pt.ulisboa.tecnico.sirs.t07.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidHashException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidOperationException;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 
 import java.io.ByteArrayInputStream;
@@ -21,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by tiago on 12/11/2016.
  */
-public class PacketParserService extends AbstractService {
+public class PacketParserService extends OperationService {
 
     private final Logger logger = LoggerFactory.getLogger(PacketParserService.class);
     private DatagramPacket packet;
@@ -33,7 +36,7 @@ public class PacketParserService extends AbstractService {
     }
 
     @Override
-    void dispatch() {
+    void dispatch() throws ErrorMessageException {
 
         UUID tuid = this.getTId();
         Timestamp time = this.getTime();
@@ -50,9 +53,10 @@ public class PacketParserService extends AbstractService {
            case 'S':
                logger.debug("Operation: Balance");
                logger.debug("Account Iban : {}", this.getOriginIBAN());
-               BalanceCheckService b = new BalanceCheckService(this.getOriginIBAN());
-               b.execute();
-               logger.debug("Account Balace: {}", b.balance);
+               this.resultData = new OperationData(tuid,time,new BalanceCheckService(this.getOriginIBAN()));
+             //  BalanceCheckService b = new BalanceCheckService(this.getOriginIBAN());
+             //  b.execute();
+            //   logger.debug("Account Balace: {}", b.balance);
                break;
            case 'T':
                logger.debug("Operation: Transfer");
@@ -60,14 +64,14 @@ public class PacketParserService extends AbstractService {
                logger.debug("Destination Iban: {}",this.getDestinationIBAN());
                logger.debug("Transfer Value: {}",this.getTransferValue());
                this.resultData = new OperationData(tuid,time,new TransferService(tuid,this.getOriginIBAN(),this.getDestinationIBAN(),this.getTransferValue()));
-                break;
+               break;
            case 'H':
                //TODO definir serviço de historico
                logger.debug("Operation: History");
                break;
            default:
                //FIXME eniviar excecao
-               logger.debug("Throw");
+              throw new InvalidOperationException();
        }
 
     }
@@ -76,7 +80,7 @@ public class PacketParserService extends AbstractService {
     private void setPacket(DatagramPacket packet) throws Exception{
         int MAX_LENGHT = 120;
         if(packet.getData().length>MAX_LENGHT){
-            throw new Exception("tamanho grande"); //FIXME
+            throw new Exception("tamanho grande"); //FIXME verificar tamanho do byteArray
         }
         this.packet = packet;
     }
@@ -135,7 +139,7 @@ public class PacketParserService extends AbstractService {
 
 
 
-    private void veryfyIntegrity() {
+    private void veryfyIntegrity() throws InvalidHashException {
         MessageDigest digest = null;
         try {
             digest = MessageDigest.getInstance("SHA-256");
@@ -160,10 +164,8 @@ public class PacketParserService extends AbstractService {
         byte[] cappedHash = Arrays.copyOfRange(calculatedHash,8,24);
         byte[] hash = this.getHash();
 
-        if(Arrays.equals(cappedHash,hash))
-            logger.debug("Cool"); //FIXME
-        else
-            logger.debug("Not Cool"); //FIXME
+        if(!Arrays.equals(cappedHash,hash))
+            throw new InvalidHashException(this.getTId());
 
     }
 }
