@@ -13,10 +13,14 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
+import sirs.grupo7.securepayment.connections.UDP;
+
+import sirs.grupo7.securepayment.connections.UDP;
 
 public class LoginActivity extends Activity {
 
     private int MAX_PASS_LENGHT = 4;
+    public final static String MY_IBAN = "PT12345678912345678912345";
     private int count;
     private TextView[] textViews;
     private String password;
@@ -95,7 +99,12 @@ public class LoginActivity extends Activity {
         } else {
             if (this.password.length() == 4 && this.password.equals(this.USER_PASSWORD)) {
                 if (fromTransaction) {
+                    String destIBAN = (String) getIntent().getExtras().get("destIBAN");
+                    String moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
                     Intent intent = new Intent(LoginActivity.this, MakingTransactionActivity.class);
+                    intent.putExtra("myIBAN", MY_IBAN);
+                    intent.putExtra("destIBAN", destIBAN);
+                    intent.putExtra("moneyToTransfer", moneyToTransfer);
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);

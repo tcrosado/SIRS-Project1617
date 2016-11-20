@@ -11,31 +11,32 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EdgeEffect;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+
+import java.io.IOException;
+
+import sirs.grupo7.securepayment.connections.UDP;
+
 
 public class MainActivity extends AppCompatActivity {
 
     public final static String MY_IBAN = "PT12345678912345678912345";
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
     private Button buttonIBAN;
-    private String CURRENT_BALANCE = "500,00 €";
+    private String CURRENT_BALANCE;
     private TextView textViewShowBalance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textViewShowBalance = (TextView) findViewById(R.id.textViewCurrentBalance);
-        textViewShowBalance.setText(CURRENT_BALANCE);
+        showCurrentBalance();
         buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
         final Context context = this;
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -107,6 +108,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showCurrentBalance() {
-        // TODO request current balance to the server
+        textViewShowBalance = (TextView) findViewById(R.id.textViewCurrentBalance);
+
+        UDP udp = new UDP();
+        try {
+            CURRENT_BALANCE = udp.showBalance(MY_IBAN);
+            textViewShowBalance.setText(CURRENT_BALANCE + " €");
+        } catch (IOException e) {
+            textViewShowBalance.setText(getResources().getString(R.string.errorGettingBalance));
+            textViewShowBalance.setTextSize(20);
+            e.printStackTrace();
+        }
     }
 }

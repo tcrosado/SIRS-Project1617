@@ -29,4 +29,7 @@
     <string name="title_activity_making_transaction">Transação em Processamento</string>
     <string name="transaction_done">Continuar</string>
     <string name="text_transaction_done">\t\t\t\t\t\t\t TODO\nTransação Completa</string>
+    <string name="errorMakingTransaction">Transferência cancelada\nOcorreu um erro ao processar a sua transferência\nVerifique as opções de rede e tente de novo</string>
+    <string name="transferSuccess"> foi transferdo para a conta </string>
+    <string name="errorGettingBalance">Erro ao pedir saldo</string>
 </resources>

@@ -8,10 +8,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import java.io.IOException;
+
+import sirs.grupo7.securepayment.connections.UDP;
 
 public class MakingTransactionActivity extends AppCompatActivity {
 
     private Button buttonDone;
+    private String moneyToTransfer;
+    private String myIBAN;
+    private String destIBAN;
+    private TextView textView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +29,20 @@ public class MakingTransactionActivity extends AppCompatActivity {
         final Activity activity = this;
 
         buttonDone = (Button) findViewById(R.id.button_done);
+        textView = (TextView) findViewById(R.id.text_done);
+
+        myIBAN = (String) getIntent().getExtras().get("myIBAN");
+        destIBAN = (String) getIntent().getExtras().get("destIBAN");
+        moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
+
+        UDP udp = new UDP();
+        try {
+            udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer);
+            textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
+        } catch (IOException e) {
+            textView.setText(getResources().getString(R.string.errorMakingTransaction));
+            e.printStackTrace();
+        }
 
         buttonDone.setOnClickListener(new View.OnClickListener() {
             @Override

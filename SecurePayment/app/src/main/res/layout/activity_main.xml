@@ -14,10 +14,10 @@
         android:text="@string/buttonBalance"
         android:id="@+id/buttonTransaction"
         android:onClick="goToBalance"
-        android:layout_marginBottom="50dp"
-        android:layout_above="@+id/buttonBalance"
-        android:layout_alignStart="@+id/buttonBalance"
-        android:layout_alignEnd="@+id/buttonBalance"/>
+        android:layout_below="@+id/textViewCurrentBalance"
+        android:layout_marginTop="68dp"
+        android:layout_alignEnd="@+id/textViewCurrentBalance"
+        android:layout_alignStart="@+id/textViewCurrentBalance"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -25,28 +25,10 @@
         android:text="@string/buttonTransaction"
         android:id="@+id/buttonBalance"
         android:onClick="goToTransaction"
-        android:layout_marginBottom="50dp"
         android:layout_above="@+id/buttonShowIBAN"
-        android:layout_centerHorizontal="true"/>
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PT"
-        android:id="@+id/buttonPT"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"/>
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="EN"
-        android:id="@+id/buttonEN"
-        android:layout_alignTop="@+id/buttonPT"
-        android:layout_toStartOf="@+id/buttonPT"
-        android:onClick="goToInitial" />
+        android:layout_marginBottom="58dp"
+        android:layout_alignStart="@+id/buttonTransaction"
+        android:layout_alignEnd="@+id/buttonTransaction"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -55,19 +37,18 @@
         android:id="@+id/buttonShowIBAN"
         android:layout_marginBottom="50dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/buttonBalance"
-        android:layout_alignEnd="@+id/buttonBalance"/>
+        android:layout_alignEnd="@+id/buttonBalance"
+        android:layout_alignStart="@+id/buttonBalance"/>
 
     <TextView
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/textViewCurrentBalance"
-        android:layout_above="@+id/buttonTransaction"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
         android:gravity="center"
         android:textColor="#000000"
         android:textSize="35dp"
-        />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"/>
 </RelativeLayout>

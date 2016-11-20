@@ -61,6 +61,8 @@ public class TransactionConfirmationActivity extends Activity {
                 if (flag) {
                     Intent intent = new Intent(activity, LoginActivity.class);
                     intent.putExtra("fromTransaction", true);
+                    intent.putExtra("destIBAN", destIBAN);
+                    intent.putExtra("moneyToTransfer", text);
                     startActivity(intent);
                 } else {
                     allAbortedRemoveEverythingBeforeTheAttackersRealise(activity);
@@ -76,7 +78,7 @@ public class TransactionConfirmationActivity extends Activity {
                 } else {
                     Intent intent = new Intent(activity, Transaction2Activity.class);
                     intent.putExtra("destIBAN", destIBAN);
-                    intent.putExtra("text", text);
+                    intent.putExtra("moneyToTransfer", text);
                     startActivity(intent);
                 }
             }

@@ -49,5 +49,8 @@
     <string name="transaction_canceled">Transaction Canceled</string>
     <string name="transaction_done">Continue</string>
     <string name="text_transaction_done">\t\t\t\t\t\t TODO\nTransaction Done!</string>
+    <string name="errorMakingTransaction">Transfer canceled\nThere was an error making your transfer\nCheck your network settings and try again</string>
+    <string name="transferSuccess"> was transfered to the account </string>
+    <string name="errorGettingBalance">Error requesting balance</string>
 
 </resources>
