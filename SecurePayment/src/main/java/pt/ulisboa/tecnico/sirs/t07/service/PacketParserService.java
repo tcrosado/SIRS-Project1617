@@ -5,8 +5,13 @@ import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Array;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -38,6 +43,7 @@ public class PacketParserService extends AbstractService {
         logger.debug("Tid: {}",tuid);
         logger.debug("Time: {}",time);
 
+        veryfyIntegrity();
 
        switch (operation){
 
@@ -122,6 +128,40 @@ public class PacketParserService extends AbstractService {
         byte[] value = Arrays.copyOfRange(this.packet.getData(),91,99);
         ByteBuffer b = ByteBuffer.wrap(value);
         return b.getDouble();
+    }
+
+
+
+    private void veryfyIntegrity() {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),40,41);
+        byte[] ibano = Arrays.copyOfRange(this.packet.getData(),41,66);
+        byte[] iband = Arrays.copyOfRange(this.packet.getData(),66,91);
+        byte[] value = Arrays.copyOfRange(this.packet.getData(),91,99);
+        try {
+            out.write(opbyte);
+            out.write(ibano);
+            out.write(iband);
+            out.write(value);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        byte[] calculatedHash = digest.digest(out.toByteArray());
+        byte[] cappedHash = Arrays.copyOfRange(calculatedHash,8,24);
+        byte[] hash = this.getHash();
+
+        if(Arrays.equals(cappedHash,hash))
+            logger.debug("Cool"); //FIXME
+        else
+            logger.debug("Not Cool"); //FIXME
+
     }
 }
 
