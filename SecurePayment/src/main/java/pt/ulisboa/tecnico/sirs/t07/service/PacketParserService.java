@@ -48,8 +48,11 @@ public class PacketParserService extends AbstractService {
        switch (operation){
 
            case 'S':
-               //TODO definir serviço de saldo
                logger.debug("Operation: Balance");
+               logger.debug("Account Iban : {}", this.getOriginIBAN());
+               BalanceCheckService b = new BalanceCheckService(this.getOriginIBAN());
+               b.execute();
+               logger.debug("Account Balace: {}", b.balance);
                break;
            case 'T':
                logger.debug("Operation: Transfer");
