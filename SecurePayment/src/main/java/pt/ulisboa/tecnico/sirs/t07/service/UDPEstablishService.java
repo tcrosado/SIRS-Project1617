@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 import sun.security.x509.IPAddressName;
 
+import javax.xml.crypto.Data;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -60,23 +61,14 @@ public class UDPEstablishService extends AbstractService implements Runnable{
             e.printStackTrace();
         }
 
+        sendMessage(this.packet.getData()); //TODO aqui deve enviar-se tambem o challenge response
 
-        DatagramPacket sendPacket = new DatagramPacket(this.packet.getData(),this.packet.getLength(), this.packet.getAddress(),this.packet.getPort());
-        try {
-            this.socket.send(sendPacket);
-            /**
-             * TODO
-             *  aqui deve enviar-se tambem o challenge response
-             * */
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         byte[] data = new byte[1024];
         DatagramPacket receiveConfirmation = new DatagramPacket(data,data.length);
         try {
-            OperationData opData = p.result();
+            OperationData opData = p.getResultData();
             opData.executeService();
-
+            sendMessage(opData.getServiceResult().getBytes());
        /*     this.socket.setSoTimeout(this.timeout);
             this.socket.receive(receiveConfirmation);
             this.socket.setSoTimeout(0);
@@ -89,8 +81,6 @@ public class UDPEstablishService extends AbstractService implements Runnable{
             }*/
             Arrays.fill( data, (byte) 0 );
 
-       /* } catch (IOException e) {
-            e.printStackTrace();*/
         } catch (ErrorMessageException e) {
             handleError(e);
             return;
@@ -106,11 +96,21 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         DataOutputStream daOp = new DataOutputStream(opBuffer);
         try {
             daOp.writeBytes(e.getMessage());
-            DatagramPacket errorPacket = new DatagramPacket(opBuffer.toByteArray(),opBuffer.toByteArray().length, this.packet.getAddress(),this.packet.getPort());
-            this.socket.send(errorPacket);
+            sendMessage(opBuffer.toByteArray());
 
         } catch (IOException e1) {
             e1.printStackTrace();
         }
     }
+
+
+    private void sendMessage(byte[] message){
+        DatagramPacket packet = new DatagramPacket(message,message.length,this.packet.getAddress(),this.packet.getPort());
+        try {
+            this.socket.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

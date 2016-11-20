@@ -19,13 +19,15 @@ public class TransferService extends OperationService {
     private final Logger logger = LoggerFactory.getLogger(TransferService.class);
     private  String tid;
     private String ibanDestination;
-    private double value = 0;
+    private double value;
+    private String result;
 
     public TransferService(UUID tid, String ibanOrigin, String ibanDestination, double value) {
         super(ibanOrigin);
         this.ibanDestination = ibanDestination;
         this.value = value;
         this.tid=tid.toString();
+        this.result = "Not Executed";
     }
 
     @Override
@@ -37,20 +39,22 @@ public class TransferService extends OperationService {
 
         if(result.isEmpty()) {
             logger.debug("Invalid Origin Iban {}.",this.getIbanOrigin());
+            this.result="Invalid Origin Iban";
             throw new InvalidIbanException(this.getIbanOrigin());
         }
 
         if(result.firstElement()<this.value) {
             logger.debug("Insufficient funds.");
+            this.result="Insufficient funds";
             throw new InsufficientFundsException(this.getIbanOrigin());
         }
 
 
         if(!client.ibanExists(this.ibanDestination)){
             logger.debug("Invalid destination Iban.");
+            this.result="Invalid destination Iban";
             throw new InvalidIbanException(this.ibanDestination);
         }
-
 
         try {
             history.doTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value);
@@ -58,6 +62,11 @@ public class TransferService extends OperationService {
             e.printStackTrace();
         }
         logger.debug("Transfer Completed");
+        this.result="Transfer Completed";
+    }
 
+    @Override
+    public String result() {
+        return this.result;
     }
 }

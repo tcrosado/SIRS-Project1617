@@ -24,4 +24,8 @@ public class OperationData {
     public void executeService() throws ErrorMessageException {
         this.service.execute();
     }
+
+    public String getServiceResult(){
+        return this.service.result();
+    }
 }

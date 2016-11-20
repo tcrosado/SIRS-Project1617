@@ -6,9 +6,11 @@ package pt.ulisboa.tecnico.sirs.t07.service;
 import java.util.Vector;
 
 import pt.ulisboa.tecnico.sirs.t07.data.AccountData;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidIbanException;
 
 /**
- * @author João
+ * @author Joï¿½o
  *
  */
 public class BalanceCheckService extends OperationService{
@@ -22,10 +24,18 @@ public class BalanceCheckService extends OperationService{
 	}
 
 	@Override
-	void dispatch() {
+	void dispatch() throws ErrorMessageException {
 		AccountData Account = new AccountData();
-		this.balance = Account.getBalanceFromIBAN(this.IBAN);
+		Vector<Float> balance = Account.getBalanceFromIBAN(this.IBAN);
+		if(balance.isEmpty())
+			throw new InvalidIbanException(this.IBAN);
+		this.balance = balance;
 		return;
+	}
+
+	@Override
+	public String result() {
+		return this.balance.firstElement()+"";
 	}
 
 }

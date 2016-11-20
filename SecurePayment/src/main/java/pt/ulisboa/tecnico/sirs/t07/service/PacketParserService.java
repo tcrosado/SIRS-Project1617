@@ -76,6 +76,14 @@ public class PacketParserService extends OperationService {
 
     }
 
+    @Override
+    public String result() {
+        return "Packet Parser doesn't implement result method";
+    }
+
+    public OperationData getResultData(){
+        return resultData;
+    }
 
     private void setPacket(DatagramPacket packet) throws Exception{
         int MAX_LENGHT = 120;
@@ -83,10 +91,6 @@ public class PacketParserService extends OperationService {
             throw new Exception("tamanho grande"); //FIXME verificar tamanho do byteArray
         }
         this.packet = packet;
-    }
-
-    public OperationData result(){
-        return resultData;
     }
 
 

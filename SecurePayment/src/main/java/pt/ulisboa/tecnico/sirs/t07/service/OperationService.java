@@ -24,6 +24,6 @@ abstract  public class OperationService {
         return ibanOrigin;
     }
 
-
+    abstract public String result();
 
 }
