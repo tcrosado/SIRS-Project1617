@@ -17,19 +17,44 @@ import java.util.UUID;
  * Created by Duarte on 20/11/2016.
  */
 public class UDP {
+    
+    private String HOSTNAME;
+    private String PORT;
+    
+    public UDP(String hostname, String port) {
+        // if Optional is supported use it
+        this.HOSTNAME = hostname;
+        this.PORT = port;
+    }
 
     public String showBalance(String origIBAN) throws IOException {
-        sendUDP('S', origIBAN, "", "");
+        byte[] message = new byte[];
+        message += 'S'.getBytes();
+        message += originIBAN.getBytes();
+        sendUDP(message);
         String balance = receiveUDP();
         return balance;
     }
 
     public void makeTransaction(String origIBAN, String destIBAN, String amount) throws IOException {
-        sendUDP('T', origIBAN, destIBAN, amount);
+        byte[] message = new byte[];
+        message += 'T'.getBytes();
+        message += originIBAN.getBytes();
+        message += destIBAN.getBytes();
+        message += amount.getBytes();
+        sendUDP(message);
+    }
+    
+    public String showHistory(String origIBAN) throws IOException {
+        byte[] message = new byte[];
+        message += 'H'.getBytes();
+        message += originIBAN.getBytes();
+        sendUDP(message);
+        String balance = receiveUDP();
+        return balance;
     }
 
-
-    private void sendUDP(char operation, String origIBAN, String destIBAN, String amount) throws IOException {
+    private void sendUDP(byte[] message) throws IOException {
         /*
         UUID tid = UUID.randomUUID();
         Calendar calendar = Calendar.getInstance();
