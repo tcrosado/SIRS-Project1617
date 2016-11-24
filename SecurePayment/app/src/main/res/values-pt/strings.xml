@@ -32,4 +32,5 @@
     <string name="errorMakingTransaction">Transferência cancelada\nOcorreu um erro ao processar a sua transferência\nVerifique as opções de rede e tente de novo</string>
     <string name="transferSuccess"> foi transferdo para a conta </string>
     <string name="errorGettingBalance">Erro ao pedir saldo</string>
+    <string name="errorGettingHistory">Erro ao pedir histórico</string>
 </resources>

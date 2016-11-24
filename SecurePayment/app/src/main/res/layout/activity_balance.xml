@@ -9,10 +9,11 @@
                 tools:context="sirs.grupo7.securepayment.BalanceActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="400dp"
+        android:layout_height="800dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/textViewBalance"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"/>
+
 </RelativeLayout>

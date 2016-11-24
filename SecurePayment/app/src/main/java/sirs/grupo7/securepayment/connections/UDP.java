@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -19,92 +20,99 @@ import java.util.UUID;
 public class UDP {
     
     private String HOSTNAME;
-    private String PORT;
+    private int PORT;
     
-    public UDP(String hostname, String port) {
+    public UDP(String hostname, int port) {
         // if Optional is supported use it
         this.HOSTNAME = hostname;
         this.PORT = port;
     }
 
     public String showBalance(String origIBAN) throws IOException {
-        byte[] message = new byte[];
-        message += 'S'.getBytes();
-        message += originIBAN.getBytes();
-        sendUDP(message);
-        String balance = receiveUDP();
-        return balance;
+        ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
+
+        DataOutputStream message = new DataOutputStream(opBuffer);
+        message.write('S');
+        message.writeBytes(origIBAN);
+        sendUDP(opBuffer.toByteArray());
+        return receiveUDP();
     }
 
-    public void makeTransaction(String origIBAN, String destIBAN, String amount) throws IOException {
-        byte[] message = new byte[];
-        message += 'T'.getBytes();
-        message += originIBAN.getBytes();
-        message += destIBAN.getBytes();
-        message += amount.getBytes();
-        sendUDP(message);
+    public String makeTransaction(String origIBAN, String destIBAN, String amount) throws IOException {
+        ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
+
+        DataOutputStream message = new DataOutputStream(opBuffer);
+        message.write('T');
+        message.writeBytes(origIBAN);
+        message.writeBytes(destIBAN);
+        message.writeBytes(amount);
+        sendUDP(opBuffer.toByteArray());
+        return receiveUDP();
     }
     
     public String showHistory(String origIBAN) throws IOException {
-        byte[] message = new byte[];
-        message += 'H'.getBytes();
-        message += originIBAN.getBytes();
-        sendUDP(message);
-        String balance = receiveUDP();
-        return balance;
+        ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
+
+        DataOutputStream message = new DataOutputStream(opBuffer);
+        message.write('H');
+        message.writeBytes(origIBAN);
+        sendUDP(opBuffer.toByteArray());
+        return receiveUDP();
     }
 
     private void sendUDP(byte[] message) throws IOException {
-        /*
+
         UUID tid = UUID.randomUUID();
         Calendar calendar = Calendar.getInstance();
         long time = calendar.getTimeInMillis();
 
         DatagramSocket clientSocket = new DatagramSocket();
 
-        InetAddress IPAddress = InetAddress.getByName("localhost");
+        InetAddress IPAddress = InetAddress.getByName(HOSTNAME);
 
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-        DataOutputStream daOp = new DataOutputStream(opBuffer);
+            ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
 
-        daOp.write(operation);
-        daOp.writeBytes(origIBAN);
-        daOp.writeBytes(destIBAN);
-        daOp.writeDouble(amount);
+            DataOutputStream temp = new DataOutputStream(tempBuffer);
+
+            temp.writeLong(tid.getMostSignificantBits());
+            temp.writeLong(tid.getLeastSignificantBits());
+            temp.writeLong(time);
+            temp.write(message);
+
+            byte[] hash = digest.digest(tempBuffer.toByteArray());
+            byte[] cappedHash = Arrays.copyOfRange(hash,8,24);
+
+            ByteArrayOutputStream toSendBuffer = new ByteArrayOutputStream();
+
+            DataOutputStream toSend = new DataOutputStream(tempBuffer);
+
+            toSend.write(cappedHash);
+            toSend.write(tempBuffer.toByteArray());
 
 
+            DatagramPacket sendPacket = new DatagramPacket(toSendBuffer.toByteArray(), toSendBuffer.size(), IPAddress, PORT);
+            clientSocket.send(sendPacket);
 
-        DatagramPacket sendPacket = new DatagramPacket(out.toByteArray(), out.size(), IPAddress, 5000);
-        clientSocket.send(sendPacket);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         clientSocket.close();
 
-
-        https://stackoverflow.com/questions/24519855/how-to-send-udp-packets-between-an-android-tablet-and-raspberry-pi
-
-        InetAddress serverAddr = InetAddress.getByName(SERVERIP);
-        DatagramSocket clientSocket = new DatagramSocket();
-        byte[] sendData = new byte[1024];
-        String sentence = message;
-        sendData = sentence.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddr, SERVERPORT);
-        clientSocket.send(sendPacket);
-        clientSocket.close();
-
-        */
     }
 
-    private String receiveUDP() {
-        /*
-        byte[] receiveData1 = new byte[1024];
-        DatagramPacket receivePacket = new DatagramPacket(receiveData1, receiveData1.length);
+    private String receiveUDP() throws IOException {
+
+        DatagramSocket clientSocket = new DatagramSocket();
+        byte[] receiveData = new byte[1024];
+        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
         clientSocket.close();
 
-         */
-        return "500.00";
+        return new String(receivePacket.getData());
     }
 
 }

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import java.io.IOException;
+import java.io.StringReader;
 
 import sirs.grupo7.securepayment.connections.UDP;
 
@@ -20,6 +21,9 @@ public class MakingTransactionActivity extends AppCompatActivity {
     private String myIBAN;
     private String destIBAN;
     private TextView textView;
+
+    private String HOSTNAME = "localhost";
+    private int PORT = 5000;
 
 
     @Override
@@ -35,7 +39,7 @@ public class MakingTransactionActivity extends AppCompatActivity {
         destIBAN = (String) getIntent().getExtras().get("destIBAN");
         moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
 
-        UDP udp = new UDP();
+        UDP udp = new UDP(HOSTNAME, PORT);
         try {
             udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer);
             textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);

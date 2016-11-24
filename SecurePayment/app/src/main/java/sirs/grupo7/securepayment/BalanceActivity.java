@@ -5,14 +5,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import java.io.IOException;
+
+import sirs.grupo7.securepayment.connections.UDP;
 
 public class BalanceActivity extends AppCompatActivity {
+
+    private String HOSTNAME = "localhost";
+    private int PORT = 5000;
+    private String MY_IBAN;
+    private TextView textViewBalance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance);
-
+        textViewBalance = (TextView) findViewById(R.id.textViewBalance);
+        textViewBalance.setText(requestBalance(MY_IBAN));
     }
 
     @Override
@@ -37,8 +48,17 @@ public class BalanceActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** Called to request the user balance to the web api */
     public String requestBalance(String IBAN) {
-        return "TODO - INTEGRATION WITH WEB API";
+        UDP udp = new UDP(HOSTNAME, PORT);
+        try {
+            String message = udp.showHistory(MY_IBAN);
+            if (message.equals("ERROR")) {
+                return getResources().getString(R.string.errorGettingHistory);
+            } else {
+                return message;
+            }
+        } catch (IOException e) {
+            return getResources().getString(R.string.errorGettingHistory);
+        }
     }
 }

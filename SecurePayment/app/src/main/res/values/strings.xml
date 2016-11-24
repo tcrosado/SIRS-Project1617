@@ -52,5 +52,6 @@
     <string name="errorMakingTransaction">Transfer canceled\nThere was an error making your transfer\nCheck your network settings and try again</string>
     <string name="transferSuccess"> was transfered to the account </string>
     <string name="errorGettingBalance">Error requesting balance</string>
+    <string name="errorGettingHistory">Error requesting history</string>
 
 </resources>
