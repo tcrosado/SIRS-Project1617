@@ -37,7 +37,6 @@ public class PacketParserService extends OperationService {
 
     @Override
     void dispatch() throws ErrorMessageException {
-
         UUID tuid = this.getTId();
         Timestamp time = this.getTime();
         char operation = this.getOperation();
@@ -45,8 +44,9 @@ public class PacketParserService extends OperationService {
         logger.debug("Packet Parsed");
         logger.debug("Tid: {}",tuid);
         logger.debug("Time: {}",time);
+        logger.debug("Op: {}",operation);
 
-        veryfyIntegrity();
+//FIXME        veryfyIntegrity();
 
        switch (operation){
 
@@ -99,10 +99,14 @@ public class PacketParserService extends OperationService {
      *
      * **/
 
+    private byte[] getHash(){
+        return Arrays.copyOf(this.packet.getData(),16);
+    }
+
 
     private UUID getTId(){
-        byte[] uidbyte1 = Arrays.copyOf(this.packet.getData(),8);
-        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),8,16);
+        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),16,24);
+        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),24,32);
         ByteBuffer bb = ByteBuffer.wrap(uidbyte1);
         long mostSignificant = bb.getLong();
         bb = ByteBuffer.wrap(uidbyte2);
@@ -111,13 +115,9 @@ public class PacketParserService extends OperationService {
     }
 
     private Timestamp getTime(){
-        byte[] timestampbyte = Arrays.copyOfRange(this.packet.getData(),16,24);
+        byte[] timestampbyte = Arrays.copyOfRange(this.packet.getData(),32,40);
         ByteBuffer bb = ByteBuffer.wrap(timestampbyte);
         return new Timestamp(bb.getLong());
-    }
-
-    private byte[] getHash(){
-        return Arrays.copyOfRange(this.packet.getData(),24,40);
     }
 
     private char getOperation(){
@@ -138,6 +138,7 @@ public class PacketParserService extends OperationService {
     private double getTransferValue(){
         byte[] value = Arrays.copyOfRange(this.packet.getData(),91,99);
         ByteBuffer b = ByteBuffer.wrap(value);
+
         return b.getDouble();
     }
 
