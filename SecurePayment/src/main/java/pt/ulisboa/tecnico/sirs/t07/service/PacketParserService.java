@@ -86,7 +86,7 @@ public class PacketParserService extends OperationService {
     }
 
     private void setPacket(DatagramPacket packet) throws Exception{
-        int MAX_LENGHT = 120;
+        int MAX_LENGHT = 1024;
         if(packet.getData().length>MAX_LENGHT){
             throw new Exception("tamanho grande"); //FIXME verificar tamanho do byteArray
         }

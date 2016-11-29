@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
+import pt.ulisboa.tecnico.sirs.t07.utils.UDPConnection;
 import sun.security.x509.IPAddressName;
 
 import javax.xml.crypto.Data;
@@ -27,14 +28,14 @@ public class UDPEstablishService extends AbstractService implements Runnable{
     private final Logger logger = LoggerFactory.getLogger(UDPEstablishService.class);
     private Integer timeout;
     private DatagramPacket packet;
-    private DatagramSocket socket;
+    private UDPConnection conn;
 
 
-    public UDPEstablishService(DatagramSocket socket, DatagramPacket packet, Integer timeout){
+    public UDPEstablishService(UDPConnection conn, DatagramPacket packet, Integer timeout){
         //this.packets = new PriorityQueue<DatagramPacket>();
         this.packet = packet;
         this.timeout = timeout;
-        this.socket = socket;
+        this.conn = conn;
 
     }
 
@@ -61,7 +62,11 @@ public class UDPEstablishService extends AbstractService implements Runnable{
             e.printStackTrace();
         }
 
-        sendMessage(this.packet.getData()); //TODO aqui deve enviar-se tambem o challenge response
+        try {
+            sendMessage(this.packet.getData()); //TODO aqui deve enviar-se tambem o challenge response
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         byte[] data = new byte[1024];
         DatagramPacket receiveConfirmation = new DatagramPacket(data,data.length);
@@ -84,6 +89,8 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         } catch (ErrorMessageException e) {
             handleError(e);
             return;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
 
@@ -104,13 +111,9 @@ public class UDPEstablishService extends AbstractService implements Runnable{
     }
 
 
-    private void sendMessage(byte[] message){
+    private void sendMessage(byte[] message) throws IOException {
         DatagramPacket packet = new DatagramPacket(message,message.length,this.packet.getAddress(),this.packet.getPort());
-        try {
-            this.socket.send(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.conn.sendData(message,this.packet.getAddress(),this.packet.getPort());
     }
 
 }

@@ -18,6 +18,7 @@ import java.util.Optional;
 public class DHExchanger {
 
     private static final  String HOSTNAME = "localhost";
+    private static final Integer PORT = 5000;
 
     private DHParameterSpec spec;
 
@@ -33,13 +34,13 @@ public class DHExchanger {
         KeyPair kp = this.generateKeyPair();
 
 
-        UDPConnection conn = new UDPConnection(HOSTNAME);
-        conn.sendData(kp.getPublic().getEncoded());
+        UDPConnection conn = new UDPConnection();
+        conn.sendData(kp.getPublic().getEncoded(),HOSTNAME,PORT);
 
         KeyAgreement keyAgree = KeyAgreement.getInstance("DH");
         keyAgree.init(kp.getPrivate());
 
-        byte[] message = conn.receiveData(); //FIXME
+        byte[] message = conn.receiveData().getData(); //FIXME
         KeyFactory keyFac = KeyFactory.getInstance("DH");
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(message);
         PublicKey clientKey = keyFac.generatePublic(x509KeySpec);
@@ -67,8 +68,8 @@ public class DHExchanger {
 
         this.sessionKey = keyAgree.generateSecret();
 
-        UDPConnection conn =  new UDPConnection(HOSTNAME);
-        conn.sendData(kp.getPublic().getEncoded());
+        UDPConnection conn =  new UDPConnection();
+        conn.sendData(kp.getPublic().getEncoded(),HOSTNAME,PORT);
         conn.closeConnection();
     }
 
