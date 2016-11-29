@@ -1,10 +1,15 @@
 package sirs.grupo7.securepayment.encryption;
 
+//import android.util.Base64;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.AlgorithmParameters;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -22,106 +27,108 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * Created by brigadinhos on 24-11-2016.
- *
- *
- * https://stackoverflow.com/questions/15554296/simple-java-aes-encrypt-decrypt-example
- * https://stackoverflow.com/questions/3103652/hash-string-via-sha-256-in-java
- * http://javapapers.com/java/java-file-encryption-decryption-using-aes-password-based-encryption-pbe/
- * http://www.java2s.com/Tutorial/Java/0490__Security/UsingCipherOutputStream.htm
- * http://www.mkyong.com/java/jce-encryption-data-encryption-standard-des-tutorial/
- * https://stackoverflow.com/questions/992019/java-256-bit-aes-password-based-encryption
- * https://stackoverflow.com/questions/27962116/simplest-way-to-encrypt-a-text-file-in-java
- *
- */
 
 public class AESFileEncryption {
 
-    public AESFileEncryption(String filename, String key, String value) {
+    private String salt;
+    private String iv;
+    private String filename;
 
-        try {
-            // file to be encrypted
-            FileInputStream inFile = new FileInputStream("plainfile.txt");
-
-            // encrypted file
-            FileOutputStream outFile = new FileOutputStream("encryptedfile.des");
-
-            // password to encrypt the file
-            String password = "javapapers";
-
-            // password, iv and salt should be transferred to the other end
-            // in a secure manner
-
-            // salt is used for encoding
-            // writing it to a file
-            // salt should be transferred to the recipient securely
-            // for decryption
-            byte[] salt = new byte[8];
-            SecureRandom secureRandom = new SecureRandom();
-            secureRandom.nextBytes(salt);
-            FileOutputStream saltOutFile = new FileOutputStream("salt.enc");
-            saltOutFile.write(salt);
-            saltOutFile.close();
-
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256);
-            SecretKey secretKey = factory.generateSecret(keySpec);
-            SecretKey secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
-
-            //
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secret);
-            AlgorithmParameters params = cipher.getParameters();
-
-            // iv adds randomness to the text and just makes the mechanism more
-            // secure
-            // used while initializing the cipher
-            // file to store the iv
-            FileOutputStream ivOutFile = new FileOutputStream("iv.enc");
-            byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-            ivOutFile.write(iv);
-            ivOutFile.close();
-
-            //file encryption
-            byte[] input = new byte[64];
-            int bytesRead;
-
-            while ((bytesRead = inFile.read(input)) != -1) {
-                byte[] output = cipher.update(input, 0, bytesRead);
-                if (output != null)
-                    outFile.write(output);
-            }
-
-            byte[] output = cipher.doFinal();
-            if (output != null)
-                outFile.write(output);
-
-            inFile.close();
-            outFile.flush();
-            outFile.close();
-
-            System.out.println("File Encrypted.");
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidParameterSpecException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
+    public AESFileEncryption() {
+        this.filename = "encryptedfile.des";
+        this.salt = "salt.enc";
+        this.iv = "iv.enc";
     }
 
+    public String getFileName() {
+        return this.filename;
+    }
+
+    public String getSaltFileName() {
+        return this.salt;
+    }
+
+    public String getIvFileName() {
+        return this.iv;
+    }
+
+    public void encrypt(String code, String value) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
+        // encrypted file
+        FileOutputStream outFile = new FileOutputStream(this.filename);
+
+        // salt is used for encoding
+        // writing it to a file
+        // salt should be transferred to the recipient securely
+        // for decryption
+        byte[] salt = new byte[8];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(salt);
+        FileOutputStream saltOutFile = new FileOutputStream(this.salt);
+        saltOutFile.write(salt);
+        saltOutFile.close();
+
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        KeySpec keySpec = new PBEKeySpec(code.toCharArray(), salt, 65536, 256);
+        SecretKey secretKey = factory.generateSecret(keySpec);
+        SecretKey secret = new SecretKeySpec(secretKey.getEncoded(), "AES");
+
+        //
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secret);
+        AlgorithmParameters params = cipher.getParameters();
+
+        // iv adds randomness to the text and just makes the mechanism more
+        // secure
+        // used while initializing the cipher
+        // file to store the iv
+        FileOutputStream ivOutFile = new FileOutputStream(this.iv);
+        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+        ivOutFile.write(iv);
+        ivOutFile.close();
+
+        // Key encryption
+        byte[] output = cipher.doFinal(value.getBytes());
+        if (output != null)
+            outFile.write(output);
+
+        outFile.flush();
+        outFile.close();
+    }
+
+    public String decrypt(String code) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+
+        // reading the salt
+        // user should have secure mechanism to transfer the
+        // salt, iv and password to the recipient
+        FileInputStream saltFis = new FileInputStream(this.salt);
+        byte[] salt = new byte[8];
+        saltFis.read(salt);
+        saltFis.close();
+
+        // reading the iv
+        FileInputStream ivFis = new FileInputStream(this.iv);
+        byte[] iv = new byte[16];
+        ivFis.read(iv);
+        ivFis.close();
+
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        KeySpec keySpec = new PBEKeySpec(code.toCharArray(), salt, 65536, 256);
+        SecretKey tmp = factory.generateSecret(keySpec);
+        SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+
+        // file decryption
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+
+        File inputFile = new File(this.filename);
+        FileInputStream fis = new FileInputStream(inputFile);
+        byte[] inputBytes = new byte[(int) inputFile.length()];
+        fis.read(inputBytes);
+        byte[] outputBytes = cipher.doFinal(inputBytes);
+        fis.close();
+
+        String key = new String(outputBytes);
+
+        return key;
+    }
 }
