@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidHashException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidOperationException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.MessageSizeExceededException;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 
 import java.io.ByteArrayInputStream;
@@ -24,13 +25,13 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by tiago on 12/11/2016.
  */
-public class PacketParserService extends OperationService {
+class PacketParserService extends OperationService {
 
     private final Logger logger = LoggerFactory.getLogger(PacketParserService.class);
     private DatagramPacket packet;
     private OperationData resultData;
 
-    public  PacketParserService(DatagramPacket packet) throws Exception{
+    PacketParserService(DatagramPacket packet) throws Exception{
         setPacket(packet);
         resultData = null;
     }
@@ -46,7 +47,7 @@ public class PacketParserService extends OperationService {
         logger.debug("Time: {}",time);
         logger.debug("Op: {}",operation);
 
-//FIXME        veryfyIntegrity();
+       veryfyIntegrity();
 
        switch (operation){
 
@@ -54,9 +55,7 @@ public class PacketParserService extends OperationService {
                logger.debug("Operation: Balance");
                logger.debug("Account Iban : {}", this.getOriginIBAN());
                this.resultData = new OperationData(tuid,time,new BalanceCheckService(this.getOriginIBAN()));
-             //  BalanceCheckService b = new BalanceCheckService(this.getOriginIBAN());
-             //  b.execute();
-            //   logger.debug("Account Balace: {}", b.balance);
+
                break;
            case 'T':
                logger.debug("Operation: Transfer");
@@ -70,7 +69,6 @@ public class PacketParserService extends OperationService {
                logger.debug("Operation: History");
                break;
            default:
-               //FIXME eniviar excecao
               throw new InvalidOperationException();
        }
 
@@ -81,14 +79,14 @@ public class PacketParserService extends OperationService {
         return "Packet Parser doesn't implement result method";
     }
 
-    public OperationData getResultData(){
+    OperationData getResultData(){
         return resultData;
     }
 
     private void setPacket(DatagramPacket packet) throws Exception{
-        int MAX_LENGHT = 1024;
-        if(packet.getData().length>MAX_LENGHT){
-            throw new Exception("tamanho grande"); //FIXME verificar tamanho do byteArray
+        int MAX_LENGHT = 120;
+        if(packet.getLength()>MAX_LENGHT){
+            throw new MessageSizeExceededException();
         }
         this.packet = packet;
     }
@@ -152,15 +150,10 @@ public class PacketParserService extends OperationService {
             e.printStackTrace();
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),40,41);
-        byte[] ibano = Arrays.copyOfRange(this.packet.getData(),41,66);
-        byte[] iband = Arrays.copyOfRange(this.packet.getData(),66,91);
-        byte[] value = Arrays.copyOfRange(this.packet.getData(),91,99);
+        byte[] data = Arrays.copyOfRange(this.packet.getData(),16,99);
+
         try {
-            out.write(opbyte);
-            out.write(ibano);
-            out.write(iband);
-            out.write(value);
+            out.write(data);
         } catch (IOException e) {
             e.printStackTrace();
         }
