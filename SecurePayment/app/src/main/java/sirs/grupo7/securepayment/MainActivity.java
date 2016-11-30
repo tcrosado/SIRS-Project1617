@@ -43,15 +43,21 @@ public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
     private Button buttonIBAN;
     private String CURRENT_BALANCE;
-    private TextView textViewShowBalance;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
-
-
     private class CommunicationTask extends AsyncTask<Void, Void, Void> {
+
+        String res;
+        TextView textViewShowBalance;
+        boolean r;
+
+        @Override
+        protected void onPreExecute() {
+            textViewShowBalance = (TextView) findViewById(R.id.textViewCurrentBalance);
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -61,18 +67,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void showCurrentBalance() {
-            textViewShowBalance = (TextView) findViewById(R.id.textViewCurrentBalance);
 
             UDP udp = new UDP();
             try {
                 CURRENT_BALANCE = udp.showBalance(MY_IBAN);
-                textViewShowBalance.setText(CURRENT_BALANCE + " €");
+                res = CURRENT_BALANCE + " €";
             } catch (IOException e) {
-                textViewShowBalance.setText(getResources().getString(R.string.errorGettingBalance));
-                textViewShowBalance.setTextSize(20);
+                res = getResources().getString(R.string.errorGettingBalance);
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            textViewShowBalance.setText(res);
+            if (!r) {
+                textViewShowBalance.setTextSize(20);
             }
         }
     }
