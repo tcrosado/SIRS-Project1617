@@ -7,9 +7,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class UDP {
     public UDP() {
     }
 
-    public String showBalance(String origIBAN) throws IOException {
+    public String showBalance(String origIBAN) throws IOException, NoSuchAlgorithmException {
         ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
 
         DataOutputStream message = new DataOutputStream(opBuffer);
@@ -35,24 +35,20 @@ public class UDP {
         return receiveUDP(clientSocket);
     }
 
-    public String makeTransaction(String origIBAN, String destIBAN, String amount) {
+    public String makeTransaction(String origIBAN, String destIBAN, String amount) throws IOException, NoSuchAlgorithmException {
         ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
 
         DataOutputStream message = new DataOutputStream(opBuffer);
-        try {
-            message.write('T');
-            message.writeBytes(origIBAN);
-            message.writeBytes(destIBAN);
-            message.writeDouble(Double.parseDouble(amount.replace(",", ".")));
-            DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
-            return receiveUDP(clientSocket);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+        message.write('T');
+        message.writeBytes(origIBAN);
+        message.writeBytes(destIBAN);
+        message.writeDouble(Double.parseDouble(amount.replace(",", ".")));
+        DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
+        return receiveUDP(clientSocket);
+
     }
     
-    public String showHistory(String origIBAN) throws IOException {
+    public String showHistory(String origIBAN) throws IOException, NoSuchAlgorithmException {
         ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
 
         DataOutputStream message = new DataOutputStream(opBuffer);
@@ -62,7 +58,7 @@ public class UDP {
         return receiveUDP(clientSocket);
     }
 
-    private DatagramSocket sendUDP(byte[] message) throws IOException {
+    private DatagramSocket sendUDP(byte[] message) throws IOException, NoSuchAlgorithmException {
 
         UUID tid = UUID.randomUUID();
         Calendar calendar = Calendar.getInstance();
@@ -74,40 +70,33 @@ public class UDP {
         System.out.println(tid.getLeastSignificantBits());
         System.out.println(calendar.getTimeInMillis());
 
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-            ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
+        ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
 
-            DataOutputStream temp = new DataOutputStream(tempBuffer);
+        DataOutputStream temp = new DataOutputStream(tempBuffer);
 
-            temp.writeLong(tid.getMostSignificantBits());
-            temp.writeLong(tid.getLeastSignificantBits());
-            temp.writeLong(time);
-            temp.write(message);
+        temp.writeLong(tid.getMostSignificantBits());
+        temp.writeLong(tid.getLeastSignificantBits());
+        temp.writeLong(time);
+        temp.write(message);
 
-            System.out.println(Arrays.toString(tempBuffer.toByteArray()));
-            byte[] hash = digest.digest(tempBuffer.toByteArray());
-            byte[] cappedHash = Arrays.copyOfRange(hash,8,24);
+        System.out.println(Arrays.toString(tempBuffer.toByteArray()));
+        byte[] hash = digest.digest(tempBuffer.toByteArray());
+        byte[] cappedHash = Arrays.copyOfRange(hash,8,24);
 
-            ByteArrayOutputStream toSendBuffer = new ByteArrayOutputStream();
+        ByteArrayOutputStream toSendBuffer = new ByteArrayOutputStream();
 
-            DataOutputStream toSend = new DataOutputStream(toSendBuffer);
+        DataOutputStream toSend = new DataOutputStream(toSendBuffer);
 
-            toSend.write(cappedHash);
-            toSend.write(tempBuffer.toByteArray());
-            System.out.println(Arrays.toString(toSendBuffer.toByteArray()));
-            DatagramPacket sendPacket = new DatagramPacket(toSendBuffer.toByteArray(), toSendBuffer.size(), IPAddress, PORT);
+        toSend.write(cappedHash);
+        toSend.write(tempBuffer.toByteArray());
+        System.out.println(Arrays.toString(toSendBuffer.toByteArray()));
+        DatagramPacket sendPacket = new DatagramPacket(toSendBuffer.toByteArray(), toSendBuffer.size(), IPAddress, PORT);
 
-            clientSocket.send(sendPacket);
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
+        clientSocket.send(sendPacket);
 
         return clientSocket;
-
     }
 
     private String receiveUDP(DatagramSocket clientSocket) throws IOException {

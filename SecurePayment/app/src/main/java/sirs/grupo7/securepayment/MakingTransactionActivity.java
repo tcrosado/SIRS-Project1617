@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+
 import sirs.grupo7.securepayment.connections.UDP;
 
 public class MakingTransactionActivity extends AppCompatActivity {
@@ -19,12 +22,12 @@ public class MakingTransactionActivity extends AppCompatActivity {
     private String moneyToTransfer;
     private String myIBAN;
     private String destIBAN;
-    //private TextView textView;
 
 
     private class MakingTransactionTask extends AsyncTask<Void, Void, Void> {
 
         TextView textView;
+        String res = "o";
 
         @Override
         protected void onPreExecute() {
@@ -35,16 +38,26 @@ public class MakingTransactionActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             UDP udp = new UDP();
-            //textView = (TextView) findViewById(R.id.text_done);
 
-            String res = udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer.substring(0, moneyToTransfer.length() - 2));
+            try {
+                res = udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer.substring(0, moneyToTransfer.length() - 2));
+            } catch (IOException e) {
+                res = "ERROR";
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            System.out.println("RES = " + res);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
             if (res.startsWith("Transfer Completed")) {
                 textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
             } else {
                 textView.setText(getResources().getString(R.string.errorMakingTransaction));
             }
-
-            return null;
         }
     }
 

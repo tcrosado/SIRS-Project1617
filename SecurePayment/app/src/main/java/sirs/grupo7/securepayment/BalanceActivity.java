@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;
 
@@ -58,6 +59,10 @@ public class BalanceActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             return getResources().getString(R.string.errorGettingHistory);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
+        return null;
     }
+
 }

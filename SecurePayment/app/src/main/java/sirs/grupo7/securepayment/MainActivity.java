@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;
 
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleApiClient client;
 
 
-    private class ComunicateTask extends AsyncTask<Void, Void, Void> {
+    private class CommunicationTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -70,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 textViewShowBalance.setText(getResources().getString(R.string.errorGettingBalance));
                 textViewShowBalance.setTextSize(20);
                 e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new ComunicateTask().execute();
+        new CommunicationTask().execute();
 
         buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
         final Context context = this;
