@@ -68,6 +68,19 @@ class PacketParserService extends OperationService {
                //TODO definir serviÃ§o de historico
                logger.debug("Operation: History");
                break;
+           case 'R': //Request Matrix challenge - format -> result = "row-column"
+        	   logger.debug("Operation: MatrixRequest");
+        	   logger.debug("Requested Account : {}", this.getOriginIBAN());
+        	   this.resultData = new OperationData(tuid,time, new GetMatrixRequestService(this.getOriginIBAN()));
+        	   break;
+           case 'V':
+        	   logger.debug("Operation: MatrixVerifyResponse");
+        	   logger.debug("Iban : {}", this.getOriginIBAN());
+        	   logger.debug("Row : {}", this.getMatrixResponseRow());
+        	   logger.debug("Column : {}", this.getMatrixResponseColumn());
+        	   logger.debug("Value : {}", this.getMatrixResponseValue());
+        	   this.resultData = new OperationData(tuid, time, new VerifyMatrixResponseService(getOriginIBAN(), getMatrixResponseRow(), getMatrixResponseColumn(), getMatrixResponseValue()));
+        	   break;
            default:
               throw new InvalidOperationException();
        }
@@ -139,9 +152,25 @@ class PacketParserService extends OperationService {
 
         return b.getDouble();
     }
-
-
-
+    
+    // Joao - Assumindo que o pacote quando so tem um NIB quando é response da matriz e vem row|column|value para validacao
+    private String getMatrixResponseRow(){
+    	byte[] row = Arrays.copyOfRange(this.packet.getData(),66,67);
+        return new String(row);
+    }
+    
+    private int getMatrixResponseColumn(){
+    	byte[] column = Arrays.copyOfRange(this.packet.getData(),67,68);
+        return new Integer(new String(column));
+    }
+    
+    private int getMatrixResponseValue(){
+    	byte[] value = Arrays.copyOfRange(this.packet.getData(),67,68);
+        return new Integer(new String(value));
+    }
+    
+    //TODO Valida isto por favor Tiago
+    //--------------------------------
     private void veryfyIntegrity() throws InvalidHashException {
         MessageDigest digest = null;
         try {

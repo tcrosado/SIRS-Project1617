@@ -20,3 +20,17 @@ CREATE TABLE transactionHistory(
   FOREIGN KEY (originIban) REFERENCES accounts(iban),
   FOREIGN KEY (destIban) REFERENCES accounts(iban)
 );
+
+CREATE TABLE `bank`.`accountmatrix` (
+  `row` ENUM('A','B','C','D','E','F','G','H') NOT NULL,
+  `column` INT NOT NULL,
+  `value` INT NULL,
+  `iban` VARCHAR(34) NOT NULL,
+  PRIMARY KEY (`row`, `column`, `iban`),
+  INDEX `ibanMatrix_idx` (`iban` ASC),
+  CONSTRAINT `ibanMatrix`
+    FOREIGN KEY (`iban`)
+    REFERENCES `bank`.`accounts` (`iban`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+COMMENT = 'Table that stores matrix cards information';
