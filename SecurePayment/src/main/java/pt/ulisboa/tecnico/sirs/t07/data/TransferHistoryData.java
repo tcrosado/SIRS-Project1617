@@ -18,10 +18,9 @@ import java.util.Vector;
  */
 public class TransferHistoryData extends AbstractData {
 
-    public void doTransaction(String tid, String originIban,String destIban, double value) throws ErrorMessageException{
+    public void doTransaction(String tid, String originIban,String destIban, double value) throws ErrorMessageException, SQLException {
         AccountData accountDB = new AccountData();
         double balance;
-        try {
             conn.setAutoCommit(false);
             PreparedStatement recordTransaction = conn.prepareStatement("INSERT INTO transactionHistory VALUES (?,CURRENT_TIMESTAMP,?,?,?);");
 
@@ -51,9 +50,6 @@ public class TransferHistoryData extends AbstractData {
             conn.commit();
             conn.setAutoCommit(true);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public Vector<TransferHistory> getLastTransactionFromIban(String iban,Optional<Integer> nr) throws SQLException {

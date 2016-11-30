@@ -6,6 +6,7 @@ package pt.ulisboa.tecnico.sirs.t07.exceptions;
 public class ReplayException extends ErrorMessageException {
 
     public ReplayException(){}
+    public ReplayException(Exception e){}
 
     @Override
     public String getMessage(){

@@ -8,7 +8,9 @@ import pt.ulisboa.tecnico.sirs.t07.data.TransferHistoryData;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidIbanException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.ReplayException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -35,30 +37,33 @@ public class TransferService extends OperationService {
         AccountData accountdb = new AccountData();
         CustomerData client = new CustomerData();
         TransferHistoryData history = new TransferHistoryData();
-        Vector<Float> result =  accountdb.getBalanceFromIBAN(this.getIbanOrigin());
+        Vector<Float> result = accountdb.getBalanceFromIBAN(this.getIbanOrigin());
 
-        if(result.isEmpty()) {
-            logger.debug("Invalid Origin Iban {}.",this.getIbanOrigin());
-            this.result="Invalid Origin Iban";
+        if (result.isEmpty()) {
+            logger.debug("Invalid Origin Iban {}.", this.getIbanOrigin());
+            this.result = "Invalid Origin Iban";
             throw new InvalidIbanException(this.getIbanOrigin());
         }
 
-        if(result.firstElement()<this.value) {
+        if (result.firstElement() < this.value) {
             logger.debug("Insufficient funds.");
-            this.result="Insufficient funds";
+            this.result = "Insufficient funds";
             throw new InsufficientFundsException(this.getIbanOrigin());
         }
 
 
-        if(!client.ibanExists(this.ibanDestination)){
+        if (!client.ibanExists(this.ibanDestination)) {
             logger.debug("Invalid destination Iban.");
-            this.result="Invalid destination Iban";
+            this.result = "Invalid destination Iban";
             throw new InvalidIbanException(this.ibanDestination);
         }
 
         try {
-            history.doTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value);
-        } catch (Exception e) {
+            history.doTransaction(this.tid, this.getIbanOrigin(), this.ibanDestination, this.value);
+        } catch (SQLIntegrityConstraintViolationException e){
+            logger.info("Operation "+this.tid+" was replayed");
+            throw new ReplayException(e);
+        }catch (Exception e) {
             e.printStackTrace();
         }
         logger.debug("Transfer Completed");
