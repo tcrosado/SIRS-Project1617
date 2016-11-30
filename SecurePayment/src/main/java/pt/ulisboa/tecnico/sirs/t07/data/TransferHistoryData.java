@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.MaxWithdrawLimitException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,6 +38,13 @@ public class TransferHistoryData extends AbstractData {
                 conn.setAutoCommit(true);
                 throw new InsufficientFundsException(originIban);
             }
+
+            if(getDayTransferWithdrawValue(originIban)>=100){
+                recordTransaction.cancel();
+                conn.setAutoCommit(true);
+                throw new MaxWithdrawLimitException(originIban);
+            }
+
             updateBalanceOrigin.setDouble(1,balance-value);
             updateBalanceOrigin.setString(2,originIban);
             updateBalanceOrigin.execute();
@@ -72,6 +80,20 @@ public class TransferHistoryData extends AbstractData {
         }
 
         return result;
+    }
+
+    public float getDayTransferWithdrawValue(String ibanOrigin) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT SUM(value) FROM transactionHistory WHERE originIban= ? AND time > CURRENT_DATE;");
+        stmt.setString(1,ibanOrigin);
+
+        ResultSet rs = stmt.executeQuery();
+        Vector<TransferHistory> result = new Vector<TransferHistory>();
+        float value = 0;
+        while (rs.next()){
+            value = rs.getFloat("SUM(value)");
+        }
+
+        return value;
     }
 
 }

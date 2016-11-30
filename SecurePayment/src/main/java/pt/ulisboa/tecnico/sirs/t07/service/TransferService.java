@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidIbanException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ReplayException;
 
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.UUID;
 import java.util.Vector;
@@ -63,7 +64,7 @@ public class TransferService extends OperationService {
         } catch (SQLIntegrityConstraintViolationException e){
             logger.info("Operation "+this.tid+" was replayed");
             throw new ReplayException(e);
-        }catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         logger.debug("Transfer Completed");
