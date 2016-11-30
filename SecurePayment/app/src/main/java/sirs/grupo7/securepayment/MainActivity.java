@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,6 +15,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -20,23 +26,61 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
 import sirs.grupo7.securepayment.connections.UDP;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    public final static String MY_IBAN = "PT12345678912345678912345";
+    public final static String MY_IBAN = "PT12345678901234567890123";
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
     private Button buttonIBAN;
     private String CURRENT_BALANCE;
     private TextView textViewShowBalance;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
+
+    private class ComunicateTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            showCurrentBalance();
+            return null;
+        }
+
+        public void showCurrentBalance() {
+            textViewShowBalance = (TextView) findViewById(R.id.textViewCurrentBalance);
+
+            UDP udp = new UDP();
+            try {
+                CURRENT_BALANCE = udp.showBalance(MY_IBAN);
+                textViewShowBalance.setText(CURRENT_BALANCE + " €");
+            } catch (IOException e) {
+                textViewShowBalance.setText(getResources().getString(R.string.errorGettingBalance));
+                textViewShowBalance.setTextSize(20);
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        showCurrentBalance();
+
+        new ComunicateTask().execute();
+
         buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
         final Context context = this;
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -57,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -86,38 +133,66 @@ public class MainActivity extends AppCompatActivity {
         // Nothing
     }
 
-    /** Called when the user clicks the Transaction button */
+    /**
+     * Called when the user clicks the Transaction button
+     */
     public void goToTransaction(View view) {
         // Do something in response to button
         Intent intent = new Intent(MainActivity.this, TransactionActivity.class);
         startActivity(intent);
     }
 
-    /** Called when the user clicks the Balance button */
+    /**
+     * Called when the user clicks the Balance button
+     */
     public void goToBalance(View view) {
         // Do something in response to button
         Intent intent = new Intent(this, BalanceActivity.class);
         startActivity(intent);
     }
 
-    /** Called when the user clicks the Balance button */
+    /**
+     * Called when the user clicks the Balance button
+     */
     public void goToInitial(View view) {
         // Do something in response to button
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
-    public void showCurrentBalance() {
-        textViewShowBalance = (TextView) findViewById(R.id.textViewCurrentBalance);
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
 
-        UDP udp = new UDP();
-        try {
-            CURRENT_BALANCE = udp.showBalance(MY_IBAN);
-            textViewShowBalance.setText(CURRENT_BALANCE + " €");
-        } catch (IOException e) {
-            textViewShowBalance.setText(getResources().getString(R.string.errorGettingBalance));
-            textViewShowBalance.setTextSize(20);
-            e.printStackTrace();
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }

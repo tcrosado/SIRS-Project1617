@@ -13,8 +13,6 @@ import sirs.grupo7.securepayment.connections.UDP;
 
 public class BalanceActivity extends AppCompatActivity {
 
-    private String HOSTNAME = "localhost";
-    private int PORT = 5000;
     private String MY_IBAN;
     private TextView textViewBalance;
 
@@ -23,7 +21,8 @@ public class BalanceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance);
         textViewBalance = (TextView) findViewById(R.id.textViewBalance);
-        textViewBalance.setText(requestBalance(MY_IBAN));
+        textViewBalance.setText("WILL\nWE\nDO\nIT?");
+        //textViewBalance.setText(requestBalance(MY_IBAN));
     }
 
     @Override
@@ -49,7 +48,7 @@ public class BalanceActivity extends AppCompatActivity {
     }
 
     public String requestBalance(String IBAN) {
-        UDP udp = new UDP(HOSTNAME, PORT);
+        UDP udp = new UDP();
         try {
             String message = udp.showHistory(MY_IBAN);
             if (message.equals("ERROR")) {

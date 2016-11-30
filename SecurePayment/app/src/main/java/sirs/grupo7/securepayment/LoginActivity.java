@@ -20,7 +20,7 @@ import sirs.grupo7.securepayment.connections.UDP;
 public class LoginActivity extends Activity {
 
     private int MAX_PASS_LENGHT = 4;
-    public final static String MY_IBAN = "PT12345678912345678912345";
+    public final static String MY_IBAN = "PT12345678901234567890123";
     private int count;
     private TextView[] textViews;
     private String password;

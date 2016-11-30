@@ -2,7 +2,7 @@
 <resources>
     <string name="action_settings">Definições</string>
     <string name="buttonTransaction">Fazer Transferência</string>
-    <string name="buttonBalance">Mostrar Saldo</string>
+    <string name="buttonBalance">Mostrar Histórico</string>
     <string name="initial_activity_button_login">Iniciar Sessão</string>
     <string name="title_activity_balance">Saldo</string>
     <string name="transaction_qrcode">Ler IBAN com QRCode</string>

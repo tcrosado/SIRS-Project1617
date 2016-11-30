@@ -2,6 +2,7 @@ package sirs.grupo7.securepayment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,8 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import java.io.IOException;
-import java.io.StringReader;
 
 import sirs.grupo7.securepayment.connections.UDP;
 
@@ -20,10 +19,34 @@ public class MakingTransactionActivity extends AppCompatActivity {
     private String moneyToTransfer;
     private String myIBAN;
     private String destIBAN;
-    private TextView textView;
+    //private TextView textView;
 
-    private String HOSTNAME = "localhost";
-    private int PORT = 5000;
+
+    private class MakingTransactionTask extends AsyncTask<Void, Void, Void> {
+
+        TextView textView;
+
+        @Override
+        protected void onPreExecute() {
+            textView = (TextView) findViewById(R.id.text_done);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            UDP udp = new UDP();
+            //textView = (TextView) findViewById(R.id.text_done);
+
+            String res = udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer.substring(0, moneyToTransfer.length() - 2));
+            if (res.startsWith("Transfer Completed")) {
+                textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
+            } else {
+                textView.setText(getResources().getString(R.string.errorMakingTransaction));
+            }
+
+            return null;
+        }
+    }
 
 
     @Override
@@ -33,20 +56,12 @@ public class MakingTransactionActivity extends AppCompatActivity {
         final Activity activity = this;
 
         buttonDone = (Button) findViewById(R.id.button_done);
-        textView = (TextView) findViewById(R.id.text_done);
 
         myIBAN = (String) getIntent().getExtras().get("myIBAN");
         destIBAN = (String) getIntent().getExtras().get("destIBAN");
         moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
 
-        UDP udp = new UDP(HOSTNAME, PORT);
-        try {
-            udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer);
-            textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
-        } catch (IOException e) {
-            textView.setText(getResources().getString(R.string.errorMakingTransaction));
-            e.printStackTrace();
-        }
+        new MakingTransactionTask().execute();
 
         buttonDone.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -70,8 +70,8 @@ public class TransactionActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
     }
 
     public void transactionSubmitIBAN(View view) {

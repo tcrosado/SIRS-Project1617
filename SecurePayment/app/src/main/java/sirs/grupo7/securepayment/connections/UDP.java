@@ -18,14 +18,11 @@ import java.util.UUID;
  * Created by Duarte on 20/11/2016.
  */
 public class UDP {
+
+    private String HOSTNAME = "10.42.0.69";
+    private int PORT = 5000;
     
-    private String HOSTNAME;
-    private int PORT;
-    
-    public UDP(String hostname, int port) {
-        // if Optional is supported use it
-        this.HOSTNAME = hostname;
-        this.PORT = port;
+    public UDP() {
     }
 
     public String showBalance(String origIBAN) throws IOException {
@@ -34,20 +31,25 @@ public class UDP {
         DataOutputStream message = new DataOutputStream(opBuffer);
         message.write('S');
         message.writeBytes(origIBAN);
-        sendUDP(opBuffer.toByteArray());
-        return receiveUDP();
+        DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
+        return receiveUDP(clientSocket);
     }
 
-    public String makeTransaction(String origIBAN, String destIBAN, String amount) throws IOException {
+    public String makeTransaction(String origIBAN, String destIBAN, String amount) {
         ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
 
         DataOutputStream message = new DataOutputStream(opBuffer);
-        message.write('T');
-        message.writeBytes(origIBAN);
-        message.writeBytes(destIBAN);
-        message.writeBytes(amount);
-        sendUDP(opBuffer.toByteArray());
-        return receiveUDP();
+        try {
+            message.write('T');
+            message.writeBytes(origIBAN);
+            message.writeBytes(destIBAN);
+            message.writeDouble(Double.parseDouble(amount.replace(",", ".")));
+            DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
+            return receiveUDP(clientSocket);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
     
     public String showHistory(String origIBAN) throws IOException {
@@ -56,19 +58,21 @@ public class UDP {
         DataOutputStream message = new DataOutputStream(opBuffer);
         message.write('H');
         message.writeBytes(origIBAN);
-        sendUDP(opBuffer.toByteArray());
-        return receiveUDP();
+        DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
+        return receiveUDP(clientSocket);
     }
 
-    private void sendUDP(byte[] message) throws IOException {
+    private DatagramSocket sendUDP(byte[] message) throws IOException {
 
         UUID tid = UUID.randomUUID();
         Calendar calendar = Calendar.getInstance();
         long time = calendar.getTimeInMillis();
-
         DatagramSocket clientSocket = new DatagramSocket();
-
         InetAddress IPAddress = InetAddress.getByName(HOSTNAME);
+        System.out.println("TID " + tid);
+        System.out.println(tid.getMostSignificantBits());
+        System.out.println(tid.getLeastSignificantBits());
+        System.out.println(calendar.getTimeInMillis());
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -82,34 +86,35 @@ public class UDP {
             temp.writeLong(time);
             temp.write(message);
 
+            System.out.println(Arrays.toString(tempBuffer.toByteArray()));
             byte[] hash = digest.digest(tempBuffer.toByteArray());
             byte[] cappedHash = Arrays.copyOfRange(hash,8,24);
 
             ByteArrayOutputStream toSendBuffer = new ByteArrayOutputStream();
 
-            DataOutputStream toSend = new DataOutputStream(tempBuffer);
+            DataOutputStream toSend = new DataOutputStream(toSendBuffer);
 
             toSend.write(cappedHash);
             toSend.write(tempBuffer.toByteArray());
-
-
+            System.out.println(Arrays.toString(toSendBuffer.toByteArray()));
             DatagramPacket sendPacket = new DatagramPacket(toSendBuffer.toByteArray(), toSendBuffer.size(), IPAddress, PORT);
+
             clientSocket.send(sendPacket);
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
-        clientSocket.close();
+
+        return clientSocket;
 
     }
 
-    private String receiveUDP() throws IOException {
-
-        DatagramSocket clientSocket = new DatagramSocket();
+    private String receiveUDP(DatagramSocket clientSocket) throws IOException {
         byte[] receiveData = new byte[1024];
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
+
         clientSocket.close();
 
         return new String(receivePacket.getData());
