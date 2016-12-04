@@ -1,205 +1,347 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:background="#0099cc"
-                tools:context="sirs.grupo7.securepayment.LoginActivity"
-                android:id="@+id/RelativeLayout">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:background="#0099cc"
+              tools:context="sirs.grupo7.securepayment.LoginActivity"
+              android:id="@+id/RelativeLayout"
+              android:orientation="vertical"
+              android:weightSum="7.5">
 
-    <Button android:id="@+id/buttonLogin" style="?metaButtonBarButtonStyle"
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:weightSum="0.7" >
+
+        <TextView
             android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:text="@string/initial_activity_button_login"
-            android:onClick="loginUser"
+            android:layout_height="fill_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/app_name"
+            android:id="@+id/textView"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.9"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="6" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textPass0"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="#ffffff"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textPass1"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textPass2"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textPass3"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:gravity="center" >
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:weightSum="3" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_1"
+            android:id="@+id/button1"
+            android:onClick="buttonPressed"
+            android:tag="1"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_2"
+            android:id="@+id/button2"
+            android:onClick="buttonPressed"
+            android:tag="2"
             android:background="#e0e0e0"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"/>
+            android:layout_weight="0.60"/>
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_2"
-        android:id="@+id/button2"
-        android:layout_marginTop="102dp"
-        android:onClick="buttonPressed"
-        android:tag="2"
-        android:background="#e0e0e0"
-        android:layout_below="@+id/textView"
-        android:layout_toStartOf="@+id/button9"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_1"
-        android:id="@+id/button1"
-        android:onClick="buttonPressed"
-        android:tag="1"
-        android:background="#e0e0e0"
-        android:layout_marginEnd="8dp"
-        android:layout_alignTop="@+id/button2"
-        android:layout_toStartOf="@+id/button2"/>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_3"
+            android:id="@+id/button3"
+            android:onClick="buttonPressed"
+            android:tag="3"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_3"
-        android:id="@+id/button3"
-        android:onClick="buttonPressed"
-        android:tag="3"
-        android:background="#e0e0e0"
-        android:layout_alignTop="@+id/button2"
-        android:layout_alignStart="@+id/button6"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_4"
-        android:id="@+id/button4"
-        android:onClick="buttonPressed"
-        android:tag="4"
-        android:background="#e0e0e0"
-        android:layout_above="@+id/button9"
-        android:layout_alignStart="@+id/button1"/>
+    </LinearLayout>
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_5"
-        android:id="@+id/button5"
-        android:onClick="buttonPressed"
-        android:tag="5"
-        android:background="#e0e0e0"
-        android:layout_below="@+id/button2"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="6dp"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:gravity="center" >
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_6"
-        android:id="@+id/button6"
-        android:onClick="buttonPressed"
-        android:tag="6"
-        android:background="#e0e0e0"
-        android:layout_alignTop="@+id/button5"
-        android:layout_alignStart="@+id/button9"/>
+    </LinearLayout>
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_7"
-        android:id="@+id/button7"
-        android:onClick="buttonPressed"
-        android:tag="7"
-        android:background="#e0e0e0"
-        android:layout_alignTop="@+id/button8"
-        android:layout_alignStart="@+id/button4"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:weightSum="3" >
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_8"
-        android:id="@+id/button8"
-        android:onClick="buttonPressed"
-        android:tag="8"
-        android:background="#e0e0e0"
-        android:layout_alignTop="@+id/button9"
-        android:layout_alignStart="@+id/button5"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="@string/initial_9"
-        android:id="@+id/button9"
-        android:onClick="buttonPressed"
-        android:tag="9"
-        android:background="#e0e0e0"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
-        android:layout_below="@+id/button6"
-        android:layout_toEndOf="@+id/button8"/>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_4"
+            android:id="@+id/button4"
+            android:onClick="buttonPressed"
+            android:tag="4"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
 
-    <TextView
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_5"
+            android:id="@+id/button5"
+            android:onClick="buttonPressed"
+            android:tag="5"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_6"
+            android:id="@+id/button6"
+            android:onClick="buttonPressed"
+            android:tag="6"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:gravity="center" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:weightSum="3" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_7"
+            android:id="@+id/button7"
+            android:onClick="buttonPressed"
+            android:tag="7"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.1" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_8"
+            android:id="@+id/button8"
+            android:onClick="buttonPressed"
+            android:tag="8"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_weight="0.1"
+            android:textStyle="bold"/>
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="@string/initial_9"
+            android:id="@+id/button9"
+            android:onClick="buttonPressed"
+            android:tag="9"
+            android:layout_weight="0.60"
+            android:background="#e0e0e0"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_weight="0.1"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="center" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:weightSum="1" >
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/login_clear_text"
+            android:id="@+id/button"
+            android:background="#e0e0e0"
+            android:onClick="clearKey"
+            android:layout_weight="0.4"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="center" >
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/app_name"
-        android:id="@+id/textView"
-        android:textColor="#ffffff"
-        android:textStyle="bold"
-        android:gravity="fill_horizontal|fill_vertical|clip_vertical"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"/>
+        android:gravity="center"
+        android:weightSum="1" >
 
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textPass0"
-        android:textStyle="bold"
-        android:layout_marginBottom="29dp"
-        android:textColor="#ffffff"
-        android:layout_above="@+id/button1"
-        android:layout_alignStart="@+id/button1"/>
+        <Button android:id="@+id/buttonLogin"
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:text="@string/initial_activity_button_login"
+                android:onClick="loginUser"
+                android:background="#e0e0e0"/>
+    </LinearLayout>
 
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textPass1"
-        android:textColor="#ffffff"
-        android:textStyle="bold"
-        android:layout_alignTop="@+id/textPass0"
-        android:layout_toEndOf="@+id/button4"/>
-
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textPass2"
-        android:layout_marginStart="11dp"
-        android:textColor="#ffffff"
-        android:textStyle="bold"
-        android:layout_alignTop="@+id/textPass1"
-        android:layout_toEndOf="@+id/textPass1"/>
-
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textPass3"
-        android:textColor="#ffffff"
-        android:textStyle="bold"
-        android:layout_alignTop="@+id/textPass2"
-        android:layout_toEndOf="@+id/textView"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_clear_text"
-        android:id="@+id/button"
-        android:layout_marginTop="8dp"
-        android:layout_below="@+id/button7"
-        android:layout_alignEnd="@+id/button9"
-        android:layout_alignStart="@+id/button7"
-        android:background="#e0e0e0"
-        android:onClick="clearKey"/>
-
-</RelativeLayout>
+</LinearLayout>

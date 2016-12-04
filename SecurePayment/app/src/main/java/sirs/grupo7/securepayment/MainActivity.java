@@ -1,6 +1,5 @@
 package sirs.grupo7.securepayment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -26,12 +25,6 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;

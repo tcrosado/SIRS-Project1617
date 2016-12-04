@@ -23,15 +23,17 @@ public class TransactionActivity extends Activity {
     private String destIBAN;
     private static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     private Button button;
+    private Button buttonGoBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        final Activity activity = this;
 
         button = (Button) findViewById(R.id.transactionQRCode);
-        final Activity activity = this;
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -42,6 +44,15 @@ public class TransactionActivity extends Activity {
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
                 integrator.initiateScan();
+            }
+        });
+
+        buttonGoBack = (Button) findViewById(R.id.button_go_back);
+        buttonGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(activity, MainActivity.class);
+                startActivity(intent);
             }
         });
     }

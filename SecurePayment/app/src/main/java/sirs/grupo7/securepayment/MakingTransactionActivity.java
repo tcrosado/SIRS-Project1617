@@ -53,7 +53,7 @@ public class MakingTransactionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-            if (res.startsWith("Transfer Completed")) {
+            if (res.startsWith("TC")) {
                 textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
             } else {
                 textView.setText(getResources().getString(R.string.errorMakingTransaction));
