@@ -74,12 +74,12 @@ class PacketParserService extends OperationService {
         	   break;
            case 'C':
         	   logger.debug("Operation: Confirm Transaction with challenge response");
-        	   logger.debug("Iban : {}", this.getOriginIBAN());
-        	   logger.debug("Value 1 : {}", this.getMatrixResponseValues());
-        	   logger.debug("Value 1 : {}", this.getMatrixResponseValues());
-        	   logger.debug("Value 1 : {}", this.getMatrixResponseValues());
-              // this.resultData = new OperationData(tuid,time,new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValue()));
-        	   //FIXME this.resultData = new OperationData(tuid, time, new VerifyMatrixResponseService(getOriginIBAN(),getMatrixResponseValues()));
+        	   logger.debug("tid : {}", this.getConfirmationTid());
+        	   logger.debug("Value 1 : {}", this.getMatrixResponseValues().get(0));
+        	   logger.debug("Value 2 : {}", this.getMatrixResponseValues().get(1));
+        	   logger.debug("Value 3 : {}", this.getMatrixResponseValues().get(2));
+               this.resultData = new OperationData(tuid,time,new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValues()));
+        	   //this.resultData = new OperationData(tuid, time, new VerifyMatrixResponseService(getOriginIBAN(),getMatrixResponseValues()));
         	   break;
            default:
               throw new InvalidOperationException();
@@ -181,9 +181,14 @@ class PacketParserService extends OperationService {
         byte[] value2 = Arrays.copyOfRange(this.packet.getData(),61,65);
         byte[] value3 = Arrays.copyOfRange(this.packet.getData(),65,69);
 
-        vector.add(new Integer(new String(value1)));
-        vector.add(new Integer(new String(value2)));
-        vector.add(new Integer(new String(value3)));
+        ByteBuffer b = ByteBuffer.wrap(value1);
+        vector.add(b.getInt());
+
+        b = ByteBuffer.wrap(value2);
+        vector.add(b.getInt());
+
+        b = ByteBuffer.wrap(value3);
+        vector.add(b.getInt());
         return vector;
     }
     
