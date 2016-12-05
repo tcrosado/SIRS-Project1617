@@ -21,6 +21,20 @@ CREATE TABLE transactionHistory(
   FOREIGN KEY (destIban) REFERENCES accounts(iban)
 );
 
+
+CREATE TABLE bank.pendingTransactions(
+  tid VARCHAR(36) NOT NULL,
+  time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  originIban VARCHAR(34) NOT NULL,
+  destIban VARCHAR(34) NOT NULL,
+  value DOUBLE NOT NULL,
+  `row` ENUM('A','B','C','D','E','F','G','H') NOT NULL,
+  `column` INT NOT NULL,
+  PRIMARY KEY (tid),
+  FOREIGN KEY (originIban) REFERENCES accounts(iban),
+  FOREIGN KEY (destIban) REFERENCES accounts(iban)
+);
+
 CREATE TABLE `bank`.`accountmatrix` (
   `row` ENUM('A','B','C','D','E','F','G','H') NOT NULL,
   `column` INT NOT NULL,

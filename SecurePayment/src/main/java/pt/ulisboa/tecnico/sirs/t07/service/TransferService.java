@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidIbanException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ReplayException;
+import pt.ulisboa.tecnico.sirs.t07.utils.UDPConnection;
 
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -58,6 +59,14 @@ public class TransferService extends OperationService {
             this.result = "Invalid destination Iban";
             throw new InvalidIbanException(this.ibanDestination);
         }
+
+        if (this.value > 200){
+            logger.debug("Transaction needs challenge resposne");
+            GetMatrixRequestService service = new GetMatrixRequestService(this.getIbanOrigin());
+            service.dispatch();
+
+        }
+
 
         try {
             history.doTransaction(this.tid, this.getIbanOrigin(), this.ibanDestination, this.value);
