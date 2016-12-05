@@ -1,5 +1,7 @@
 package sirs.grupo7.securepayment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,12 +18,14 @@ public class BalanceActivity extends AppCompatActivity {
 
     private String MY_IBAN;
     private TextView textViewBalance;
+    private String cod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance);
         textViewBalance = (TextView) findViewById(R.id.textViewBalance);
+        cod = (String) getIntent().getExtras().get("cod");
         textViewBalance.setText("WILL\nWE\nDO\nIT?");
         //textViewBalance.setText(requestBalance(MY_IBAN));
     }
@@ -63,6 +67,14 @@ public class BalanceActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        final Activity activity = this;
+        Intent intent = new Intent(activity, MainActivity.class);
+        intent.putExtra("cod", cod);
+        startActivity(intent);
     }
 
 }

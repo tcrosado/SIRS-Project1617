@@ -14,7 +14,7 @@ import android.widget.Toast;
 public class LoginActivity extends Activity {
 
     private int MAX_PASS_LENGHT = 4;
-    public final static String MY_IBAN = "PT12345678901234567890123";
+    public final static String MY_IBAN = "PT09876543210987654321098";
     private int count;
     private TextView[] textViews;
     private String password;
@@ -99,6 +99,7 @@ public class LoginActivity extends Activity {
                     intent.putExtra("myIBAN", MY_IBAN);
                     intent.putExtra("destIBAN", destIBAN);
                     intent.putExtra("moneyToTransfer", moneyToTransfer);
+                    System.out.println("LOGIN MY_IBAN = " + MY_IBAN);
                     intent.putExtra("cod", this.password);
                     startActivity(intent);
                 } else {

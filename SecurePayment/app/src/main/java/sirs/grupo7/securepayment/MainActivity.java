@@ -33,7 +33,7 @@ import sirs.grupo7.securepayment.encryption.AESFileEncryption;
 
 public class MainActivity extends AppCompatActivity {
 
-    public final static String MY_IBAN = "PT12345678901234567890123";
+    public final static String MY_IBAN = "PT09876543210987654321098";
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
     private Button buttonIBAN;
     private String CURRENT_BALANCE;
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         public void showCurrentBalance() {
 
             UDP udp = new UDP();
-            
+
             try {
                 CURRENT_BALANCE = udp.showBalance(MY_IBAN);
                 res = CURRENT_BALANCE + " €";
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(unused);
             textViewShowBalance.setText(res);
             if (!r) {
-                textViewShowBalance.setTextSize(20);
+                textViewShowBalance.setTextSize(40);
             }
         }
     }
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         new CommunicationTask().execute();
 
-        cod = (String) getIntent().getExtras().get("myIBAN");
+        cod = (String) getIntent().getExtras().get("cod");
 
         buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
         final Context context = this;
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
                     Intent intent = new Intent(context, QrActivity.class);
                     intent.putExtra("picIBAN", bitmap);
+                    intent.putExtra("cod", cod);
                     intent.putExtra("textShowIBAN", MY_IBAN);
                     context.startActivity(intent);
                 } catch (WriterException e) {
@@ -162,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToBalance(View view) {
         // Do something in response to button
         Intent intent = new Intent(this, BalanceActivity.class);
+        intent.putExtra("cod", cod);
         startActivity(intent);
     }
 

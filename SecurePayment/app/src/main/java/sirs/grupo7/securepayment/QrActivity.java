@@ -19,11 +19,13 @@ public class QrActivity extends AppCompatActivity {
     private Button buttonGoBack;
     private TextView textShowIBAN;
     private String IBAN;
+    private String cod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr);
+        cod = (String) getIntent().getExtras().get("cod");
         imageViewIBAN = (ImageView) this.findViewById(R.id.imageViewIBAN);
         Bitmap bitmap = getIntent().getParcelableExtra("picIBAN");
         imageViewIBAN.setImageBitmap(bitmap);
@@ -37,6 +39,7 @@ public class QrActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(activity, MainActivity.class);
+                intent.putExtra("cod", cod);
                 startActivity(intent);
             }
         });

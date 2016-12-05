@@ -23,6 +23,8 @@ public class MakingTransactionActivity extends AppCompatActivity {
     private String myIBAN;
     private String destIBAN;
 
+    private String cod;
+
 
     private class MakingTransactionTask extends AsyncTask<Void, Void, Void> {
 
@@ -55,6 +57,10 @@ public class MakingTransactionActivity extends AppCompatActivity {
             super.onPostExecute(unused);
             if (res.startsWith("TC")) {
                 textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
+            } else if (res.startsWith("II")) {
+                textView.setText("Invalid IBAN\n" + destIBAN);
+            } else if (res.startsWith("IF")) {
+                textView.setText("Insuficient Founds");
             } else {
                 textView.setText(getResources().getString(R.string.errorMakingTransaction));
             }
@@ -74,12 +80,15 @@ public class MakingTransactionActivity extends AppCompatActivity {
         destIBAN = (String) getIntent().getExtras().get("destIBAN");
         moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
 
+        cod = (String) getIntent().getExtras().get("cod");
+
         new MakingTransactionTask().execute();
 
         buttonDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(activity, MainActivity.class);
+                intent.putExtra("cod", cod);
                 startActivity(intent);
             }
         });
