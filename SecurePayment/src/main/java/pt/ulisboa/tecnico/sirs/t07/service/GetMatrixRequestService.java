@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.sirs.t07.data.AccountMatrixData;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 
 /**
- * @author João
+ * @author Joï¿½o
  *
  */
 public class GetMatrixRequestService extends OperationService{
@@ -42,7 +42,7 @@ public class GetMatrixRequestService extends OperationService{
 			e.printStackTrace();
 		}
 		
-		this.result = this.row + "-" + this.column;
+		this.result = this.row + "-" + this.column + "-" + matrix.getRandomDigitPosition();
 		
 	}
 

@@ -28,11 +28,20 @@ CREATE TABLE bank.pendingTransactions(
   originIban VARCHAR(34) NOT NULL,
   destIban VARCHAR(34) NOT NULL,
   value DOUBLE NOT NULL,
-  `row` ENUM('A','B','C','D','E','F','G','H') NOT NULL,
-  `column` INT NOT NULL,
   PRIMARY KEY (tid),
   FOREIGN KEY (originIban) REFERENCES accounts(iban),
   FOREIGN KEY (destIban) REFERENCES accounts(iban)
+);
+
+CREATE TABLE `bank`.`pendingChallenges`(
+  tid VARCHAR(36) NOT NULL,
+  `order` INT NOT NULL,
+  `row` ENUM('A','B','C','D','E','F','G','H') NOT NULL,
+  `column` INT NOT NULL,
+  position INT NOT NULL,
+  FOREIGN KEY (tid) REFERENCES bank.pendingTransactions(tid)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION
 );
 
 CREATE TABLE `bank`.`accountmatrix` (

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * @author João
+ * @author Joï¿½o
  *
  */
 public class AccountMatrixData extends AbstractData {
@@ -63,7 +63,7 @@ public class AccountMatrixData extends AbstractData {
 		int result;
 		ArrayList<Integer> queryResult = new ArrayList<Integer>();
 
-		java.sql.PreparedStatement returnedValue = conn.prepareStatement("SELECT column FROM accountmatrix WHERE iban = ?");
+		java.sql.PreparedStatement returnedValue = conn.prepareStatement("SELECT `column` FROM accountmatrix WHERE iban = ?");
 		
 		returnedValue.setString(1, iban);
 		
@@ -82,4 +82,15 @@ public class AccountMatrixData extends AbstractData {
 
 	}
 
+	public int getRandomDigitPosition(){
+		Random r = new Random();
+		return r.nextInt(3)+1;
+	}
+
+	private int getNthDigit(int nth,int number){
+		Double digit;
+		digit = Math.pow(10,nth-1);
+		digit = (number/digit) % 10;
+		return digit.intValue();
+	}
 }

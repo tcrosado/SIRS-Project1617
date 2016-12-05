@@ -18,8 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -47,7 +46,7 @@ class PacketParserService extends OperationService {
         logger.debug("Time: {}",time);
         logger.debug("Op: {}",operation);
 
-       veryfyIntegrity();
+     //  veryfyIntegrity();
 
        switch (operation){
 
@@ -73,13 +72,14 @@ class PacketParserService extends OperationService {
         	   logger.debug("Requested Account : {}", this.getOriginIBAN());
         	   this.resultData = new OperationData(tuid,time, new GetMatrixRequestService(this.getOriginIBAN()));
         	   break;
-           case 'V':
-        	   logger.debug("Operation: MatrixVerifyResponse");
+           case 'C':
+        	   logger.debug("Operation: Confirm Transaction with challenge response");
         	   logger.debug("Iban : {}", this.getOriginIBAN());
-        	   logger.debug("Row : {}", this.getMatrixResponseRow());
-        	   logger.debug("Column : {}", this.getMatrixResponseColumn());
-        	   logger.debug("Value : {}", this.getMatrixResponseValue());
-        	   this.resultData = new OperationData(tuid, time, new VerifyMatrixResponseService(getOriginIBAN(), getMatrixResponseRow(), getMatrixResponseColumn(), getMatrixResponseValue()));
+        	   logger.debug("Value 1 : {}", this.getMatrixResponseValues());
+        	   logger.debug("Value 1 : {}", this.getMatrixResponseValues());
+        	   logger.debug("Value 1 : {}", this.getMatrixResponseValues());
+              // this.resultData = new OperationData(tuid,time,new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValue()));
+        	   //FIXME this.resultData = new OperationData(tuid, time, new VerifyMatrixResponseService(getOriginIBAN(),getMatrixResponseValues()));
         	   break;
            default:
               throw new InvalidOperationException();
@@ -153,7 +153,7 @@ class PacketParserService extends OperationService {
         return b.getDouble();
     }
     
-    // Joao - Assumindo que o pacote quando so tem um NIB quando é response da matriz e vem row|column|value para validacao
+    // Joao - Assumindo que o pacote quando so tem um NIB quando ï¿½ response da matriz e vem row|column|value para validacao
     private String getMatrixResponseRow(){
     	byte[] row = Arrays.copyOfRange(this.packet.getData(),66,67);
         return new String(row);
@@ -163,10 +163,28 @@ class PacketParserService extends OperationService {
     	byte[] column = Arrays.copyOfRange(this.packet.getData(),67,68);
         return new Integer(new String(column));
     }
+
+
+    private UUID getConfirmationTid(){
+        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),41,49);
+        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),49,57);
+        ByteBuffer bb = ByteBuffer.wrap(uidbyte1);
+        long mostSignificant = bb.getLong();
+        bb = ByteBuffer.wrap(uidbyte2);
+        long leastSignificant = bb.getLong();
+        return new UUID(mostSignificant,leastSignificant);
+    }
     
-    private int getMatrixResponseValue(){
-    	byte[] value = Arrays.copyOfRange(this.packet.getData(),67,68);
-        return new Integer(new String(value));
+    private AbstractList<Integer> getMatrixResponseValues(){
+        Vector<Integer> vector = new Vector<Integer>();
+        byte[] value1 = Arrays.copyOfRange(this.packet.getData(),57,61);
+        byte[] value2 = Arrays.copyOfRange(this.packet.getData(),61,65);
+        byte[] value3 = Arrays.copyOfRange(this.packet.getData(),65,69);
+
+        vector.add(new Integer(new String(value1)));
+        vector.add(new Integer(new String(value2)));
+        vector.add(new Integer(new String(value3)));
+        return vector;
     }
     
     //TODO Valida isto por favor Tiago

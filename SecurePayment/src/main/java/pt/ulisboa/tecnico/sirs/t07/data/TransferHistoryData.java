@@ -39,11 +39,11 @@ public class TransferHistoryData extends AbstractData {
                 throw new InsufficientFundsException(originIban);
             }
 
-            if(getDayTransferWithdrawValue(originIban)>=100){
+            /*FIXME if(getDayTransferWithdrawValue(originIban)>=400){
                 recordTransaction.cancel();
                 conn.setAutoCommit(true);
                 throw new MaxWithdrawLimitException(originIban);
-            }
+            }*/
 
             updateBalanceOrigin.setDouble(1,balance-value);
             updateBalanceOrigin.setString(2,originIban);

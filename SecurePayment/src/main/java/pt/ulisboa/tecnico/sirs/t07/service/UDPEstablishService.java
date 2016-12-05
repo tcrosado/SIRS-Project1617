@@ -75,9 +75,8 @@ public class UDPEstablishService extends AbstractService implements Runnable{
             OperationData opData = p.getResultData();
             opData.executeService();
             logger.debug(opData.getServiceResult());
-
             sendMessage(opData.getServiceResult().getBytes());
-            logger.debug("sent");
+            logger.debug("sent Response");
        /*     this.socket.setSoTimeout(this.timeout);
             this.socket.receive(receiveConfirmation);
             this.socket.setSoTimeout(0);

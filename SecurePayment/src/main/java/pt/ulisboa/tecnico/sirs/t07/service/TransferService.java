@@ -2,10 +2,7 @@ package pt.ulisboa.tecnico.sirs.t07.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.ulisboa.tecnico.sirs.t07.data.AccountData;
-import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
-import pt.ulisboa.tecnico.sirs.t07.data.PendingTransactionsData;
-import pt.ulisboa.tecnico.sirs.t07.data.TransferHistoryData;
+import pt.ulisboa.tecnico.sirs.t07.data.*;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidIbanException;
@@ -45,33 +42,39 @@ public class TransferService extends OperationService {
 
         if (result.isEmpty()) {
             logger.debug("Invalid Origin Iban {}.", this.getIbanOrigin());
-            this.result = "Invalid Origin Iban";
+            this.result = "II";
             throw new InvalidIbanException(this.getIbanOrigin());
         }
 
         if (result.firstElement() < this.value) {
             logger.debug("Insufficient funds.");
-            this.result = "Insufficient funds";
+            this.result = "IF";
             throw new InsufficientFundsException(this.getIbanOrigin());
         }
 
 
         if (!client.ibanExists(this.ibanDestination)) {
             logger.debug("Invalid destination Iban.");
-            this.result = "Invalid destination Iban";
+            this.result = "II";
             throw new InvalidIbanException(this.ibanDestination);
         }
 
-        if (this.value > 10){
-            GetMatrixRequestService service = new GetMatrixRequestService(this.getIbanOrigin());
-            service.dispatch();
-            this.result = this.tid+"-"+service.result();
-            String[] splited = service.result().split("-");
-            String row = splited[0];
-            int col = Integer.parseInt(splited[1]);
+       if (this.value > 10){
+           Vector<MatrixPosition> positions = new Vector<MatrixPosition>();
 
+           this.result = this.tid;
+           for(int i = 0; i<3;i++){
+               GetMatrixRequestService service = new GetMatrixRequestService(this.getIbanOrigin());
+               service.dispatch();
+               this.result += "-"+service.result();
+               String[] splited = service.result().split("-");
+               String row = splited[0];
+               Integer col = Integer.parseInt(splited[1]);
+               Integer position = Integer.parseInt(splited[2]);
+               positions.add(new MatrixPosition(row,col,position));
+           }
             try {
-                pending.addPendingTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value,row,col);
+                pending.addPendingTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value,positions);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -90,7 +93,7 @@ public class TransferService extends OperationService {
             e.printStackTrace();
         }
         logger.debug("Transfer Completed");
-        this.result="Transfer Completed";
+        this.result="TC";
     }
 
     @Override
