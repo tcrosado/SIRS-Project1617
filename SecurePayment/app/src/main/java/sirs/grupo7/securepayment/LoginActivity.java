@@ -18,7 +18,7 @@ public class LoginActivity extends Activity {
     private int count;
     private TextView[] textViews;
     private String password;
-    private String USER_PASSWORD = "9513";
+    //private String USER_PASSWORD = "9513";
     private int BAD_PASSWORD_TRIES = 3;
     private boolean fromTransaction;
 
@@ -91,7 +91,7 @@ public class LoginActivity extends Activity {
         } else if (this.password.length() == 0) {
             toastPrinter("You need to provide a password", Toast.LENGTH_SHORT);
         } else {
-            if (this.password.length() == 4 && this.password.equals(this.USER_PASSWORD)) {
+            if (this.password.length() == 4) { // && this.password.equals(this.USER_PASSWORD)) {
                 if (fromTransaction) {
                     String destIBAN = (String) getIntent().getExtras().get("destIBAN");
                     String moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
@@ -99,9 +99,11 @@ public class LoginActivity extends Activity {
                     intent.putExtra("myIBAN", MY_IBAN);
                     intent.putExtra("destIBAN", destIBAN);
                     intent.putExtra("moneyToTransfer", moneyToTransfer);
+                    intent.putExtra("cod", this.password);
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("cod", this.password);
                     startActivity(intent);
                 }
             } else {

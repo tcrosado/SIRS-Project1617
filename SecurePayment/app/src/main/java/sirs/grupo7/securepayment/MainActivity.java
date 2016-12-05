@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;
+import sirs.grupo7.securepayment.encryption.AESFileEncryption;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
     private Button buttonIBAN;
     private String CURRENT_BALANCE;
+    private String cod;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         public void showCurrentBalance() {
 
             UDP udp = new UDP();
+            
             try {
                 CURRENT_BALANCE = udp.showBalance(MY_IBAN);
                 res = CURRENT_BALANCE + " €";
@@ -89,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         new CommunicationTask().execute();
+
+        cod = (String) getIntent().getExtras().get("myIBAN");
 
         buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
         final Context context = this;

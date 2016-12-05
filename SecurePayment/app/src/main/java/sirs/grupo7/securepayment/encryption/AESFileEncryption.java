@@ -1,12 +1,11 @@
 package sirs.grupo7.securepayment.encryption;
 
-//import android.util.Base64;
-
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
@@ -36,6 +35,12 @@ public class AESFileEncryption {
 
     public AESFileEncryption() {
         this.filename = "encryptedfile.des";
+        this.salt = "salt.enc";
+        this.iv = "iv.enc";
+    }
+
+    public AESFileEncryption(String filename) {
+        this.filename = filename;
         this.salt = "salt.enc";
         this.iv = "iv.enc";
     }
@@ -96,39 +101,50 @@ public class AESFileEncryption {
     }
 
     public String decrypt(String code) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+        try {
 
-        // reading the salt
-        // user should have secure mechanism to transfer the
-        // salt, iv and password to the recipient
-        FileInputStream saltFis = new FileInputStream(this.salt);
-        byte[] salt = new byte[8];
-        saltFis.read(salt);
-        saltFis.close();
+            // reading the salt
+            // user should have secure mechanism to transfer the
+            // salt, iv and password to the recipient
+            FileInputStream saltFis = new FileInputStream(this.salt);
+            byte[] salt = new byte[8];
+            saltFis.read(salt);
+            saltFis.close();
 
-        // reading the iv
-        FileInputStream ivFis = new FileInputStream(this.iv);
-        byte[] iv = new byte[16];
-        ivFis.read(iv);
-        ivFis.close();
+            // reading the iv
+            FileInputStream ivFis = new FileInputStream(this.iv);
+            byte[] iv = new byte[16];
+            ivFis.read(iv);
+            ivFis.close();
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        KeySpec keySpec = new PBEKeySpec(code.toCharArray(), salt, 65536, 256);
-        SecretKey tmp = factory.generateSecret(keySpec);
-        SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            KeySpec keySpec = new PBEKeySpec(code.toCharArray(), salt, 65536, 256);
+            SecretKey tmp = factory.generateSecret(keySpec);
+            SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
 
-        // file decryption
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
+            // file decryption
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
 
-        File inputFile = new File(this.filename);
-        FileInputStream fis = new FileInputStream(inputFile);
-        byte[] inputBytes = new byte[(int) inputFile.length()];
-        fis.read(inputBytes);
-        byte[] outputBytes = cipher.doFinal(inputBytes);
-        fis.close();
+            File inputFile = new File(this.filename);
+            FileInputStream fis = new FileInputStream(inputFile);
+            byte[] inputBytes = new byte[(int) inputFile.length()];
+            fis.read(inputBytes);
+            byte[] outputBytes = cipher.doFinal(inputBytes);
+            fis.close();
 
-        String key = new String(outputBytes);
+            String key = new String(outputBytes);
 
-        return key;
+            return key;
+        } catch (BadPaddingException e) {
+            return read();
+        }
+    }
+
+    public String read() throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(this.filename));
+        String sCurrentLine = br.readLine();
+        br.close();
+        return sCurrentLine;
     }
 }
