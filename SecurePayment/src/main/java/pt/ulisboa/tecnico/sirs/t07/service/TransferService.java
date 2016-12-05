@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.data.AccountData;
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
+import pt.ulisboa.tecnico.sirs.t07.data.PendingTransactionsData;
 import pt.ulisboa.tecnico.sirs.t07.data.TransferHistoryData;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
@@ -39,6 +40,7 @@ public class TransferService extends OperationService {
         AccountData accountdb = new AccountData();
         CustomerData client = new CustomerData();
         TransferHistoryData history = new TransferHistoryData();
+        PendingTransactionsData pending = new PendingTransactionsData();
         Vector<Float> result = accountdb.getBalanceFromIBAN(this.getIbanOrigin());
 
         if (result.isEmpty()) {
@@ -60,10 +62,21 @@ public class TransferService extends OperationService {
             throw new InvalidIbanException(this.ibanDestination);
         }
 
-        if (this.value > 200){
-            logger.debug("Transaction needs challenge resposne");
+        if (this.value > 10){
             GetMatrixRequestService service = new GetMatrixRequestService(this.getIbanOrigin());
             service.dispatch();
+            this.result = this.tid+"-"+service.result();
+            String[] splited = service.result().split("-");
+            String row = splited[0];
+            int col = Integer.parseInt(splited[1]);
+
+            try {
+                pending.addPendingTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value,row,col);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            logger.debug("Transaction added to pending");
+            return;
 
         }
 
