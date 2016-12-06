@@ -15,6 +15,10 @@ public class PendingTransactionsData extends AbstractData {
 
     public void addPendingTransaction(String tid, String originIban,String destIban, double value,Vector<MatrixPosition> positions) throws SQLException {
 
+        PreparedStatement deleteSameIban = conn.prepareStatement("DELETE FROM pendingTransactions WHERE originIban=?;");
+        deleteSameIban.setString(1,originIban);
+        deleteSameIban.execute();
+
         PreparedStatement recordTransaction = conn.prepareStatement("INSERT INTO pendingTransactions VALUES (?,CURRENT_TIMESTAMP,?,?,?);");
 
         recordTransaction.setString(1,tid);
