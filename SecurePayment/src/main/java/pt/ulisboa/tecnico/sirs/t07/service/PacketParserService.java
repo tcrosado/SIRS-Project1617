@@ -67,11 +67,6 @@ class PacketParserService extends OperationService {
                //TODO definir serviço de historico
                logger.debug("Operation: History");
                break;
-           case 'R': //Request Matrix challenge - format -> result = "row-column"
-        	   logger.debug("Operation: MatrixRequest");
-        	   logger.debug("Requested Account : {}", this.getOriginIBAN());
-        	   this.resultData = new OperationData(tuid,time, new GetMatrixRequestService(this.getOriginIBAN()));
-        	   break;
            case 'C':
         	   logger.debug("Operation: Confirm Transaction with challenge response");
         	   logger.debug("tid : {}", this.getConfirmationTid());
@@ -79,7 +74,6 @@ class PacketParserService extends OperationService {
         	   logger.debug("Value 2 : {}", this.getMatrixResponseValues().get(1));
         	   logger.debug("Value 3 : {}", this.getMatrixResponseValues().get(2));
                this.resultData = new OperationData(tuid,time,new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValues()));
-        	   //this.resultData = new OperationData(tuid, time, new VerifyMatrixResponseService(getOriginIBAN(),getMatrixResponseValues()));
         	   break;
            default:
               throw new InvalidOperationException();

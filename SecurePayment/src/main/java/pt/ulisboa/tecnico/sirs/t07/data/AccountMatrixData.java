@@ -14,11 +14,11 @@ import java.util.Random;
  */
 public class AccountMatrixData extends AbstractData {
 
-	public boolean VerifyMatrixValue(String iban, String row, int column, int value) throws SQLException{
+	public boolean verifyMatrixValue(String iban, String row, int column, int position, int value) throws SQLException{
 
 		boolean result = false;
 
-		java.sql.PreparedStatement returnedValue = conn.prepareStatement("SELECT value FROM accountmatrix WHERE iban = ? AND row = ? AND column = ?");
+		java.sql.PreparedStatement returnedValue = conn.prepareStatement("SELECT value FROM accountmatrix WHERE iban = ? AND row = ? AND `column` = ?");
 
 		returnedValue.setString(1, iban);
 		returnedValue.setString(2, row);
@@ -27,7 +27,7 @@ public class AccountMatrixData extends AbstractData {
 		ResultSet rs = returnedValue.executeQuery();
 
 		while(rs.next()){
-			if(rs.getInt("value") == value)
+			if(getNthDigit(position,rs.getInt("value")) == value)
 				result = true;
 		}
 

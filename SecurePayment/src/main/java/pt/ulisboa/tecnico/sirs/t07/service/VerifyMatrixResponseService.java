@@ -9,7 +9,7 @@ import pt.ulisboa.tecnico.sirs.t07.data.AccountMatrixData;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 
 /**
- * @author João
+ * @author Joï¿½o
  *
  */
 public class VerifyMatrixResponseService extends OperationService{
@@ -18,16 +18,18 @@ public class VerifyMatrixResponseService extends OperationService{
 	private String row;
 	private int column;
 	private int value;
+	private int position;
 	private String result;
 	
 	
 	
-	public VerifyMatrixResponseService(String iban, String row, int column, int value) {
+	public VerifyMatrixResponseService(String iban, String row, int column,int position, int value) {
 		super();
 		this.iban = iban;
 		this.row = row;
 		this.column = column;
 		this.value = value;
+		this.position = position;
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public class VerifyMatrixResponseService extends OperationService{
 		AccountMatrixData matrix = new AccountMatrixData();
 		
 		try {
-			Boolean res = matrix.VerifyMatrixValue(this.iban, this.row, this.column, this.value);
+			Boolean res = matrix.verifyMatrixValue(this.iban, this.row, this.column,this.position, this.value);
 			result = "" + res;
 		} catch (SQLException e) {
 			e.printStackTrace();
