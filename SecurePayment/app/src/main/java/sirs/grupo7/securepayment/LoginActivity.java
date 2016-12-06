@@ -3,7 +3,9 @@ package sirs.grupo7.securepayment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -137,4 +139,18 @@ public class LoginActivity extends Activity {
         toast.show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
+        if(!previouslyStarted) {
+            //SharedPreferences.Editor edit = prefs.edit();
+            //edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
+            //edit.commit();
+            final Activity activity = this;
+            Intent intent = new Intent(activity, StartFirst.class);
+            startActivity(intent);
+        }
+    }
 }

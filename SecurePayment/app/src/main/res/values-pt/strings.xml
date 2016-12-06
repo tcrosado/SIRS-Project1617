@@ -33,4 +33,10 @@
     <string name="transferSuccess"> foi transferdo para a conta </string>
     <string name="errorGettingBalance">Erro ao pedir saldo</string>
     <string name="errorGettingHistory">Erro ao pedir histórico</string>
+    <string name="start_welcome_message">Bem vindo ao</string>
+    <string name="start_welcome_message2">Clique em Próximo para continuar</string>
+    <string name="button_finish">Finalizar</string>
+    <string name="button_next">Próximo</string>
+    <string name="button_prev">Anterior</string>
+    <string name="start_setup1">Escreva o seu IBAN</string>
 </resources>

@@ -53,5 +53,18 @@
     <string name="transferSuccess"> was transfered to the account </string>
     <string name="errorGettingBalance">Error requesting balance</string>
     <string name="errorGettingHistory">Error requesting history</string>
+    <string name="title_activity_start" translatable="false">Start</string>
+    <string name="pref_previously_started" translatable="false">false</string>
+    <string name="title_activity_start2" translatable="false">Start2</string>
+    <string name="title_activity_start_first" translatable="false">StartFirst</string>
+    <string name="title_activity_start_second" translatable="false">StartSecond</string>
+    <string name="title_activity_start_third" translatable="false">StartThird</string>
+    <string name="button_next">Next</string>
+    <string name="start_welcome_message">Welcome to</string>
+    <string name="start_welcome_message2">Click Next to setup your aplication</string>
+    <string name="button_prev">Previous</string>
+    <string name="start_welcome_message1" translatable="false">Secure Payment</string>
+    <string name="start_setup1">Type your IBAN</string>
+    <string name="button_finish">Finish</string>
 
 </resources>
