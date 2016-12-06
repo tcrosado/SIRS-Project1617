@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -38,12 +39,11 @@ class PacketParserService extends OperationService {
     @Override
     void dispatch() throws ErrorMessageException {
         UUID tuid = this.getTId();
-        Timestamp time = this.getTime();
         char operation = this.getOperation();
 
         logger.debug("Packet Parsed");
+        logger.debug("Phone Number: {}",this.getPhoneNumber());
         logger.debug("Tid: {}",tuid);
-        logger.debug("Time: {}",time);
         logger.debug("Op: {}",operation);
 
      //  veryfyIntegrity();
@@ -53,7 +53,7 @@ class PacketParserService extends OperationService {
            case 'S':
                logger.debug("Operation: Balance");
                logger.debug("Account Iban : {}", this.getOriginIBAN());
-               this.resultData = new OperationData(tuid,time,new BalanceCheckService(this.getOriginIBAN()));
+               this.resultData = new OperationData(tuid,new BalanceCheckService(this.getOriginIBAN()));
 
                break;
            case 'T':
@@ -61,7 +61,7 @@ class PacketParserService extends OperationService {
                logger.debug("Origin Iban: {}",this.getOriginIBAN());
                logger.debug("Destination Iban: {}",this.getDestinationIBAN());
                logger.debug("Transfer Value: {}",this.getTransferValue());
-               this.resultData = new OperationData(tuid,time,new TransferService(tuid,this.getOriginIBAN(),this.getDestinationIBAN(),this.getTransferValue()));
+               this.resultData = new OperationData(tuid,new TransferService(tuid,this.getOriginIBAN(),this.getDestinationIBAN(),this.getTransferValue()));
                break;
            case 'H':
                //TODO definir serviço de historico
@@ -73,7 +73,7 @@ class PacketParserService extends OperationService {
         	   logger.debug("Value 1 : {}", this.getMatrixResponseValues().get(0));
         	   logger.debug("Value 2 : {}", this.getMatrixResponseValues().get(1));
         	   logger.debug("Value 3 : {}", this.getMatrixResponseValues().get(2));
-               this.resultData = new OperationData(tuid,time,new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValues()));
+               this.resultData = new OperationData(tuid,new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValues()));
         	   break;
            default:
               throw new InvalidOperationException();
@@ -104,14 +104,17 @@ class PacketParserService extends OperationService {
      *
      * **/
 
+    private String getPhoneNumber(){ return new String(Arrays.copyOf(this.packet.getData(),9));}
+
     private byte[] getHash(){
-        return Arrays.copyOf(this.packet.getData(),16);
+        return Arrays.copyOfRange(this.packet.getData(),9,25);
     }
 
 
     private UUID getTId(){
-        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),16,24);
-        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),24,32);
+        final int UUIDPOSITION = 25;
+        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),UUIDPOSITION,UUIDPOSITION+8);
+        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),UUIDPOSITION+8,UUIDPOSITION+16);
         ByteBuffer bb = ByteBuffer.wrap(uidbyte1);
         long mostSignificant = bb.getLong();
         bb = ByteBuffer.wrap(uidbyte2);
@@ -119,32 +122,29 @@ class PacketParserService extends OperationService {
         return new UUID(mostSignificant,leastSignificant);
     }
 
-    private Timestamp getTime(){
-        byte[] timestampbyte = Arrays.copyOfRange(this.packet.getData(),32,40);
-        ByteBuffer bb = ByteBuffer.wrap(timestampbyte);
-        return new Timestamp(bb.getLong());
-    }
-
     private char getOperation(){
-        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),40,41);
+        final int OPPOSITION = 41;
+        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),OPPOSITION,OPPOSITION+1);
         return (char)(opbyte[0]);
     }
 
     private String getOriginIBAN(){
-        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),41,66);
+        final int OIBANPOS = 42;
+        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),OIBANPOS,OIBANPOS+25);
         return new String(ibanb);
     }
 
     private String getDestinationIBAN(){
-        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),66,91);
+        final int DIBANPOS = 67;
+        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),DIBANPOS,DIBANPOS+25);
         return new String(ibanb);
     }
 
-    private double getTransferValue(){
-        byte[] value = Arrays.copyOfRange(this.packet.getData(),91,99);
+    private int getTransferValue(){
+        final int VALUEPOS = 92;
+        byte[] value = Arrays.copyOfRange(this.packet.getData(),VALUEPOS,VALUEPOS+4);
         ByteBuffer b = ByteBuffer.wrap(value);
-
-        return b.getDouble();
+        return b.getInt();
     }
     
     // Joao - Assumindo que o pacote quando so tem um NIB quando � response da matriz e vem row|column|value para validacao
@@ -160,8 +160,9 @@ class PacketParserService extends OperationService {
 
 
     private UUID getConfirmationTid(){
-        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),41,49);
-        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),49,57);
+        final int CTIDPOS = 42;
+        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),CTIDPOS,CTIDPOS+8);
+        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),CTIDPOS+8,CTIDPOS+16);
         ByteBuffer bb = ByteBuffer.wrap(uidbyte1);
         long mostSignificant = bb.getLong();
         bb = ByteBuffer.wrap(uidbyte2);
@@ -170,10 +171,11 @@ class PacketParserService extends OperationService {
     }
     
     private AbstractList<Integer> getMatrixResponseValues(){
+        final int RESPOS = 58;
         Vector<Integer> vector = new Vector<Integer>();
-        byte[] value1 = Arrays.copyOfRange(this.packet.getData(),57,61);
-        byte[] value2 = Arrays.copyOfRange(this.packet.getData(),61,65);
-        byte[] value3 = Arrays.copyOfRange(this.packet.getData(),65,69);
+        byte[] value1 = Arrays.copyOfRange(this.packet.getData(),RESPOS,RESPOS+4);
+        byte[] value2 = Arrays.copyOfRange(this.packet.getData(),RESPOS+4,RESPOS+8);
+        byte[] value3 = Arrays.copyOfRange(this.packet.getData(),RESPOS+8,RESPOS+12);
 
         ByteBuffer b = ByteBuffer.wrap(value1);
         vector.add(b.getInt());
@@ -196,7 +198,7 @@ class PacketParserService extends OperationService {
             e.printStackTrace();
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] data = Arrays.copyOfRange(this.packet.getData(),16,99);
+        byte[] data = Arrays.copyOfRange(this.packet.getData(),25,100);
 
         try {
             out.write(data);

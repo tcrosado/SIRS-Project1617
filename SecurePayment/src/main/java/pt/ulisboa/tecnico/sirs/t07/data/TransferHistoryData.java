@@ -6,6 +6,8 @@ import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InsufficientFundsException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.MaxWithdrawLimitException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,9 +21,9 @@ import java.util.Vector;
  */
 public class TransferHistoryData extends AbstractData {
 
-    public void doTransaction(String tid, String originIban,String destIban, double value) throws ErrorMessageException, SQLException {
+    public void doTransaction(String tid, String originIban,String destIban, int value) throws ErrorMessageException, SQLException {
         AccountData accountDB = new AccountData();
-        double balance;
+        int balance;
             conn.setAutoCommit(false);
             PreparedStatement recordTransaction = conn.prepareStatement("INSERT INTO transactionHistory VALUES (?,CURRENT_TIMESTAMP,?,?,?);");
 
@@ -73,7 +75,7 @@ public class TransferHistoryData extends AbstractData {
             Timestamp time = rs.getTimestamp("time");
             String originIban = rs.getString("originIban");
             String destIban = rs.getString("destIban");
-            float value = rs.getFloat("value");
+            int value = rs.getInt("value");
 
             TransferHistory transfer = new TransferHistory(tid,time,originIban,destIban,value);
             result.add(transfer);
@@ -82,18 +84,17 @@ public class TransferHistoryData extends AbstractData {
         return result;
     }
 
-    public float getDayTransferWithdrawValue(String ibanOrigin) throws SQLException {
+    public int getDayTransferWithdrawValue(String ibanOrigin) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT SUM(value) FROM transactionHistory WHERE originIban= ? AND time > CURRENT_DATE;");
         stmt.setString(1,ibanOrigin);
 
         ResultSet rs = stmt.executeQuery();
         Vector<TransferHistory> result = new Vector<TransferHistory>();
-        float value = 0;
+        int value = 0;
         while (rs.next()){
-            value = rs.getFloat("SUM(value)");
+            value = rs.getInt("SUM(value)");
         }
 
         return value;
     }
-
 }

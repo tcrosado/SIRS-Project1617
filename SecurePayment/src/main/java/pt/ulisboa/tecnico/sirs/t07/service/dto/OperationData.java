@@ -12,12 +12,10 @@ import java.util.UUID;
  */
 public class OperationData {
     private UUID operationUid;
-    private Timestamp timestamp;
     private OperationService service;
 
-    public OperationData(UUID uid,Timestamp time,OperationService service){
+    public OperationData(UUID uid,OperationService service){
         this.operationUid=uid;
-        this.timestamp=time;
         this.service=service;
     }
 

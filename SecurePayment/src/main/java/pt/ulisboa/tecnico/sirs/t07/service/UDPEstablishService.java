@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.PriorityQueue;
@@ -58,7 +60,11 @@ public class UDPEstablishService extends AbstractService implements Runnable{
             p = new PacketParserService(this.packet);
             p.execute();
         } catch (ErrorMessageException e) {
-           handleError(e);
+            try {
+                handleError(e);
+            } catch (NoSuchAlgorithmException e1) {
+                e1.printStackTrace();
+            }
             return;
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,25 +81,20 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         try {
             OperationData opData = p.getResultData();
             opData.executeService();
-            logger.debug(opData.getServiceResult());
             sendMessage(opData.getServiceResult().getBytes());
             logger.debug("sent Response");
-       /*     this.socket.setSoTimeout(this.timeout);
-            this.socket.receive(receiveConfirmation);
-            this.socket.setSoTimeout(0);
-            if(Arrays.equals(receiveConfirmation.getData(),sendPacket.getData())){
-                //FIXME tratar de verificar confirmacao
-                p.result();
-                logger.debug("Operation executed");
-            }else{
-                logger.debug("Operation aborted");
-            }*/
             Arrays.fill( data, (byte) 0 );
 
         } catch (ErrorMessageException e) {
-            handleError(e);
+            try {
+                handleError(e);
+            } catch (NoSuchAlgorithmException e1) {
+                e1.printStackTrace();
+            }
             return;
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
@@ -102,7 +103,7 @@ public class UDPEstablishService extends AbstractService implements Runnable{
 
 
 
-    private void handleError(ErrorMessageException e){
+    private void handleError(ErrorMessageException e) throws NoSuchAlgorithmException {
         ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
         DataOutputStream daOp = new DataOutputStream(opBuffer);
         try {
@@ -115,15 +116,24 @@ public class UDPEstablishService extends AbstractService implements Runnable{
     }
 
 
-    private void sendMessage(byte[] message) throws IOException {
-        DatagramPacket packet = new DatagramPacket(message,message.length,this.packet.getAddress(),this.packet.getPort());
+    private void sendMessage(byte[] message) throws IOException, NoSuchAlgorithmException {
         UUID msgId = UUID.randomUUID();
         ByteArrayOutputStream buff = new ByteArrayOutputStream();
         DataOutputStream dBuff = new DataOutputStream(buff);
         dBuff.writeLong(msgId.getMostSignificantBits());
         dBuff.writeLong(msgId.getLeastSignificantBits());
         dBuff.write(message);
-        this.conn.sendData(buff.toByteArray(),this.packet.getAddress(),this.packet.getPort());
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        ByteArrayOutputStream join = new ByteArrayOutputStream();
+        DataOutputStream daOp = new DataOutputStream(join);
+        byte[] hash = digest.digest(buff.toByteArray());
+        byte[] cappedHash = Arrays.copyOfRange(hash,8,24);
+        logger.debug(new String(buff.toByteArray()));
+        daOp.write(buff.toByteArray());
+        daOp.write(cappedHash);
+
+        this.conn.sendData(join.toByteArray(),this.packet.getAddress(),this.packet.getPort());
     }
 
 }

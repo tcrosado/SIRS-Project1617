@@ -42,7 +42,7 @@ public class GetMatrixRequestService extends OperationService{
 			e.printStackTrace();
 		}
 		
-		this.result = this.row + "-" + this.column + "-" + matrix.getRandomDigitPosition();
+		this.result = this.row + "-" + this.column + "-"+matrix.getRandomDigitPosition();
 		
 	}
 

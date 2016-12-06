@@ -21,10 +21,10 @@ public class TransferService extends OperationService {
     private final Logger logger = LoggerFactory.getLogger(TransferService.class);
     private  String tid;
     private String ibanDestination;
-    private double value;
+    private int value;
     private String result;
 
-    public TransferService(UUID tid, String ibanOrigin, String ibanDestination, double value) {
+    public TransferService(UUID tid, String ibanOrigin, String ibanDestination, int value) {
         super(ibanOrigin);
         this.ibanDestination = ibanDestination;
         this.value = value;
@@ -38,7 +38,7 @@ public class TransferService extends OperationService {
         CustomerData client = new CustomerData();
         TransferHistoryData history = new TransferHistoryData();
         PendingTransactionsData pending = new PendingTransactionsData();
-        Vector<Float> result = accountdb.getBalanceFromIBAN(this.getIbanOrigin());
+        Vector<Integer> result = accountdb.getBalanceFromIBAN(this.getIbanOrigin());
 
         if (result.isEmpty()) {
             logger.debug("Invalid Origin Iban {}.", this.getIbanOrigin());
@@ -59,10 +59,9 @@ public class TransferService extends OperationService {
             throw new InvalidIbanException(this.ibanDestination);
         }
 
-       if (this.value > 10){
+       if (this.value > 5000){
            Vector<MatrixPosition> positions = new Vector<MatrixPosition>();
-
-           this.result = this.tid;
+           this.result="TP";
            for(int i = 0; i<3;i++){
                GetMatrixRequestService service = new GetMatrixRequestService(this.getIbanOrigin());
                service.dispatch();
@@ -73,7 +72,8 @@ public class TransferService extends OperationService {
                Integer position = Integer.parseInt(splited[2]);
                positions.add(new MatrixPosition(row,col,position));
            }
-            try {
+           this.result += "-" + this.tid;
+           try {
                 pending.addPendingTransaction(this.tid,this.getIbanOrigin(),this.ibanDestination,this.value,positions);
             } catch (SQLException e) {
                 e.printStackTrace();

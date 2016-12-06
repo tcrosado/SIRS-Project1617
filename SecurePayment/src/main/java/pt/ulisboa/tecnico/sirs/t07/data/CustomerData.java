@@ -66,4 +66,8 @@ public class CustomerData extends AbstractData {
 
         return !(result.isEmpty());
     }
+
+    public String getBankCode(String iban,String phoneNumber){
+        return "FIXME"; //FIXME
+    }
 }

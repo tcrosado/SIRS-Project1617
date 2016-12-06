@@ -48,7 +48,7 @@ public class AccountMatrixData extends AbstractData {
 		while(rs.next()){
 			queryResult.add(rs.getString("row"));
 		}
-		
+
 		Random r = new Random();
 		int index = r.nextInt(queryResult.size() - 1);
 		

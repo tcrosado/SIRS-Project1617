@@ -1,12 +1,13 @@
 USE bank;
 CREATE TABLE `customers`(
-  `iban` VARCHAR(34) NOT NULL,
+  iban VARCHAR(34) NOT NULL,
   `phoneNumber` VARCHAR(9) NOT NULL,
-  primary key (`iban`));
+  `bankCode` VARCHAR(20) NOT NULL,
+  primary key (iban));
 
 CREATE TABLE accounts(
   iban VARCHAR(34) NOT NULL,
-  balance DOUBLE NOT NULL,
+  balance INT NOT NULL,
   PRIMARY KEY  (iban),
   FOREIGN KEY (iban) REFERENCES customers(iban));
 
@@ -15,7 +16,7 @@ CREATE TABLE transactionHistory(
   time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   originIban VARCHAR(34) NOT NULL,
   destIban VARCHAR(34) NOT NULL,
-  value DOUBLE NOT NULL,
+  value INT NOT NULL,
   PRIMARY KEY (tid),
   FOREIGN KEY (originIban) REFERENCES accounts(iban),
   FOREIGN KEY (destIban) REFERENCES accounts(iban)
@@ -27,7 +28,7 @@ CREATE TABLE bank.pendingTransactions(
   time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   originIban VARCHAR(34) NOT NULL,
   destIban VARCHAR(34) NOT NULL,
-  value DOUBLE NOT NULL,
+  value INT NOT NULL,
   PRIMARY KEY (tid),
   FOREIGN KEY (originIban) REFERENCES accounts(iban),
   FOREIGN KEY (destIban) REFERENCES accounts(iban)

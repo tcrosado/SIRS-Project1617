@@ -76,7 +76,7 @@ public class PendingTransactionsData extends AbstractData {
             String recordTid = set.getString("tid");
             String originIban = set.getString("originIban");
             String destinationIban = set.getString("destIban");
-            Double value = set.getDouble("value");
+            int value = set.getInt("value");
 
             data.doTransaction(recordTid,originIban,destinationIban,value);
         }

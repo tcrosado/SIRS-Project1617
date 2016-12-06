@@ -16,7 +16,7 @@ import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidIbanException;
 public class BalanceCheckService extends OperationService{
 
 	private String IBAN;
-	public Vector<Float> balance = null;
+	public Vector<Integer> balance = null;
 	
 	public BalanceCheckService(String iban) {
 		super(iban);
@@ -26,7 +26,7 @@ public class BalanceCheckService extends OperationService{
 	@Override
 	void dispatch() throws ErrorMessageException {
 		AccountData Account = new AccountData();
-		Vector<Float> balance = Account.getBalanceFromIBAN(this.IBAN);
+		Vector<Integer> balance = Account.getBalanceFromIBAN(this.IBAN);
 		if(balance.isEmpty())
 			throw new InvalidIbanException(this.IBAN);
 		this.balance = balance;
@@ -35,7 +35,7 @@ public class BalanceCheckService extends OperationService{
 
 	@Override
 	public String result() {
-		return this.balance.firstElement()+"";
+		return "B"+this.balance.firstElement()+"$";
 	}
 
 }

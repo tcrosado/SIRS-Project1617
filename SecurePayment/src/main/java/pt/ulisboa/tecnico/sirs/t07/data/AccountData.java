@@ -22,9 +22,9 @@ public class AccountData extends AbstractData{
 	//
 
 
-	public Vector<Float> getBalanceFromIBAN(String IBAN){
+	public Vector<Integer> getBalanceFromIBAN(String IBAN){
 
-		Vector<Float> result = new Vector<Float>();
+		Vector<Integer> result = new Vector<Integer>();
 		try {
 			PreparedStatement stmt = conn.prepareStatement("SELECT balance FROM accounts WHERE iban = ?");
 			stmt.setString(1,IBAN);
@@ -32,7 +32,7 @@ public class AccountData extends AbstractData{
 
 
 			while (rs.next()){
-				result.add(rs.getFloat("balance"));
+				result.add(rs.getInt("balance"));
 			}
 
 		} catch (SQLException e) {
@@ -42,9 +42,9 @@ public class AccountData extends AbstractData{
 		return result;
 	}
 
-	public void updateBalance(String iban,float balance) throws SQLException {
+	public void updateBalance(String iban,int balance) throws SQLException {
 		PreparedStatement stmt = conn.prepareStatement("UPDATE accounts SET balance=? WHERE iban= ?;");
-		stmt.setFloat(1,balance);
+		stmt.setInt(1,balance);
 		stmt.setString(2,iban);
 		stmt.executeQuery();
 	}

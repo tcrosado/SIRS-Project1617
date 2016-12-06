@@ -11,9 +11,9 @@ public class TransferHistory {
     private Timestamp time;
     private String originIban;
     private String destinationIban;
-    private float value;
+    private int value;
 
-    public TransferHistory(UUID tid,Timestamp time, String originIban, String destinationIban,float value){
+    public TransferHistory(UUID tid,Timestamp time, String originIban, String destinationIban,int value){
         this.tid=tid;
         this.time=time;
         this.originIban=originIban;
@@ -43,7 +43,7 @@ public class TransferHistory {
 
 
 
-    public float getValue() {
+    public int getValue() {
         return value;
     }
 
