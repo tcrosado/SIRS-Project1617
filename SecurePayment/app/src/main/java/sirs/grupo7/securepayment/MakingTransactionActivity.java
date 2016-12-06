@@ -55,12 +55,28 @@ public class MakingTransactionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-            if (res.startsWith("TC")) {
+
+            if (res.equals("C")) {
+                // Transfer was completed with success
                 textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
-            } else if (res.startsWith("II")) {
-                textView.setText("Invalid IBAN\n" + destIBAN);
-            } else if (res.startsWith("IF")) {
+            } else if (res.startsWith("P")) {
+                // Challengeresponse
+                System.out.println("_______________________CR____________________");
+                // TODO Challenge Response
+                String[] cods = res.substring(2, 18).split("-");
+                String tid = res.substring(20);
+                System.out.println(cods[1]);
+                System.out.println(cods[2]);
+                System.out.println(cods[3]);
+                System.out.println(tid);
+                System.out.println("_____________________________________________");
+
+            } else if (res.equals("F")) {
+                // Insuficient founds
                 textView.setText("Insuficient Founds");
+            }  else if (res.equals("I")) {
+                // Invalid IBAN
+                textView.setText("Invalid IBAN\n" + destIBAN);
             } else {
                 textView.setText(getResources().getString(R.string.errorMakingTransaction));
             }

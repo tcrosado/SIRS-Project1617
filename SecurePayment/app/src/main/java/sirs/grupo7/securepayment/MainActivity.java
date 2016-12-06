@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -28,12 +29,12 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;
-import sirs.grupo7.securepayment.encryption.AESFileEncryption;
+import sirs.grupo7.securepayment.encryption.DHKeyAgreement;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    public final static String MY_IBAN = "PT09876543210987654321098";
+    public final static String MY_IBAN = "PT12345678901234567890123";
     public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
     private Button buttonIBAN;
     private String CURRENT_BALANCE;
@@ -58,6 +59,26 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             showCurrentBalance();
+            /*
+            try {
+                //Context context = getApplicationContext();
+                //Toast toast = Toast.makeText(context, "START", Toast.LENGTH_SHORT);
+                //toast.show();
+                System.err.println("================== START");
+
+                String mode = "USE_SKIP_DH_PARAMS";
+
+                DHKeyAgreement keyAgree = new DHKeyAgreement();
+
+                keyAgree.run(mode);
+                System.err.println("================== STOP");
+
+                //Toast toast2 = Toast.makeText(context, "STOP", Toast.LENGTH_SHORT);
+                //toast2.show();
+            } catch (Exception e) {
+                System.err.println("Error: " + e);
+            }
+            */
             return null;
         }
 
