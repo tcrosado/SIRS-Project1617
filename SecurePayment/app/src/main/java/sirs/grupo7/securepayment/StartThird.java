@@ -13,6 +13,7 @@ public class StartThird extends Activity {
     private Button prev;
     private Button next;
     private String MYIBAN;
+    private String MYCODE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,12 +21,14 @@ public class StartThird extends Activity {
         setContentView(R.layout.activity_start_third);
 
         MYIBAN = (String) getIntent().getExtras().get("MYIBAN");
+        MYCODE = (String) getIntent().getExtras().get("MYCODE");
 
         prev = (Button) findViewById(R.id.button_start_third_prev);
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(StartThird.this, StartSecond.class);
+                Intent intent = new Intent(StartThird.this, StartFourth.class);
+                intent.putExtra("MYIBAN", MYIBAN);
                 startActivity(intent);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
             }

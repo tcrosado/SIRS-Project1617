@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- NOTE
+<!--
+ NOTE
         android:allowBackup="false"
         If this attribute is set to false, no backup or restore of the application
         will ever be performed, even by a full-system backup that would otherwise
         cause all application data to be saved via adb.
     MORE INFO -> https://developer.android.com/guide/topics/manifest/application-element.html
 -->
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="sirs.grupo7.securepayment" >
+    package="sirs.grupo7.securepayment" >
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -107,6 +106,10 @@
             android:label="@string/title_activity_start_third"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".StartFourth"
+            android:label="@string/title_activity_start_fourth" >
         </activity>
     </application>
 

@@ -66,5 +66,12 @@
     <string name="start_welcome_message1" translatable="false">Secure Payment</string>
     <string name="start_setup1">Type your IBAN</string>
     <string name="button_finish">Finish</string>
+    <string name="title_activity_start_fourth" translatable="false">StartFourth</string>
+    <string name="start_setup2">Type your Secret Code</string>
+    <string name="secret_qrcode">Scan Secret Code</string>
+    <string name="start_setup_completed">Your app is configured correctly</string>
+    <string name="start_setup_completed2">Start using it now</string>
+    <string name="start_welcome_message3">Click Finish to close setup</string>
+    <string name="title_activity_start_fifth">StartFifth</string>
 
 </resources>

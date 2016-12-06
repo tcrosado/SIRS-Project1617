@@ -39,4 +39,9 @@
     <string name="button_next">Próximo</string>
     <string name="button_prev">Anterior</string>
     <string name="start_setup1">Escreva o seu IBAN</string>
+    <string name="start_setup_completed">A sua aplicação foi correctamente configurada</string>
+    <string name="secret_qrcode">Ler Código Secreto</string>
+    <string name="start_setup2">Escreva o seu Código Secreto</string>
+    <string name="start_setup_completed2">Comece já a usá-la</string>
+    <string name="start_welcome_message3">Clique Finalizar para terminar a configuração</string>
 </resources>
