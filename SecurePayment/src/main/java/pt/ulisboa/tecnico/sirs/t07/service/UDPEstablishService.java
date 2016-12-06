@@ -17,6 +17,7 @@ import java.nio.ByteBuffer;
 import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.PriorityQueue;
+import java.util.UUID;
 
 
 /**
@@ -116,7 +117,13 @@ public class UDPEstablishService extends AbstractService implements Runnable{
 
     private void sendMessage(byte[] message) throws IOException {
         DatagramPacket packet = new DatagramPacket(message,message.length,this.packet.getAddress(),this.packet.getPort());
-        this.conn.sendData(message,this.packet.getAddress(),this.packet.getPort());
+        UUID msgId = UUID.randomUUID();
+        ByteArrayOutputStream buff = new ByteArrayOutputStream();
+        DataOutputStream dBuff = new DataOutputStream(buff);
+        dBuff.writeLong(msgId.getMostSignificantBits());
+        dBuff.writeLong(msgId.getLeastSignificantBits());
+        dBuff.write(message);
+        this.conn.sendData(buff.toByteArray(),this.packet.getAddress(),this.packet.getPort());
     }
 
 }
