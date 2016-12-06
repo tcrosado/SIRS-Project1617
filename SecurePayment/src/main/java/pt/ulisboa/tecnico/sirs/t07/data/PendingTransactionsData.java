@@ -67,7 +67,7 @@ public class PendingTransactionsData extends AbstractData {
 
         TransferHistoryData data = new TransferHistoryData();
 
-        PreparedStatement pendingTransfer = conn.prepareStatement("SELECT * FROM bank.pendingtransactions WHERE tid = ?");
+        PreparedStatement pendingTransfer = conn.prepareStatement("SELECT * FROM bank.pendingTransactions WHERE tid = ?");
         pendingTransfer.setString(1,tid);
 
         ResultSet set = pendingTransfer.executeQuery();
@@ -81,14 +81,14 @@ public class PendingTransactionsData extends AbstractData {
             data.doTransaction(recordTid,originIban,destinationIban,value);
         }
 
-        PreparedStatement deleteCompletedTransfers = conn.prepareStatement("DELETE FROM bank.pendingtransactions WHERE tid = ?");
+        PreparedStatement deleteCompletedTransfers = conn.prepareStatement("DELETE FROM bank.pendingTransactions WHERE tid = ?");
         deleteCompletedTransfers.setString(1,tid);
 
         return deleteCompletedTransfers.execute();
     }
 
     public Boolean abortTransaction(String tid) throws SQLException {
-        PreparedStatement deleteCompletedTransfers = conn.prepareStatement("DELETE FROM bank.pendingtransactions WHERE tid = ?");
+        PreparedStatement deleteCompletedTransfers = conn.prepareStatement("DELETE FROM bank.pendingTransactions WHERE tid = ?");
         deleteCompletedTransfers.setString(1,tid);
 
         return deleteCompletedTransfers.execute();
