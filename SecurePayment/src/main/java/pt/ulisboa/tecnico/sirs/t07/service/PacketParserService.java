@@ -92,7 +92,10 @@ class PacketParserService extends OperationService {
         logger.debug("Phone Number: {}",this.getPhoneNumber());
         logger.debug("Tid: {}",tuid);
         logger.debug("Op: {}",operation);
-        //  veryfyIntegrity();
+
+
+
+        veryfyIntegrity();
 
        switch (operation){
 
@@ -137,7 +140,7 @@ class PacketParserService extends OperationService {
     }
 
     private void setPacket(DatagramPacket packet) throws Exception{
-        int MAX_LENGHT = 120;
+        int MAX_LENGHT = 129;
         if(packet.getLength()>MAX_LENGHT){
             throw new MessageSizeExceededException();
         }
@@ -243,16 +246,10 @@ class PacketParserService extends OperationService {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] data = Arrays.copyOfRange(this.packet.getData(),25,100);
+        byte[] data = Arrays.copyOfRange(decriptedMessage,16,decriptedMessage.length);
+        logger.debug(Arrays.toString(data));
 
-        try {
-            out.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        byte[] calculatedHash = digest.digest(out.toByteArray());
+        byte[] calculatedHash = digest.digest(data);
         byte[] cappedHash = Arrays.copyOfRange(calculatedHash,8,24);
         byte[] hash = this.getHash();
 
