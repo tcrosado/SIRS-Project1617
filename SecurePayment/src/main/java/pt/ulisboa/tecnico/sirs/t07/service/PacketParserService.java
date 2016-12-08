@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.sirs.t07.service;
+	package pt.ulisboa.tecnico.sirs.t07.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ class PacketParserService extends OperationService {
 
             SecretKey secret = new SecretKeySpec(key, "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secret,new IvParameterSpec(iv));
             logger.debug(Arrays.toString(cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,105))));
             decriptedMessage = cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,105));
