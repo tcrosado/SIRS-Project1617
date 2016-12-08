@@ -3,10 +3,7 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
-import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
-import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidHashException;
-import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidOperationException;
-import pt.ulisboa.tecnico.sirs.t07.exceptions.MessageSizeExceededException;
+import pt.ulisboa.tecnico.sirs.t07.exceptions.*;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 
 import javax.crypto.*;
@@ -93,9 +90,9 @@ class PacketParserService extends OperationService {
         logger.debug("Tid: {}",tuid);
         logger.debug("Op: {}",operation);
 
-
-
         veryfyIntegrity();
+        verifyOriginIban();
+
 
        switch (operation){
 
@@ -129,6 +126,8 @@ class PacketParserService extends OperationService {
        }
 
     }
+
+
 
     @Override
     public String result() {
@@ -237,8 +236,7 @@ class PacketParserService extends OperationService {
         return vector;
     }
     
-    //TODO Valida isto por favor Tiago
-    //--------------------------------
+
     private void veryfyIntegrity() throws InvalidHashException {
         MessageDigest digest = null;
         try {
@@ -255,6 +253,14 @@ class PacketParserService extends OperationService {
 
         if(!Arrays.equals(cappedHash,hash))
             throw new InvalidHashException(this.getTId());
+
+    }
+
+    private void verifyOriginIban() throws InvalidIbanException {
+        CustomerData cd = new CustomerData();
+        String ibanDB = cd.getIBANFromPhone(this.getPhoneNumber()).firstElement();
+        if (!ibanDB.equals(this.getOriginIBAN()))
+            throw new InvalidIbanException(ibanDB);
 
     }
 }
