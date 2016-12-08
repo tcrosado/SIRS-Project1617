@@ -2,20 +2,30 @@ package pt.ulisboa.tecnico.sirs.t07.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.ulisboa.tecnico.sirs.t07.data.CustomerData;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.ErrorMessageException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidHashException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.InvalidOperationException;
 import pt.ulisboa.tecnico.sirs.t07.exceptions.MessageSizeExceededException;
 import pt.ulisboa.tecnico.sirs.t07.service.dto.OperationData;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.sql.Array;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -29,15 +39,52 @@ class PacketParserService extends OperationService {
 
     private final Logger logger = LoggerFactory.getLogger(PacketParserService.class);
     private DatagramPacket packet;
+    private byte[] decriptedMessage;
     private OperationData resultData;
 
     PacketParserService(DatagramPacket packet) throws Exception{
         setPacket(packet);
         resultData = null;
+        decriptedMessage = null;
     }
 
     @Override
     void dispatch() throws ErrorMessageException {
+
+
+        CustomerData cd = new CustomerData();
+
+        String code = cd.getBankCode(this.getPhoneNumber());
+        byte [] iv = "1234567812345678".getBytes();
+        SecretKeyFactory factory = null;
+        try {
+            byte[] key = code.getBytes("UTF-8");
+            MessageDigest sha = MessageDigest.getInstance("SHA-1");
+            key = sha.digest(key);
+            key = Arrays.copyOf(key, 16);
+
+            SecretKey secret = new SecretKeySpec(key, "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, secret,new IvParameterSpec(iv));
+            logger.debug(Arrays.toString(cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,105))));
+            decriptedMessage = cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,105));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+
         UUID tuid = this.getTId();
         char operation = this.getOperation();
 
@@ -45,8 +92,7 @@ class PacketParserService extends OperationService {
         logger.debug("Phone Number: {}",this.getPhoneNumber());
         logger.debug("Tid: {}",tuid);
         logger.debug("Op: {}",operation);
-
-     //  veryfyIntegrity();
+        //  veryfyIntegrity();
 
        switch (operation){
 
@@ -107,14 +153,14 @@ class PacketParserService extends OperationService {
     private String getPhoneNumber(){ return new String(Arrays.copyOf(this.packet.getData(),9));}
 
     private byte[] getHash(){
-        return Arrays.copyOfRange(this.packet.getData(),9,25);
+        return Arrays.copyOf(decriptedMessage,16);
     }
 
 
     private UUID getTId(){
-        final int UUIDPOSITION = 25;
-        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),UUIDPOSITION,UUIDPOSITION+8);
-        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),UUIDPOSITION+8,UUIDPOSITION+16);
+        final int UUIDPOSITION = 16;
+        byte[] uidbyte1 = Arrays.copyOfRange(decriptedMessage,UUIDPOSITION,UUIDPOSITION+8);
+        byte[] uidbyte2 = Arrays.copyOfRange(decriptedMessage,UUIDPOSITION+8,UUIDPOSITION+16);
         ByteBuffer bb = ByteBuffer.wrap(uidbyte1);
         long mostSignificant = bb.getLong();
         bb = ByteBuffer.wrap(uidbyte2);
@@ -123,26 +169,26 @@ class PacketParserService extends OperationService {
     }
 
     private char getOperation(){
-        final int OPPOSITION = 41;
-        byte[] opbyte = Arrays.copyOfRange(this.packet.getData(),OPPOSITION,OPPOSITION+1);
+        final int OPPOSITION = 32;
+        byte[] opbyte = Arrays.copyOfRange(decriptedMessage,OPPOSITION,OPPOSITION+1);
         return (char)(opbyte[0]);
     }
 
     private String getOriginIBAN(){
-        final int OIBANPOS = 42;
-        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),OIBANPOS,OIBANPOS+25);
+        final int OIBANPOS = 33;
+        byte[] ibanb = Arrays.copyOfRange(decriptedMessage,OIBANPOS,OIBANPOS+25);
         return new String(ibanb);
     }
 
     private String getDestinationIBAN(){
-        final int DIBANPOS = 67;
-        byte[] ibanb = Arrays.copyOfRange(this.packet.getData(),DIBANPOS,DIBANPOS+25);
+        final int DIBANPOS = 58;
+        byte[] ibanb = Arrays.copyOfRange(decriptedMessage,DIBANPOS,DIBANPOS+25);
         return new String(ibanb);
     }
 
     private int getTransferValue(){
-        final int VALUEPOS = 92;
-        byte[] value = Arrays.copyOfRange(this.packet.getData(),VALUEPOS,VALUEPOS+4);
+        final int VALUEPOS = 83;
+        byte[] value = Arrays.copyOfRange(decriptedMessage,VALUEPOS,VALUEPOS+4);
         ByteBuffer b = ByteBuffer.wrap(value);
         return b.getInt();
     }
@@ -160,9 +206,9 @@ class PacketParserService extends OperationService {
 
 
     private UUID getConfirmationTid(){
-        final int CTIDPOS = 42;
-        byte[] uidbyte1 = Arrays.copyOfRange(this.packet.getData(),CTIDPOS,CTIDPOS+8);
-        byte[] uidbyte2 = Arrays.copyOfRange(this.packet.getData(),CTIDPOS+8,CTIDPOS+16);
+        final int CTIDPOS = 33;
+        byte[] uidbyte1 = Arrays.copyOfRange(decriptedMessage,CTIDPOS,CTIDPOS+8);
+        byte[] uidbyte2 = Arrays.copyOfRange(decriptedMessage,CTIDPOS+8,CTIDPOS+16);
         ByteBuffer bb = ByteBuffer.wrap(uidbyte1);
         long mostSignificant = bb.getLong();
         bb = ByteBuffer.wrap(uidbyte2);
@@ -171,11 +217,11 @@ class PacketParserService extends OperationService {
     }
     
     private AbstractList<Integer> getMatrixResponseValues(){
-        final int RESPOS = 58;
+        final int RESPOS = 49;
         Vector<Integer> vector = new Vector<Integer>();
-        byte[] value1 = Arrays.copyOfRange(this.packet.getData(),RESPOS,RESPOS+4);
-        byte[] value2 = Arrays.copyOfRange(this.packet.getData(),RESPOS+4,RESPOS+8);
-        byte[] value3 = Arrays.copyOfRange(this.packet.getData(),RESPOS+8,RESPOS+12);
+        byte[] value1 = Arrays.copyOfRange(decriptedMessage,RESPOS,RESPOS+4);
+        byte[] value2 = Arrays.copyOfRange(decriptedMessage,RESPOS+4,RESPOS+8);
+        byte[] value3 = Arrays.copyOfRange(decriptedMessage,RESPOS+8,RESPOS+12);
 
         ByteBuffer b = ByteBuffer.wrap(value1);
         vector.add(b.getInt());

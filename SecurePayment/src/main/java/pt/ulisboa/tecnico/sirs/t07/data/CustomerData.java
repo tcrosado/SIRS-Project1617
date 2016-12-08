@@ -67,7 +67,21 @@ public class CustomerData extends AbstractData {
         return !(result.isEmpty());
     }
 
-    public String getBankCode(String iban,String phoneNumber){
-        return "FIXME"; //FIXME
+    public String getBankCode(String phoneNumber){
+        String result = "";
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM customers WHERE phoneNumber=?");
+            stmt.setString(1,phoneNumber);
+
+            ResultSet rs = stmt.executeQuery();
+
+
+            while(rs.next()){
+                result=rs.getString("bankCode");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result; //FIXME
     }
 }
