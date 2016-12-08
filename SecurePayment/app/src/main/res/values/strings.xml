@@ -79,5 +79,9 @@
     <string name="login_password_less">Your password must contain 4 digits</string>
     <string name="start_login_main2">Retype you password</string>
     <string name="start_login_main3">Passwords do not match\\nTry again</string>
+    <string name="start_third_error">Setup cancelled</string>
+    <string name="start_third_error2">Press Next do it again</string>
+    <string name="login_confirm1">Choose password</string>
+    <string name="login_confirm2">Confirm password</string>
 
 </resources>

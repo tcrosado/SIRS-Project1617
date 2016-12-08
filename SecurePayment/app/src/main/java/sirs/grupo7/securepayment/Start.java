@@ -49,6 +49,7 @@ public class Start extends Activity {
                     intent.putExtra("cod3", cod3.getText());
                     intent.putExtra("tid", tid);
                     intent.putExtra("cod", cod);
+                    intent.putExtra("nowWhat", "cr");
                     startActivity(intent);
                 } else {
                     toastPrinter("Please fill all parameters", Toast.LENGTH_LONG);

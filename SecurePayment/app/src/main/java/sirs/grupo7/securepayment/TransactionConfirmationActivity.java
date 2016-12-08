@@ -60,7 +60,7 @@ public class TransactionConfirmationActivity extends Activity {
             public void onClick(View view) {
                 if (flag) {
                     Intent intent = new Intent(activity, LoginActivity.class);
-                    intent.putExtra("fromTransaction", true);
+                    intent.putExtra("fromWhere", "transaction");
                     intent.putExtra("destIBAN", destIBAN);
                     intent.putExtra("moneyToTransfer", text);
                     startActivity(intent);

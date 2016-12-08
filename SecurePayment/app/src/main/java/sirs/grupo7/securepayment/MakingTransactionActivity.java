@@ -11,23 +11,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;
+import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 
 public class MakingTransactionActivity extends AppCompatActivity {
 
-    private Button buttonDone;
     private String moneyToTransfer;
-    private String myIBAN;
     private String destIBAN;
-    private boolean nowWhat;
+    private String nowWhat;
     private String cod;
-    private String input1;
-    private String input2;
-    private String input3;
-    private String tid;
 
 
     private class MakingTransactionTask extends AsyncTask<Void, Void, Void> {
@@ -43,33 +41,37 @@ public class MakingTransactionActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
 
-            UDP udp = new UDP();
-            System.out.println(";;;;;;;;;;;;;;; " + res);
+            UDP udp = new UDP(read(ReadWriteInfo.IP), getApplicationContext());
 
+            String MYIBAN = read(ReadWriteInfo.IBAN);
 
-            if (nowWhat){
-                /*try {
-                    res = udp.giveResponsetoChallenge(input1, input2, input3, tid);
-                } catch (IOException e) {
-                    res = "ERROR";
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+            switch (nowWhat) {
+                case "cr":{
+                    /*try {
+                        res = udp.giveResponsetoChallenge(input1, input2, input3, tid);
+                    } catch (IOException e) {
+                        res = "ERROR";
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                    //System.out.println("RES = " + res);*/
+                    return null;
+
                 }
-                //System.out.println("RES = " + res);*/
-                return null;
+                default: {
+                    try {
+                        System.out.println("\nT\n");
 
-            } else {
-                try {
-                    System.out.println("\nT\n");
-
-                    res = udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer.substring(0, moneyToTransfer.length() - 2));
-                } catch (IOException e) {
-                    res = "ERROR";
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                        res = udp.makeTransaction(MYIBAN, destIBAN, moneyToTransfer.substring(0, moneyToTransfer.length() - 2));
+                        System.out.println(";;;;;;;;;;;;;;; " + res);
+                    } catch (IOException e) {
+                        res = "ERROR";
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                    //System.out.println("RES = " + res);
+                    return null;
                 }
-                //System.out.println("RES = " + res);
-                return null;
             }
         }
 
@@ -115,6 +117,23 @@ public class MakingTransactionActivity extends AppCompatActivity {
                 textView.setText(getResources().getString(R.string.errorMakingTransaction));
             }
         }
+
+        public String read(String filename) {
+            try {
+                String message;
+                FileInputStream fileInputStream = openFileInput(filename);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                StringBuffer stringBuffer = new StringBuffer();
+                while ((message = bufferedReader.readLine()) != null) {
+                    stringBuffer.append(message);
+                }
+                return stringBuffer.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "ERROR";
+        }
     }
 
 
@@ -124,51 +143,51 @@ public class MakingTransactionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_making_transaction);
         final Activity activity = this;
 
-        buttonDone = (Button) findViewById(R.id.button_done);
+        Button buttonDone = (Button) findViewById(R.id.button_done);
         cod = (String) getIntent().getExtras().get("cod");
-        System.out.println(";;;;;;;;;;;;;;; ");
+        //System.out.println(";;;;;;;;;;;;;;; ");
 
+        nowWhat = (String) getIntent().getExtras().get("nowWhat");
 
-        try {
-            input1 = (String) getIntent().getExtras().get("cod1");
-            input2 = (String) getIntent().getExtras().get("cod2");
-            input3 = (String) getIntent().getExtras().get("cod3");
-            tid = (String) getIntent().getExtras().get("tid");
-            System.out.println();
-            nowWhat = true;
-        } catch (NullPointerException e ) {
-            nowWhat = false;
-        }
+        switch (nowWhat) {
+            case "cr":{
+                String input1 = (String) getIntent().getExtras().get("cod1");
+                String input2 = (String) getIntent().getExtras().get("cod2");
+                String input3 = (String) getIntent().getExtras().get("cod3");
+                String tid = (String) getIntent().getExtras().get("tid");
 
-        if (nowWhat) {
+                new MakingTransactionTask().execute();
 
-            new MakingTransactionTask().execute();
+                buttonDone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(activity, MainActivity.class);
+                        intent.putExtra("cod", cod);
+                        startActivity(intent);
+                    }
+                });
 
-            buttonDone.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(activity, MainActivity.class);
-                    intent.putExtra("cod", cod);
-                    startActivity(intent);
-                }
-            });
-        } else {
-            myIBAN = (String) getIntent().getExtras().get("myIBAN");
-            destIBAN = (String) getIntent().getExtras().get("destIBAN");
-            moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
+                break;
+            }
+            default: {
+                //myIBAN = (String) getIntent().getExtras().get("myIBAN");
+                destIBAN = (String) getIntent().getExtras().get("destIBAN");
+                moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
 
-            cod = (String) getIntent().getExtras().get("cod");
+                cod = (String) getIntent().getExtras().get("cod");
 
-            new MakingTransactionTask().execute();
+                new MakingTransactionTask().execute();
 
-            buttonDone.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(activity, MainActivity.class);
-                    intent.putExtra("cod", cod);
-                    startActivity(intent);
-                }
-            });
+                buttonDone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(activity, MainActivity.class);
+                        intent.putExtra("cod", cod);
+                        startActivity(intent);
+                    }
+                });
+            }
+
         }
     }
 

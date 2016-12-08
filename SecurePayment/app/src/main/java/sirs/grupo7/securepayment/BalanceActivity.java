@@ -8,10 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;
+import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 
 public class BalanceActivity extends AppCompatActivity {
 
@@ -52,7 +56,7 @@ public class BalanceActivity extends AppCompatActivity {
     }
 
     public String requestBalance(String IBAN) {
-        UDP udp = new UDP();
+        UDP udp = new UDP(read(ReadWriteInfo.IP));
         try {
             String message = udp.showHistory(MY_IBAN);
             if (message.equals("ERROR")) {
@@ -76,4 +80,20 @@ public class BalanceActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public String read(String filename) {
+        try {
+            String message;
+            FileInputStream fileInputStream = openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((message = bufferedReader.readLine()) != null) {
+                stringBuffer.append(message);
+            }
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
+    }
 }

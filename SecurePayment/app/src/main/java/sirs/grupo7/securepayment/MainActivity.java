@@ -25,17 +25,21 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 
 import sirs.grupo7.securepayment.connections.UDP;
 import sirs.grupo7.securepayment.encryption.DHKeyAgreement;
+import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    public final static String MY_IBAN = "PT12345678901234567890123";
-    public final static String EXTRA_MESSAGE = "sirs.grupo7.securepayment.MESSAGE";
+    private String MYIBAN;
     private Button buttonIBAN;
     private String CURRENT_BALANCE;
     private String cod;
@@ -84,10 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
         public void showCurrentBalance() {
 
-            UDP udp = new UDP();
+            UDP udp = new UDP(read(ReadWriteInfo.IP), getApplicationContext());
 
             try {
-                CURRENT_BALANCE = udp.showBalance(MY_IBAN);
+                CURRENT_BALANCE = udp.showBalance(MYIBAN);
                 res = CURRENT_BALANCE + " €";
             } catch (IOException e) {
                 res = getResources().getString(R.string.errorGettingBalance);
@@ -112,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MYIBAN = read(ReadWriteInfo.IBAN);
+
         new CommunicationTask().execute();
 
         cod = (String) getIntent().getExtras().get("cod");
@@ -124,13 +130,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
                 try {
-                    BitMatrix bitMatrix = multiFormatWriter.encode(MY_IBAN, BarcodeFormat.QR_CODE, 200, 200);
+                    BitMatrix bitMatrix = multiFormatWriter.encode(MYIBAN, BarcodeFormat.QR_CODE, 200, 200);
                     BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                     Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
                     Intent intent = new Intent(context, QrActivity.class);
                     intent.putExtra("picIBAN", bitmap);
                     intent.putExtra("cod", cod);
-                    intent.putExtra("textShowIBAN", MY_IBAN);
+                    intent.putExtra("textShowIBAN", MYIBAN);
                     context.startActivity(intent);
                 } catch (WriterException e) {
                     e.printStackTrace();
@@ -231,5 +237,22 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
+    }
+
+    public String read(String filename) {
+        try {
+            String message;
+            FileInputStream fileInputStream = openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((message = bufferedReader.readLine()) != null) {
+                stringBuffer.append(message);
+            }
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
     }
 }

@@ -13,26 +13,37 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
+
 public class QrActivity extends AppCompatActivity {
 
     private ImageView imageViewIBAN;
     private Button buttonGoBack;
     private TextView textShowIBAN;
-    private String IBAN;
+    //private String IBAN;
     private String cod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr);
+
+        String MYIBAN = read(ReadWriteInfo.IBAN);
+
         cod = (String) getIntent().getExtras().get("cod");
         imageViewIBAN = (ImageView) this.findViewById(R.id.imageViewIBAN);
         Bitmap bitmap = getIntent().getParcelableExtra("picIBAN");
         imageViewIBAN.setImageBitmap(bitmap);
         buttonGoBack = (Button) findViewById(R.id.button_qrcode_go_back);
-        IBAN = (String) getIntent().getExtras().get("textShowIBAN");
+        //IBAN = (String) getIntent().getExtras().get("textShowIBAN");
         textShowIBAN = (TextView) findViewById(R.id.textShowIBAN);
-        textShowIBAN.setText(IBAN);
+        textShowIBAN.setText(MYIBAN);
 
         final Activity activity = this;
         buttonGoBack.setOnClickListener(new View.OnClickListener() {
@@ -70,5 +81,22 @@ public class QrActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Nothing
+    }
+
+    public String read(String filename) {
+        try {
+            String message;
+            FileInputStream fileInputStream = openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((message = bufferedReader.readLine()) != null) {
+                stringBuffer.append(message);
+            }
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
     }
 }

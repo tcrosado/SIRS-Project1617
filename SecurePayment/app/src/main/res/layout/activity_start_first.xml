@@ -56,16 +56,16 @@
         android:orientation="horizontal"
         android:weightSum="1" >
 
-        <Button
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:layout_weight="0.1"/>
+            android:id="@+id/ip"
+            android:layout_weight="0.5"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="0.5" />
+            android:layout_weight="0.1" />
 
         <Button
             android:layout_width="wrap_content"

@@ -1,8 +1,13 @@
 package sirs.grupo7.securepayment.connections;
 
+import android.content.Context;
+
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -19,22 +24,30 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import sirs.grupo7.securepayment.encryption.AESFileEncryption;
+import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 
 /**
  * Created by Duarte on 20/11/2016.
  */
 public class UDP {
 
-    private String HOSTNAME = "192.168.43.219";
+    private String HOSTNAME;// = "192.168.43.219";
     private String PHONENUMBER = "910000000";
     private int PORT = 5000;
+    private Context context;
 
     private int CODE_INDEX = 16;
     private int MONEY_INDEX = 17;
     private int INFO_INDEX = 17;
 
 
-    public UDP() {
+    public UDP(String hostname) {
+        this.HOSTNAME = hostname;
+    }
+
+    public UDP(String hostname, Context context) {
+        this.HOSTNAME = hostname;
+        this.context = context;
     }
 
     public void requestNewKey() throws IOException, NoSuchAlgorithmException {
@@ -59,6 +72,10 @@ public class UDP {
         message.writeBytes(cod3);
         message.writeBytes(tid);
         DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
+
+        if (clientSocket == null) {
+            throw new IOException();
+        }
 
         byte[] response = receiveUDP(clientSocket);
 
@@ -115,10 +132,14 @@ public class UDP {
         DataOutputStream message = new DataOutputStream(opBuffer);
         message.write('T');
         System.out.println("\nT\n");
-        message.writeBytes("PT09876543210987654321098");
+        message.writeBytes(origIBAN);
         message.writeBytes(destIBAN);
         message.writeInt(Integer.parseInt(amount.replace(",", "")));
         DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
+
+        if (clientSocket == null) {
+            throw new IOException();
+        }
 
         byte[] response = receiveUDP(clientSocket);
 
@@ -175,8 +196,8 @@ public class UDP {
         messageStream.write(cappedHash);
         messageStream.write(tempBuffer.toByteArray());
 
-        byte[] p = {'A', 'A', 'A', 'A', 'A', 'A'};
-        messageStream.write(p);
+        //byte[] p = {'A', 'A', 'A', 'A', 'A', 'A'};
+        //messageStream.write(p);
 
         ByteArrayOutputStream toSendBuffer = new ByteArrayOutputStream();
 
@@ -189,21 +210,10 @@ public class UDP {
         System.out.println("LEN = " + Arrays.toString(messageStream.toByteArray()));
 
         try {
-            //toSend.write(aes.encrypt("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", messageStream.toByteArray()));
-            cy = aes.encrypt("AAAAAAAAAAAAAAAAAAAA", messageStream.toByteArray());
+            cy = aes.encrypt(read(ReadWriteInfo.KEY), messageStream.toByteArray());
             System.out.println("++++ " + new String(cy));
             toSend.write(cy);
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (InvalidParameterSpecException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
+        } catch (InvalidKeySpecException | NoSuchPaddingException | InvalidParameterSpecException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             e.printStackTrace();
         }
         System.out.println("==== " + new String(toSendBuffer.toByteArray()));
@@ -215,6 +225,8 @@ public class UDP {
     }
 
     private byte[] receiveUDP(DatagramSocket clientSocket) throws IOException {
+        AESFileEncryption aes = new AESFileEncryption();
+
         byte[] receiveData = new byte[1024];
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
@@ -222,6 +234,28 @@ public class UDP {
         clientSocket.close();
         System.out.println("RECEBIDO = " + new String(receivePacket.getData()));
 
-        return receivePacket.getData();
+        try {
+            return aes.decrypt(read(ReadWriteInfo.KEY), receivePacket.getData());
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | InvalidParameterSpecException | InvalidKeyException | InvalidKeySpecException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+        return new byte[0];
+    }
+
+    public String read(String filename) {
+        try {
+            String message;
+            FileInputStream fileInputStream = this.context.openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((message = bufferedReader.readLine()) != null) {
+                stringBuffer.append(message);
+            }
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
     }
 }

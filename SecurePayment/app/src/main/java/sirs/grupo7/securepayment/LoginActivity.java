@@ -10,14 +10,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.FileOutputStream;
 
 public class LoginActivity extends Activity {
 
     private int MAX_PASS_LENGHT = 4;
     //public final static String MY_IBAN = "PT09876543210987654321098";
-    public final static String MY_IBAN = "PT12345678901234567890123";
+    //public final static String MY_IBAN = "PT12345678901234567890123";
     private int count;
     private TextView[] textViews;
     private String password;
@@ -26,8 +29,7 @@ public class LoginActivity extends Activity {
     private String codeToConfirm;
     private int startTries;
 
-    private boolean fromTransaction;
-    private boolean fromStart;
+    private String fromWhere;
 
     private TextView mainView;
 
@@ -44,23 +46,19 @@ public class LoginActivity extends Activity {
         this.textViews[2] = (TextView) findViewById(R.id.textPass2);
         this.textViews[3] = (TextView) findViewById(R.id.textPass3);
 
-        fromTransaction = false;
-        fromStart = false;
 
         try {
-            fromTransaction = (Boolean) getIntent().getExtras().get("fromTransaction");
-            System.out.println(";;;;;;;;;;;;;;; ");
-        }catch(NullPointerException e) {
-            e.printStackTrace();
+            fromWhere = (String) getIntent().getExtras().get("fromWhere");
+        } catch (NullPointerException e) {
+            fromWhere = "new";
         }
 
-        try {
-            fromStart = (Boolean) getIntent().getExtras().get("fromStart");
+        if (fromWhere.equals("start")) {
+            Button log = (Button) findViewById(R.id.buttonLogin);
+            log.setText(getResources().getString(R.string.login_confirm1));
             mainView = (TextView) findViewById(R.id.textView);
             mainView.setText(getString(R.string.start_login_main));
             codeToConfirm = "";
-        }catch(NullPointerException e) {
-            e.printStackTrace();
         }
     }
 
@@ -98,7 +96,6 @@ public class LoginActivity extends Activity {
 
     private void passwordControl(String number) {
         if (this.count == 4) {
-            return;
         } else {
             this.password += number;
             textViews[this.count].setText("*");
@@ -115,42 +112,59 @@ public class LoginActivity extends Activity {
             toastPrinter("You need to provide a password", Toast.LENGTH_SHORT);
         } else {
             if (this.password.length() == 4) { // && this.password.equals(this.USER_PASSWORD)) {
-                if (fromTransaction) {
-                    String destIBAN = (String) getIntent().getExtras().get("destIBAN");
-                    System.out.println(";;;;;;;;;;;;;;; ");
+                switch (fromWhere) {
+                    case "transaction": {
+                        String destIBAN = (String) getIntent().getExtras().get("destIBAN");
+                        //System.out.println(";;;;;;;;;;;;;;; ");
 
-                    String moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
-                    Intent intent = new Intent(LoginActivity.this, MakingTransactionActivity.class);
-                    intent.putExtra("myIBAN", MY_IBAN);
-                    intent.putExtra("destIBAN", destIBAN);
-                    intent.putExtra("moneyToTransfer", moneyToTransfer);
-                    System.out.println("LOGIN MY_IBAN = " + MY_IBAN);
-                    intent.putExtra("cod", this.password);
-                    startActivity(intent);
+                        String moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
+                        Intent intent = new Intent(LoginActivity.this, MakingTransactionActivity.class);
+                        intent.putExtra("nowWhat", "normal");
+                        //intent.putExtra("myIBAN", MY_IBAN);
+                        intent.putExtra("destIBAN", destIBAN);
+                        intent.putExtra("moneyToTransfer", moneyToTransfer);
+                        //System.out.println("LOGIN MY_IBAN = " + MY_IBAN);
+                        intent.putExtra("cod", this.password);
+                        startActivity(intent);
 
-                } else if (fromStart) {
-                    if (codeToConfirm == "") {
-                        codeToConfirm = this.password;
-                        resetPassword();
-                        mainView.setText(getString(R.string.start_login_main2));
-                    } else {
-                        if (codeToConfirm.equals(password)) {
-                            Intent intent = new Intent(LoginActivity.this, StartSecond.class);
-                            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-                            intent.putExtra("code", this.password);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
-                        } else {
-                            codeToConfirm = "";
-                            resetPassword();
-                            mainView.setText(getString(R.string.start_login_main3));
-                        }
+                        break;
                     }
+                    case "start": {
+                        if (codeToConfirm == "") {
+                            codeToConfirm = this.password;
+                            resetPassword();
+                            mainView.setText(getString(R.string.start_login_main2));
+                            Button log = (Button) findViewById(R.id.buttonLogin);
+                            log.setText(getResources().getString(R.string.login_confirm2));
+                        } else {
+                            if (codeToConfirm.equals(password)) {
+                                Intent intent = new Intent(LoginActivity.this, StartSecond.class);
+                                intent.putExtra("code", this.password);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
+                            } else {
+                                codeToConfirm = "";
+                                resetPassword();
+                                mainView.setText(getString(R.string.start_login_main3));
+                            }
+                        }
 
-                } else {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("cod", this.password);
-                    startActivity(intent);
+                        break;
+                    }
+                    case "finish": {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("cod", this.password);
+                        startActivity(intent);
+
+                        break;
+                    }
+                    default: {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("cod", this.password);
+                        startActivity(intent);
+
+                        break;
+                    }
                 }
             } else {
                 resetPassword();
@@ -183,4 +197,5 @@ public class LoginActivity extends Activity {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
+
 }

@@ -126,4 +126,9 @@ public class StartFourth extends Activity {
         }
         return false;
     }
+
+    @Override
+    public void onBackPressed() {
+        // Nothing
+    }
 }

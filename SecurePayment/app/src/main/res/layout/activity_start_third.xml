@@ -17,6 +17,7 @@
         android:text="@string/start_setup_completed"
         android:textSize="30sp"
         android:gravity="center"
+        android:id="@+id/start_third_text"
         android:textColor="#ffffff"
         android:layout_weight="1"
         android:textStyle="bold" />
@@ -29,6 +30,7 @@
         android:gravity="center"
         android:textColor="#ffffff"
         android:layout_weight="1"
+        android:id="@+id/start_third_text2"
         android:textStyle="bold" />
 
     <TextView
@@ -38,6 +40,7 @@
         android:textSize="20sp"
         android:gravity="center"
         android:textColor="#ffffff"
+        android:id="@+id/start_third_text3"
         android:layout_weight="0.5"
         android:textStyle="bold" />
 

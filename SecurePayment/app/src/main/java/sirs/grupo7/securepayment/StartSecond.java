@@ -1,6 +1,7 @@
 package sirs.grupo7.securepayment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,14 +15,17 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.regex.Pattern;
+
+import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 
 public class StartSecond extends Activity {
 
     private static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
-    private Button prev;
-    private Button next;
-    private Button scan;
     private String MYIBAN;
     private String code;
 
@@ -30,11 +34,13 @@ public class StartSecond extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_second);
 
+        toastPrinter(read(ReadWriteInfo.IP), Toast.LENGTH_LONG);
+
         final Activity activity = this;
 
         code = (String) getIntent().getExtras().get("code");
 
-        scan = (Button) findViewById(R.id.transactionQRCode);
+        Button scan = (Button) findViewById(R.id.transactionQRCode);
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,18 +54,18 @@ public class StartSecond extends Activity {
             }
         });
 
-        prev = (Button) findViewById(R.id.button_start_second_prev);
+        Button prev = (Button) findViewById(R.id.button_start_second_prev);
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(StartSecond.this, LoginActivity.class);
-                intent.putExtra("fromStart", true);
+                intent.putExtra("fromWhere", "start");
                 startActivity(intent);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
             }
         });
 
-        next = (Button) findViewById(R.id.button_start_second_next);
+        Button next = (Button) findViewById(R.id.button_start_second_next);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,4 +140,31 @@ public class StartSecond extends Activity {
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        // Nothing
+    }
+
+    public String read(String filename) {
+        try {
+            String message;
+            FileInputStream fileInputStream = openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((message = bufferedReader.readLine()) != null) {
+                stringBuffer.append(message);
+            }
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
+    }
+
+    private void toastPrinter(CharSequence text, int duration){
+        Context context = getApplicationContext();
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
 }
