@@ -22,14 +22,18 @@ public class MakingTransactionActivity extends AppCompatActivity {
     private String moneyToTransfer;
     private String myIBAN;
     private String destIBAN;
-
+    private boolean nowWhat;
     private String cod;
+    private String input1;
+    private String input2;
+    private String input3;
+    private String tid;
 
 
     private class MakingTransactionTask extends AsyncTask<Void, Void, Void> {
 
         TextView textView;
-        String res = "o";
+        String res = "";
 
         @Override
         protected void onPreExecute() {
@@ -40,24 +44,41 @@ public class MakingTransactionActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             UDP udp = new UDP();
+            System.out.println(";;;;;;;;;;;;;;; " + res);
 
-            try {
-                res = udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer.substring(0, moneyToTransfer.length() - 2));
-            } catch (IOException e) {
-                res = "ERROR";
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+
+            if (nowWhat){
+                /*try {
+                    res = udp.giveResponsetoChallenge(input1, input2, input3, tid);
+                } catch (IOException e) {
+                    res = "ERROR";
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                //System.out.println("RES = " + res);*/
+                return null;
+
+            } else {
+                try {
+                    System.out.println("\nT\n");
+
+                    res = udp.makeTransaction(myIBAN, destIBAN, moneyToTransfer.substring(0, moneyToTransfer.length() - 2));
+                } catch (IOException e) {
+                    res = "ERROR";
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                //System.out.println("RES = " + res);
+                return null;
             }
-            System.out.println("RES = " + res);
-            return null;
         }
 
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-
             if (res.equals("C")) {
                 // Transfer was completed with success
+
                 textView.setText(moneyToTransfer + " " + getResources().getString(R.string.transferSuccess) + "\n" + destIBAN);
             } else if (res.startsWith("P")) {
                 // Challengeresponse
@@ -70,6 +91,19 @@ public class MakingTransactionActivity extends AppCompatActivity {
                 System.out.println(cods[3]);
                 System.out.println(tid);
                 System.out.println("_____________________________________________");
+
+                String toAsk1 = cods[0] + " " + cods[1] + " " + cods[2];
+                String toAsk2 = cods[4] + " " + cods[5] + " " + cods[6];
+                String toAsk3 = cods[7] + " " + cods[8] + " " + cods[9];
+
+                Intent intent = new Intent(MakingTransactionActivity.this, Start.class);
+                intent.putExtra("toAsk1", toAsk1);
+                intent.putExtra("toAsk2", toAsk2);
+                intent.putExtra("toAsk3", toAsk3);
+                intent.putExtra("tid", tid);
+                intent.putExtra("cod", cod);
+
+                startActivity(intent);
 
             } else if (res.equals("F")) {
                 // Insuficient founds
@@ -91,23 +125,51 @@ public class MakingTransactionActivity extends AppCompatActivity {
         final Activity activity = this;
 
         buttonDone = (Button) findViewById(R.id.button_done);
-
-        myIBAN = (String) getIntent().getExtras().get("myIBAN");
-        destIBAN = (String) getIntent().getExtras().get("destIBAN");
-        moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
-
         cod = (String) getIntent().getExtras().get("cod");
+        System.out.println(";;;;;;;;;;;;;;; ");
 
-        new MakingTransactionTask().execute();
 
-        buttonDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(activity, MainActivity.class);
-                intent.putExtra("cod", cod);
-                startActivity(intent);
-            }
-        });
+        try {
+            input1 = (String) getIntent().getExtras().get("cod1");
+            input2 = (String) getIntent().getExtras().get("cod2");
+            input3 = (String) getIntent().getExtras().get("cod3");
+            tid = (String) getIntent().getExtras().get("tid");
+            System.out.println();
+            nowWhat = true;
+        } catch (NullPointerException e ) {
+            nowWhat = false;
+        }
+
+        if (nowWhat) {
+
+            new MakingTransactionTask().execute();
+
+            buttonDone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(activity, MainActivity.class);
+                    intent.putExtra("cod", cod);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            myIBAN = (String) getIntent().getExtras().get("myIBAN");
+            destIBAN = (String) getIntent().getExtras().get("destIBAN");
+            moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
+
+            cod = (String) getIntent().getExtras().get("cod");
+
+            new MakingTransactionTask().execute();
+
+            buttonDone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(activity, MainActivity.class);
+                    intent.putExtra("cod", cod);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override

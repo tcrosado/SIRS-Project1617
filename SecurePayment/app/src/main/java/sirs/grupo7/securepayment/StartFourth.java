@@ -21,6 +21,7 @@ public class StartFourth extends Activity {
     private Button scan;
     private String MYIBAN;
     private String MYCODE;
+    private String code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class StartFourth extends Activity {
         final Activity activity = this;
 
         MYIBAN = (String) getIntent().getExtras().get("MYIBAN");
+        code = (String) getIntent().getExtras().get("code");
 
         scan = (Button) findViewById(R.id.codeQRCode);
         scan.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +51,7 @@ public class StartFourth extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(StartFourth.this, StartSecond.class);
+                intent.putExtra("code", code);
                 startActivity(intent);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
             }
@@ -90,6 +93,8 @@ public class StartFourth extends Activity {
         Intent intent = new Intent(this, StartThird.class);
         intent.putExtra("MYIBAN", MYIBAN);
         intent.putExtra("MYCODE", MYCODE);
+        intent.putExtra("code", code);
+
         startActivity(intent);
         overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
     }

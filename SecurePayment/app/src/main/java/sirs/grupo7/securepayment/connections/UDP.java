@@ -6,10 +6,19 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.Arrays;
 import java.util.UUID;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import sirs.grupo7.securepayment.encryption.AESFileEncryption;
 
 /**
  * Created by Duarte on 20/11/2016.
@@ -39,11 +48,43 @@ public class UDP {
         // TODO Request New Key
     }
 
+    public String giveResponsetoChallenge(String cod1, String cod2, String cod3, String tid) throws IOException, NoSuchAlgorithmException {
+
+        ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
+
+        DataOutputStream message = new DataOutputStream(opBuffer);
+        message.write('R');
+        message.writeBytes(cod1);
+        message.writeBytes(cod2);
+        message.writeBytes(cod3);
+        message.writeBytes(tid);
+        DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
+
+        byte[] response = receiveUDP(clientSocket);
+
+
+        // TODO WHAT DOES SERVER SEND TO ME AFTER RESPONSE to CHALLENGE???????????
+
+        if (response[CODE_INDEX] == 'T') {
+            System.out.println("INFO = " + response[INFO_INDEX]);
+            if (response[INFO_INDEX] == 'P') {
+                return new String(Arrays.copyOfRange(response, INFO_INDEX, INFO_INDEX + 46));
+            } else {
+                return "" + (char) response[INFO_INDEX];
+            }
+        } else {
+            return "ERROR";
+        }
+
+        // TODO END WHAT DOES SERVER SEND TO ME AFTER RESPONSE to CHALLENGE???????????
+    }
+
     public String showBalance(String origIBAN) throws IOException, NoSuchAlgorithmException {
         ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
 
         DataOutputStream message = new DataOutputStream(opBuffer);
         message.write('S');
+        System.out.println("\nS\n");
         message.writeBytes(origIBAN);
         DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
 
@@ -73,7 +114,8 @@ public class UDP {
 
         DataOutputStream message = new DataOutputStream(opBuffer);
         message.write('T');
-        message.writeBytes("PT12345678901234567890123");
+        System.out.println("\nT\n");
+        message.writeBytes("PT09876543210987654321098");
         message.writeBytes(destIBAN);
         message.writeInt(Integer.parseInt(amount.replace(",", "")));
         DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
@@ -106,6 +148,8 @@ public class UDP {
 
     private DatagramSocket sendUDP(byte[] message) throws IOException, NoSuchAlgorithmException {
 
+        AESFileEncryption aes = new AESFileEncryption();
+
         UUID tid = UUID.randomUUID();
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress IPAddress = InetAddress.getByName(HOSTNAME);
@@ -127,13 +171,41 @@ public class UDP {
         byte[] hash = digest.digest(tempBuffer.toByteArray());
         byte[] cappedHash = Arrays.copyOfRange(hash,8,24);
 
+        ByteArrayOutputStream messageStream = new ByteArrayOutputStream( );
+        messageStream.write(cappedHash);
+        messageStream.write(tempBuffer.toByteArray());
+
+        byte[] p = {'A', 'A', 'A', 'A', 'A', 'A'};
+        messageStream.write(p);
+
         ByteArrayOutputStream toSendBuffer = new ByteArrayOutputStream();
 
         DataOutputStream toSend = new DataOutputStream(toSendBuffer);
 
         toSend.writeBytes(PHONENUMBER);
-        toSend.write(cappedHash);
-        toSend.write(tempBuffer.toByteArray());
+        //toSend.write(cappedHash);
+        byte[] cy;
+
+        System.out.println("LEN = " + Arrays.toString(messageStream.toByteArray()));
+
+        try {
+            //toSend.write(aes.encrypt("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", messageStream.toByteArray()));
+            cy = aes.encrypt("AAAAAAAAAAAAAAAAAAAA", messageStream.toByteArray());
+            System.out.println("++++ " + new String(cy));
+            toSend.write(cy);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidParameterSpecException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
         System.out.println("==== " + new String(toSendBuffer.toByteArray()));
         DatagramPacket sendPacket = new DatagramPacket(toSendBuffer.toByteArray(), toSendBuffer.size(), IPAddress, PORT);
 

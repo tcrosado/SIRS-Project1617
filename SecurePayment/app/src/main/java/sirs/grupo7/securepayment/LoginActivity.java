@@ -23,7 +23,13 @@ public class LoginActivity extends Activity {
     private String password;
     //private String USER_PASSWORD = "9513";
     private int BAD_PASSWORD_TRIES = 3;
+    private String codeToConfirm;
+    private int startTries;
+
     private boolean fromTransaction;
+    private boolean fromStart;
+
+    private TextView mainView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +44,23 @@ public class LoginActivity extends Activity {
         this.textViews[2] = (TextView) findViewById(R.id.textPass2);
         this.textViews[3] = (TextView) findViewById(R.id.textPass3);
 
+        fromTransaction = false;
+        fromStart = false;
+
         try {
             fromTransaction = (Boolean) getIntent().getExtras().get("fromTransaction");
-        }catch(NullPointerException e ){
-            fromTransaction = false;
+            System.out.println(";;;;;;;;;;;;;;; ");
+        }catch(NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            fromStart = (Boolean) getIntent().getExtras().get("fromStart");
+            mainView = (TextView) findViewById(R.id.textView);
+            mainView.setText(getString(R.string.start_login_main));
+            codeToConfirm = "";
+        }catch(NullPointerException e) {
+            e.printStackTrace();
         }
     }
 
@@ -88,15 +107,18 @@ public class LoginActivity extends Activity {
     }
 
     public void loginUser(View view) {
-        if (BAD_PASSWORD_TRIES == -1) {
-            toastPrinter("       Account Blocked\n     Please contact your\nbank for more information", Toast.LENGTH_LONG);
-
-        } else if (this.password.length() == 0) {
+        //if (BAD_PASSWORD_TRIES == -1) {
+        //    toastPrinter("       Account Blocked\n     Please contact your\nbank for more information", Toast.LENGTH_LONG);
+        //
+        //} else
+        if (this.password.length() == 0) {
             toastPrinter("You need to provide a password", Toast.LENGTH_SHORT);
         } else {
             if (this.password.length() == 4) { // && this.password.equals(this.USER_PASSWORD)) {
                 if (fromTransaction) {
                     String destIBAN = (String) getIntent().getExtras().get("destIBAN");
+                    System.out.println(";;;;;;;;;;;;;;; ");
+
                     String moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
                     Intent intent = new Intent(LoginActivity.this, MakingTransactionActivity.class);
                     intent.putExtra("myIBAN", MY_IBAN);
@@ -105,6 +127,26 @@ public class LoginActivity extends Activity {
                     System.out.println("LOGIN MY_IBAN = " + MY_IBAN);
                     intent.putExtra("cod", this.password);
                     startActivity(intent);
+
+                } else if (fromStart) {
+                    if (codeToConfirm == "") {
+                        codeToConfirm = this.password;
+                        resetPassword();
+                        mainView.setText(getString(R.string.start_login_main2));
+                    } else {
+                        if (codeToConfirm.equals(password)) {
+                            Intent intent = new Intent(LoginActivity.this, StartSecond.class);
+                            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                            intent.putExtra("code", this.password);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
+                        } else {
+                            codeToConfirm = "";
+                            resetPassword();
+                            mainView.setText(getString(R.string.start_login_main3));
+                        }
+                    }
+
                 } else {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("cod", this.password);
@@ -112,12 +154,14 @@ public class LoginActivity extends Activity {
                 }
             } else {
                 resetPassword();
-                if (BAD_PASSWORD_TRIES == 0) {
-                    toastPrinter("       Account Blocked\n     Please contact your\nbank for more information", Toast.LENGTH_LONG);
-                } else {
-                    toastPrinter("      Bad Password\nYou have " + BAD_PASSWORD_TRIES + " more tries", Toast.LENGTH_SHORT);
-                }
-                BAD_PASSWORD_TRIES -= 1;
+                toastPrinter(getString(R.string.login_password_less), Toast.LENGTH_LONG);
+
+                //if (BAD_PASSWORD_TRIES == 0) {
+                //    toastPrinter("       Account Blocked\n     Please contact your\nbank for more information", Toast.LENGTH_LONG);
+                //} else {
+                //    toastPrinter("      Bad Password\nYou have " + BAD_PASSWORD_TRIES + " more tries", Toast.LENGTH_SHORT);
+                //}
+                //BAD_PASSWORD_TRIES -= 1;
             }
         }
     }
@@ -138,20 +182,5 @@ public class LoginActivity extends Activity {
         Context context = getApplicationContext();
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
-        if(!previouslyStarted) {
-            //SharedPreferences.Editor edit = prefs.edit();
-            //edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
-            //edit.commit();
-            final Activity activity = this;
-            Intent intent = new Intent(activity, StartFirst.class);
-            startActivity(intent);
-        }
     }
 }

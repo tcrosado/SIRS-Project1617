@@ -72,6 +72,12 @@
     <string name="start_setup_completed">Your app is configured correctly</string>
     <string name="start_setup_completed2">Start using it now</string>
     <string name="start_welcome_message3">Click Finish to close setup</string>
-    <string name="title_activity_start_fifth">StartFifth</string>
+    <string name="title_activity_start_fifth" translatable="false">StartFifth</string>
+    <string name="start_two_steps">Two steps authentication</string>
+    <string name="start_two_steps2">Please enter the correct numbers of your personal matrix card</string>
+    <string name="start_login_main">Please choose a password</string>
+    <string name="login_password_less">Your password must contain 4 digits</string>
+    <string name="start_login_main2">Retype you password</string>
+    <string name="start_login_main3">Passwords do not match\\nTry again</string>
 
 </resources>

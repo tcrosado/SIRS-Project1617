@@ -44,4 +44,10 @@
     <string name="start_setup2">Escreva o seu Código Secreto</string>
     <string name="start_setup_completed2">Comece já a usá-la</string>
     <string name="start_welcome_message3">Clique Finalizar para terminar a configuração</string>
+    <string name="start_login_main3">Passwords não são iguais. Por favor tente outra vez</string>
+    <string name="start_login_main2">Reescreva a password</string>
+    <string name="start_login_main">Escolha uma password</string>
+    <string name="login_password_less">A password deve conter 4 digitos</string>
+    <string name="start_two_steps">Autenticação em dois passos</string>
+    <string name="start_two_steps2">Escreva os números das coordenadas indicadas do seu cartão matriz</string>
 </resources>

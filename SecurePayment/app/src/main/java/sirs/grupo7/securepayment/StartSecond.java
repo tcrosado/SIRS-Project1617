@@ -23,6 +23,7 @@ public class StartSecond extends Activity {
     private Button next;
     private Button scan;
     private String MYIBAN;
+    private String code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,8 @@ public class StartSecond extends Activity {
         setContentView(R.layout.activity_start_second);
 
         final Activity activity = this;
+
+        code = (String) getIntent().getExtras().get("code");
 
         scan = (Button) findViewById(R.id.transactionQRCode);
         scan.setOnClickListener(new View.OnClickListener() {
@@ -49,7 +52,8 @@ public class StartSecond extends Activity {
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(StartSecond.this, StartFirst.class);
+                Intent intent = new Intent(StartSecond.this, LoginActivity.class);
+                intent.putExtra("fromStart", true);
                 startActivity(intent);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
             }
@@ -90,6 +94,7 @@ public class StartSecond extends Activity {
     private void goToNextActivity() {
         Intent intent = new Intent(this, StartFourth.class);
         intent.putExtra("MYIBAN", MYIBAN);
+        intent.putExtra("code", code);
         startActivity(intent);
         overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
     }
