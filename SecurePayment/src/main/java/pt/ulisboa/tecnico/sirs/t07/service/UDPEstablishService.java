@@ -56,7 +56,6 @@ public class UDPEstablishService extends AbstractService implements Runnable{
 
         PacketParserService p = null;
         try {
-            logger.debug(new String(this.packet.getData()));
             p = new PacketParserService(this.packet);
             p.execute();
         } catch (ErrorMessageException e) {
@@ -69,13 +68,7 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         } catch (Exception e) {
             e.printStackTrace();
         }
-/*
-        try {
-            sendMessage(this.packet.getData()); //TODO aqui deve enviar-se tambem o challenge response
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
+
         byte[] data = new byte[1024];
         DatagramPacket receiveConfirmation = new DatagramPacket(data,data.length);
         try {

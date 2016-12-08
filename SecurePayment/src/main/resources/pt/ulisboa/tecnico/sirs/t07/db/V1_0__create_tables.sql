@@ -1,15 +1,23 @@
 USE bank;
+
 CREATE TABLE `customers`(
+`phoneNumber` VARCHAR(9) NOT NULL,
+  iv VARCHAR(24) NOT NULL,
+`bankCode` VARCHAR(44) NOT NULL,
+primary key (`phoneNumber`));
+
+CREATE TABLE phone_iban(
   iban VARCHAR(34) NOT NULL,
   `phoneNumber` VARCHAR(9) NOT NULL,
-  `bankCode` VARCHAR(20) NOT NULL,
-  primary key (iban));
+  primary key (iban),
+  FOREIGN KEY (`phoneNumber`) REFERENCES `customers`(`phoneNumber`));
+
 
 CREATE TABLE accounts(
   iban VARCHAR(34) NOT NULL,
   balance INT NOT NULL,
   PRIMARY KEY  (iban),
-  FOREIGN KEY (iban) REFERENCES customers(iban));
+  FOREIGN KEY (iban) REFERENCES phone_iban(iban));
 
 CREATE TABLE transactionHistory(
   tid VARCHAR(36) NOT NULL,

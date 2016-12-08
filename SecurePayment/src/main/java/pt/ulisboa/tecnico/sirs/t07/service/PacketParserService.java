@@ -51,11 +51,11 @@ class PacketParserService extends OperationService {
 
         CustomerData cd = new CustomerData();
 
-        String code = cd.getBankCode(this.getPhoneNumber());
+        byte[] code = cd.getBankCode(this.getPhoneNumber());
         byte [] iv = "1234567812345678".getBytes();
         SecretKeyFactory factory = null;
         try {
-            byte[] key = code.getBytes("UTF-8");
+            byte[] key = code;
             MessageDigest sha = MessageDigest.getInstance("SHA-1");
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16);
@@ -64,7 +64,6 @@ class PacketParserService extends OperationService {
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secret,new IvParameterSpec(iv));
-            logger.debug(Arrays.toString(cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,105))));
             decriptedMessage = cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,105));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -73,8 +72,6 @@ class PacketParserService extends OperationService {
         } catch (NoSuchPaddingException e) {
             e.printStackTrace();
         } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
@@ -245,7 +242,6 @@ class PacketParserService extends OperationService {
             e.printStackTrace();
         }
         byte[] data = Arrays.copyOfRange(decriptedMessage,16,decriptedMessage.length);
-        logger.debug(Arrays.toString(data));
 
         byte[] calculatedHash = digest.digest(data);
         byte[] cappedHash = Arrays.copyOfRange(calculatedHash,8,24);
