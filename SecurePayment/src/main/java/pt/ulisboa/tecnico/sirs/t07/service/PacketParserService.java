@@ -48,7 +48,8 @@ class PacketParserService extends OperationService {
     @Override
     void dispatch() throws ErrorMessageException {
 
-
+        //FIXME se o telefone nao existir rebenta
+        
         CustomerData cd = new CustomerData();
 
         byte[] code = cd.getBankCode(this.getPhoneNumber());
