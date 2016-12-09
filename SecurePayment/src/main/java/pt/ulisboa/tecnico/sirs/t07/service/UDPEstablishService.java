@@ -122,7 +122,6 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         DataOutputStream daOp = new DataOutputStream(join);
         byte[] hash = digest.digest(buff.toByteArray());
         byte[] cappedHash = Arrays.copyOfRange(hash,8,24);
-        logger.debug(new String(buff.toByteArray()));
         daOp.write(buff.toByteArray());
         daOp.write(cappedHash);
 
