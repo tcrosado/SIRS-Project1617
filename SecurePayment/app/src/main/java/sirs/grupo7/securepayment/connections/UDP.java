@@ -271,7 +271,11 @@ public class UDP {
         System.out.println("LEN = " + Arrays.toString(messageStream.toByteArray()));
 
         try {
-            byte[] key = Base64.decode("vqJhHWzM6KtF4YUIZmbxng==", Base64.CRLF);
+            //byte[] key = Base64.decode("vqJhHWzM6KtF4YUIZmbxng==",Base64.NO_WRAP);
+
+
+            byte[] key = {118, 113, 74, 104, 72, 87, 122, 77, 54, 75, 116, 70, 52, 89, 85, 73, 90, 109, 98, 120, 110, 103, 61, 61};
+            System.out.println("Print Key decoded  ---- " + Arrays.toString(key));
             //byte[] key = aes.decrypt(code, read(ReadWriteInfo.KEY).getBytes());
             //System.out.println("BEFORE");
             //System.out.println(key);
