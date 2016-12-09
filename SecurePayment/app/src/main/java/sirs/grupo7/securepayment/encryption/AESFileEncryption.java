@@ -24,16 +24,16 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AESFileEncryption {
 
-    public byte[] encrypt(String code, byte[] value) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
+    public byte[] encrypt(byte[] code, byte[] value) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
         return encrypt_decrypt(code, value, Cipher.ENCRYPT_MODE);
     }
 
-    public byte[] decrypt(String code, byte[] value) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
+    public byte[] decrypt(byte[] code, byte[] value) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
         return encrypt_decrypt(code, value, Cipher.DECRYPT_MODE);
     }
 
-    private byte[] encrypt_decrypt(String code, byte[] value, int mode) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
-        byte[] key = makeHash(code);
+    private byte[] encrypt_decrypt(byte[] code, byte[] value, int mode) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
+        byte[] key = code;//.getBytes();
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
         key = sha.digest(key);
         key = Arrays.copyOf(key, 16);
@@ -56,4 +56,40 @@ public class AESFileEncryption {
         message.writeBytes(code);
         return digest.digest(opBuffer.toByteArray());
     }
+    /*
+    public static String encrytData(String text) throws Exception {
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        byte[] static_key = Constants.AES_KEY.getBytes();
+
+        SecretKeySpec keySpec = new SecretKeySpec(static_key, "AES");
+        IvParameterSpec ivSpec = new IvParameterSpec(Constants.IV_VECTOR);
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
+
+        byte[] results = cipher.doFinal(text.getBytes());
+
+        String result = Base64.encodeToString(results, Base64.NO_WRAP|Base64.DEFAULT);
+        return result;
+
+    }
+
+
+    public static String decryptData(String text)throws Exception{
+
+        byte[] encryted_bytes = Base64.decode(text, Base64.DEFAULT);
+
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+        byte[] static_key = Constants.AES_KEY.getBytes();
+
+        SecretKeySpec keySpec = new SecretKeySpec(static_key, "AES");
+        IvParameterSpec ivSpec = new IvParameterSpec(Constants.IV_VECTOR);
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+
+        byte[] decrypted = cipher.doFinal(encryted_bytes);
+        String result = new String(decrypted);
+
+        return result;
+    }
+
+    */
 }

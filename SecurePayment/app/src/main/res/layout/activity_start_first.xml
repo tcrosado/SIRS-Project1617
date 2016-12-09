@@ -60,6 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ip"
+            android:inputType="phone"
             android:layout_weight="0.5"/>
 
         <TextView

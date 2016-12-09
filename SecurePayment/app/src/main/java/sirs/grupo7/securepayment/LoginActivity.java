@@ -116,7 +116,10 @@ public class LoginActivity extends Activity {
                     case "transaction": {
                         String destIBAN = (String) getIntent().getExtras().get("destIBAN");
                         //System.out.println(";;;;;;;;;;;;;;; ");
-
+                        Button log = (Button) findViewById(R.id.buttonLogin);
+                        log.setText(getResources().getString(R.string.login_confirm3));
+                        TextView text = (TextView) findViewById(R.id.textView);
+                        text.setText(getResources().getString(R.string.login_confirm4));
                         String moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
                         Intent intent = new Intent(LoginActivity.this, MakingTransactionActivity.class);
                         intent.putExtra("nowWhat", "normal");

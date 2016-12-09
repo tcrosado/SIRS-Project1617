@@ -3,10 +3,7 @@ package sirs.grupo7.securepayment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +14,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
@@ -99,7 +97,12 @@ public class StartSecond extends Activity {
 
     private void goToNextActivity() {
         Intent intent = new Intent(this, StartFourth.class);
-        intent.putExtra("MYIBAN", MYIBAN);
+        try {
+            write(ReadWriteInfo.IBAN, MYIBAN);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //intent.putExtra("MYIBAN", MYIBAN);
         intent.putExtra("code", code);
         startActivity(intent);
         overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
@@ -166,5 +169,12 @@ public class StartSecond extends Activity {
         Context context = getApplicationContext();
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+
+    public void write(String filename, String message) throws IOException {
+        FileOutputStream fileOutputStream = openFileOutput(filename, MODE_PRIVATE);
+        fileOutputStream.write(message.getBytes());
+        fileOutputStream.close();
+        System.out.println("\n\nDONE " + filename + "\n\n");
     }
 }

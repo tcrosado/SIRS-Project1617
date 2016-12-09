@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
@@ -32,18 +31,23 @@ public class StartFirst extends Activity {
             public void onClick(View view) {
 
                 ip = (EditText) findViewById(R.id.ip);
-                if (checkIP(ip.getText().toString())) {
+
+                String[] input = ip.getText().toString().split("-");
+                int l = input.length;
+
+                if (l == 2 && checkIP(input[0]) && checkNumber(input[1])) {
                     try {
-                        write(ReadWriteInfo.IP, ip.getText().toString());
+                        write(ReadWriteInfo.IP, input[0]);
+                        write(ReadWriteInfo.NUMBER, input[1]);
                     } catch (IOException e) {
-                        toastPrinter("SOMETHING WRONG WTH IP", Toast.LENGTH_LONG);
+                        toastPrinter("SOMETHING WRONG WTH IP AND PHONE NUMBER", Toast.LENGTH_LONG);
                     }
                     Intent intent = new Intent(StartFirst.this, LoginActivity.class);
                     intent.putExtra("fromWhere", "start");
                     startActivity(intent);
                     overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
                 } else {
-                    toastPrinter("ENTER IP", Toast.LENGTH_LONG);
+                    toastPrinter("ENTER IP AND PHONE-NUMBER", Toast.LENGTH_LONG);
                 }
             }
         });
@@ -70,7 +74,7 @@ public class StartFirst extends Activity {
     }
 
     private boolean checkIP(String ip) {
-        // This is for debug. Write the ip
+        // This is for debug. Check the ip
         String patternIP = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -78,6 +82,14 @@ public class StartFirst extends Activity {
 
         Pattern pIP = Pattern.compile(patternIP);
         return pIP.matches(patternIP, ip);
+    }
+
+    private boolean checkNumber(String number) {
+        // This is for debug. Check the number
+        String patternNumber = "[0-9]{9}";
+
+        Pattern pIP = Pattern.compile(patternNumber);
+        return pIP.matches(patternNumber, number);
     }
 
     private void toastPrinter(CharSequence text, int duration){

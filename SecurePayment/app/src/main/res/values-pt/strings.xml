@@ -54,4 +54,6 @@
     <string name="start_third_error2">Clique em Próximo para fazer de novo</string>
     <string name="login_confirm1">Escolher password</string>
     <string name="login_confirm2">Confirmar password</string>
+    <string name="login_confirm3">Confirmar transferência</string>
+    <string name="login_confirm4">Confirmação da Transferência</string>
 </resources>

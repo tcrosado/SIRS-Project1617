@@ -1,6 +1,7 @@
 package sirs.grupo7.securepayment.connections;
 
 import android.content.Context;
+import android.util.Base64;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -11,12 +12,16 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.crypto.BadPaddingException;
@@ -24,6 +29,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import sirs.grupo7.securepayment.encryption.AESFileEncryption;
+import sirs.grupo7.securepayment.encryption.DHExchanger;
 import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 
 /**
@@ -32,7 +38,9 @@ import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 public class UDP {
 
     private String HOSTNAME;// = "192.168.43.219";
-    private String PHONENUMBER = "910000000";
+    //private String PHONENUMBER = "910000000";
+    //private String PHONENUMBER = "911174628";
+
     private int PORT = 5000;
     private Context context;
 
@@ -40,6 +48,7 @@ public class UDP {
     private int MONEY_INDEX = 17;
     private int INFO_INDEX = 17;
 
+    private String code;
 
     public UDP(String hostname) {
         this.HOSTNAME = hostname;
@@ -50,13 +59,57 @@ public class UDP {
         this.context = context;
     }
 
-    public void requestNewKey() throws IOException, NoSuchAlgorithmException {
+    public byte[] requestNewKey(String code) throws IOException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeySpecException, InvalidKeyException {
+
+        this.code = code;
+
         ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
 
         DataOutputStream message = new DataOutputStream(opBuffer);
         message.write('R');
+
+        System.out.println(opBuffer);
+
         DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
         byte[] data = receiveUDP(clientSocket);
+        SortedMap<Integer, byte[]> packets = new TreeMap<>();
+
+        if (data[32] == 'R') {
+            int packetLength = data[33];
+            int packetNumber = data[34];
+            byte[] messageRecv = Arrays.copyOfRange(data, 35, data.length);
+            packets.put(packetNumber, messageRecv);
+            int i = 0;
+            int exit = 3;
+            while (i < packetLength || exit == 0) {
+                data = receiveUDP(clientSocket);
+                if (data[32] == 'R') {
+                    packetNumber = data[34];
+                    messageRecv = Arrays.copyOfRange(data, 35, data.length);
+                    packets.put(packetNumber, messageRecv);
+                    i++;
+                } else {
+                    exit--;
+                }
+            }
+        } else {
+            return new byte[0];
+        }
+
+        String result = "";
+        for ( Map.Entry<Integer,byte[]> e : packets.entrySet()){
+            result += new String(e.getValue());
+        }
+        byte[] decode = Base64.decode(result, Base64.DEFAULT);
+
+        DHExchanger dh = new DHExchanger(decode);
+        byte[] dh_key = dh.getKey();
+
+        byte[] key_pair = dh.getKeyPair();
+
+        System.out.println("LENNNNNNN = " + key_pair.length);
+
+        return dh_key;
 
         // TODO Request New Key
     }
@@ -79,6 +132,9 @@ public class UDP {
 
         byte[] response = receiveUDP(clientSocket);
 
+        if (response.length == 0) {
+            return "ERROR";
+        }
 
         // TODO WHAT DOES SERVER SEND TO ME AFTER RESPONSE to CHALLENGE???????????
 
@@ -106,6 +162,10 @@ public class UDP {
         DatagramSocket clientSocket = sendUDP(opBuffer.toByteArray());
 
         byte[] response = receiveUDP(clientSocket);
+
+        if (response.length == 0) {
+            return "ERROR";
+        }
 
         if (response[CODE_INDEX] == 'B') {
             String money = "";
@@ -142,6 +202,10 @@ public class UDP {
         }
 
         byte[] response = receiveUDP(clientSocket);
+
+        if (response.length == 0) {
+            return "ERROR";
+        }
 
         System.out.println("CODE = " + response[CODE_INDEX]);
         if (response[CODE_INDEX] == 'T') {
@@ -196,27 +260,31 @@ public class UDP {
         messageStream.write(cappedHash);
         messageStream.write(tempBuffer.toByteArray());
 
-        //byte[] p = {'A', 'A', 'A', 'A', 'A', 'A'};
-        //messageStream.write(p);
-
         ByteArrayOutputStream toSendBuffer = new ByteArrayOutputStream();
 
         DataOutputStream toSend = new DataOutputStream(toSendBuffer);
 
-        toSend.writeBytes(PHONENUMBER);
+        toSend.writeBytes(read(ReadWriteInfo.NUMBER));
         //toSend.write(cappedHash);
         byte[] cy;
 
         System.out.println("LEN = " + Arrays.toString(messageStream.toByteArray()));
 
         try {
-            cy = aes.encrypt(read(ReadWriteInfo.KEY), messageStream.toByteArray());
+            byte[] key = Base64.decode("vqJhHWzM6KtF4YUIZmbxng==", Base64.CRLF);
+            //byte[] key = aes.decrypt(code, read(ReadWriteInfo.KEY).getBytes());
+            //System.out.println("BEFORE");
+            //System.out.println(key);
+            //System.out.println("AFTER");
+            cy = aes.encrypt(key, messageStream.toByteArray());
             System.out.println("++++ " + new String(cy));
             toSend.write(cy);
         } catch (InvalidKeySpecException | NoSuchPaddingException | InvalidParameterSpecException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             e.printStackTrace();
         }
         System.out.println("==== " + new String(toSendBuffer.toByteArray()));
+        System.out.println("--------> " + Arrays.toString(toSendBuffer.toByteArray()));
+
         DatagramPacket sendPacket = new DatagramPacket(toSendBuffer.toByteArray(), toSendBuffer.size(), IPAddress, PORT);
 
         clientSocket.send(sendPacket);
@@ -235,14 +303,30 @@ public class UDP {
         System.out.println("RECEBIDO = " + new String(receivePacket.getData()));
 
         try {
-            return aes.decrypt(read(ReadWriteInfo.KEY), receivePacket.getData());
+            byte[] recv = aes.decrypt(Base64.decode("vqJhHWzM6KtF4YUIZmbxng==", Base64.NO_PADDING), receivePacket.getData());
+
+            //byte[] recv = aes.decrypt(read(ReadWriteInfo.KEY), receivePacket.getData());
+            byte[] recv_hash = Arrays.copyOfRange(recv, 0, 16);
+            byte[] message = Arrays.copyOfRange(recv, 16, recv.length);
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            byte[] hash = digest.digest(message);
+            byte[] cappedHash = Arrays.copyOfRange(hash, 8, 24);
+
+            if (Arrays.equals(cappedHash, recv_hash)) {
+                return recv;
+            } else {
+                return new byte[0];
+            }
+
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | InvalidParameterSpecException | InvalidKeyException | InvalidKeySpecException | BadPaddingException e) {
             e.printStackTrace();
         }
         return new byte[0];
     }
 
-    public String read(String filename) {
+    private String read(String filename) {
         try {
             String message;
             FileInputStream fileInputStream = this.context.openFileInput(filename);

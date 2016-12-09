@@ -9,5 +9,6 @@ public class ReadWriteInfo {
     static public String KEY = "key.txt";
     static public String IP = "ip.txt";
     static public String IV = "iv.txt";
+    static public String NUMBER = "number.txt";
 
 }

@@ -83,5 +83,7 @@
     <string name="start_third_error2">Press Next do it again</string>
     <string name="login_confirm1">Choose password</string>
     <string name="login_confirm2">Confirm password</string>
+    <string name="login_confirm3">Confirm transfer</string>
+    <string name="login_confirm4">Transfer Confirmation</string>
 
 </resources>

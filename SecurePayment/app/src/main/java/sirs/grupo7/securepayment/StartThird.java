@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,13 +25,14 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import sirs.grupo7.securepayment.connections.UDP;
 import sirs.grupo7.securepayment.encryption.AESFileEncryption;
 import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
 
 public class StartThird extends Activity {
 
-    private String MYIBAN;
-    private String MYCODE;
+    //private String MYIBAN;
+    //private String MYCODE;
     private String code;
 
 
@@ -49,15 +51,18 @@ public class StartThird extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
+
+            UDP udp = new UDP(read(ReadWriteInfo.IP), getApplicationContext());
             AESFileEncryption aes = new AESFileEncryption();
 
             try {
-                write(ReadWriteInfo.IBAN, MYIBAN);
 
-                write(ReadWriteInfo.KEY, aes.encrypt(code, MYCODE.getBytes()));
+                //write(ReadWriteInfo.KEY, aes.encrypt(code, udp.requestNewKey(code)));
+                write(ReadWriteInfo.KEY, aes.encrypt(code.getBytes(), Base64.decode("vqJhHWzM6KtF4YUIZmbxng==", Base64.DEFAULT)));
 
-            } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeySpecException | InvalidParameterSpecException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            } catch (BadPaddingException | IllegalBlockSizeException e) {
                 e.printStackTrace();
+            } catch (InvalidParameterSpecException | NoSuchPaddingException | IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException e){
                 textView.setText(getResources().getString(R.string.start_third_error));
                 textView2.setText(getResources().getString(R.string.start_third_error2));
                 textView3.setText("");
@@ -123,8 +128,8 @@ public class StartThird extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_third);
 
-        MYIBAN = (String) getIntent().getExtras().get("MYIBAN");
-        MYCODE = (String) getIntent().getExtras().get("MYCODE");
+        //MYIBAN = (String) getIntent().getExtras().get("MYIBAN");
+        //MYCODE = (String) getIntent().getExtras().get("MYCODE");
         code = (String) getIntent().getExtras().get("code");
 
         new WritingDataTask().execute();
@@ -134,7 +139,7 @@ public class StartThird extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(StartThird.this, StartFourth.class);
-                intent.putExtra("MYIBAN", MYIBAN);
+                //intent.putExtra("MYIBAN", MYIBAN);
                 intent.putExtra("code", code);
                 startActivity(intent);
                 overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_right);
