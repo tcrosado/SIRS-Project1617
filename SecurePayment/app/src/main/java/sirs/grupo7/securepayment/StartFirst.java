@@ -11,8 +11,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Pattern;
 
 import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
@@ -25,7 +31,44 @@ public class StartFirst extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_first);
-        Button next = (Button) findViewById(R.id.button_start_first_next);
+        final Button next = (Button) findViewById(R.id.button_start_first_next);
+
+        /*try {
+            write(ReadWriteInfo.KEY, Base64.encode("ola rosado".getBytes(), Base64.NO_WRAP));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("======================");
+        System.out.println(Arrays.toString(Base64.decode(read(ReadWriteInfo.KEY), Base64.NO_WRAP)));
+        System.out.println("======================");
+
+
+        AESFileEncryption aes = new AESFileEncryption();
+        try {
+            System.out.println("---------------------------");
+            byte[] o = aes.encrypt(makeHash("9999"), "ola rosado".getBytes());
+            write(ReadWriteInfo.KEY, Base64.encode(o, Base64.NO_WRAP));
+            byte[] p = aes.decrypt(makeHash("9999"), Base64.decode(read(ReadWriteInfo.KEY), Base64.NO_WRAP));
+            System.out.println(Arrays.toString(p));
+            System.out.println("---------------------------");
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (InvalidParameterSpecException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        */
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -37,8 +80,8 @@ public class StartFirst extends Activity {
 
                 if (l == 2 && checkIP(input[0]) && checkNumber(input[1])) {
                     try {
-                        write(ReadWriteInfo.IP, input[0]);
-                        write(ReadWriteInfo.NUMBER, input[1]);
+                        write(ReadWriteInfo.IP, input[0].getBytes());
+                        write(ReadWriteInfo.NUMBER, input[1].getBytes());
                     } catch (IOException e) {
                         toastPrinter("SOMETHING WRONG WTH IP AND PHONE NUMBER", Toast.LENGTH_LONG);
                     }
@@ -51,6 +94,11 @@ public class StartFirst extends Activity {
                 }
             }
         });
+    }
+
+    private byte[] makeHash(String code) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return digest.digest(code.getBytes());
     }
 
     @Override
@@ -99,10 +147,47 @@ public class StartFirst extends Activity {
     }
 
 
-    public void write(String filename, String message) throws IOException {
+    public void write(String filename, byte[] message) throws IOException {
         FileOutputStream fileOutputStream = openFileOutput(filename, MODE_PRIVATE);
-        fileOutputStream.write(message.getBytes());
+        fileOutputStream.write(message);
         fileOutputStream.close();
         System.out.println("\n\nDONE " + filename + "\n\n");
+    }
+
+    public byte[] read(String filename, int n) {
+        byte[] message = new byte[256];
+        ByteArrayOutputStream bb = new ByteArrayOutputStream();
+        try {
+            FileInputStream fileInputStream = openFileInput(filename);
+            int i = fileInputStream.read(message);
+            //InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            //BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            //StringBuffer stringBuffer = new StringBuffer();
+            while (i != -1) {
+                bb.write(message);
+                i = fileInputStream.read(message);
+            }
+            //return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bb.toByteArray();
+    }
+
+    public String read(String filename) {
+        try {
+            String message;
+            FileInputStream fileInputStream = openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((message = bufferedReader.readLine()) != null) {
+                stringBuffer.append(message);
+            }
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
     }
 }

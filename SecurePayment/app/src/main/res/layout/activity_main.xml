@@ -48,7 +48,8 @@
             android:text="@string/buttonBalance"
             android:id="@+id/buttonTransaction"
             android:layout_weight="0.6"
-            android:onClick="goToBalance"/>
+            android:onClick="goToBalance"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout

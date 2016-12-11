@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,14 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import sirs.grupo7.securepayment.connections.UDP;
 import sirs.grupo7.securepayment.encryption.AESFileEncryption;
@@ -53,17 +46,42 @@ public class StartThird extends Activity {
         protected Void doInBackground(Void... params) {
 
             UDP udp = new UDP(read(ReadWriteInfo.IP), getApplicationContext());
-            AESFileEncryption aes = new AESFileEncryption();
+            AESFileEncryption aes = new AESFileEncryption(getApplicationContext());
 
-            try {
-
-                //write(ReadWriteInfo.KEY, aes.encrypt(code, udp.requestNewKey(code)));
-                write(ReadWriteInfo.KEY, aes.encrypt(code.getBytes(), Base64.decode("vqJhHWzM6KtF4YUIZmbxng==", Base64.DEFAULT)));
-
-            } catch (BadPaddingException | IllegalBlockSizeException e) {
+            //try {
+            /*try {
+                byte[] o = aes.encrypt(makeHash(code), "vqJhHWzM6KtF4YUIZmbxng==".getBytes());
+                write(ReadWriteInfo.KEY, Base64.encode(o, Base64.NO_WRAP));
+            } catch (NoSuchPaddingException e) {
                 e.printStackTrace();
-            } catch (InvalidParameterSpecException | NoSuchPaddingException | IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException e){
-                textView.setText(getResources().getString(R.string.start_third_error));
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (BadPaddingException e) {
+                e.printStackTrace();
+            } catch (IllegalBlockSizeException e) {
+                e.printStackTrace();
+            } catch (InvalidParameterSpecException e) {
+                e.printStackTrace();
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+            } catch (InvalidKeySpecException e) {
+                e.printStackTrace();
+            }
+            */
+            //byte[] o = aes.encrypt("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".getBytes(), );
+                //write(ReadWriteInfo.KEY, Base64.encode(o, Base64.NO_WRAP));
+                //write(ReadWriteInfo.KEY, aes.encrypt(code, udp.requestNewKey(code)));
+                //write(ReadWriteInfo.KEY, aes.encrypt(code.getBytes(), Base64.decode("vqJhHWzM6KtF4YUIZmbxng==", Base64.DEFAULT)));
+                //write(ReadWriteInfo.KEY, aes.encrypt(code.getBytes(), Base64.decode("vqJhHWzM6KtF4YUIZmbxng==", Base64.DEFAULT)));
+                //write(ReadWriteInfo.KEY, aes.encrypt(code.getBytes(), "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".getBytes()));
+                //System.out.println("KEYYYYYYY = " + aes.decrypt(code.getBytes(), read(ReadWriteInfo.KEY).getBytes()));
+
+            //} catch (BadPaddingException | IllegalBlockSizeException e) {
+            //    e.printStackTrace();
+            //} catch (InvalidParameterSpecException | NoSuchPaddingException | IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException e){
+            /*    textView.setText(getResources().getString(R.string.start_third_error));
                 textView2.setText(getResources().getString(R.string.start_third_error2));
                 textView3.setText("");
 
@@ -80,8 +98,8 @@ public class StartThird extends Activity {
                         overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
                     }
                 });
-            }
-
+            //}
+            */
             return null;
         }
 
@@ -89,6 +107,11 @@ public class StartThird extends Activity {
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
 
+        }
+
+        private byte[] makeHash(String code) throws NoSuchAlgorithmException, IOException {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return digest.digest(code.getBytes());
         }
 
         public void write(String filename, String message) throws IOException {

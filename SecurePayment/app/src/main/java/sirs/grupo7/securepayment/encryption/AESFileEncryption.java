@@ -1,8 +1,12 @@
 package sirs.grupo7.securepayment.encryption;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import android.content.Context;
+import android.util.Base64;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -19,10 +23,18 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
+
 // TO SAVE FILES ON ANDROID
 // https://developer.android.com/guide/topics/data/data-storage.html#filesInternal
 
 public class AESFileEncryption {
+
+    private Context context;
+
+    public AESFileEncryption(Context context) {
+        this.context = context;
+    }
 
     public byte[] encrypt(byte[] code, byte[] value) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
         return encrypt_decrypt(code, value, Cipher.ENCRYPT_MODE);
@@ -33,12 +45,10 @@ public class AESFileEncryption {
     }
 
     private byte[] encrypt_decrypt(byte[] code, byte[] value, int mode) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
-        byte[] key = code;//.getBytes();
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        key = sha.digest(key);
-        key = Arrays.copyOf(key, 16);
+        byte[] key = makeHash(code);
+        System.out.println("THE REAL KEY = " + Arrays.toString(key));
         SecretKey secret = new SecretKeySpec(key, "AES");
-        byte [] iv = "1234567812345678".getBytes();
+        byte [] iv = Base64.decode(read(ReadWriteInfo.IV).getBytes(), Base64.NO_WRAP);
         System.out.println("IV = " + Arrays.toString(iv));
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         try {
@@ -49,13 +59,28 @@ public class AESFileEncryption {
         return cipher.doFinal(value);
     }
 
-    private byte[] makeHash(String code) throws NoSuchAlgorithmException, IOException {
+    private byte[] makeHash(byte[] code) throws NoSuchAlgorithmException, IOException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        ByteArrayOutputStream opBuffer = new ByteArrayOutputStream();
-        DataOutputStream message = new DataOutputStream(opBuffer);
-        message.writeBytes(code);
-        return digest.digest(opBuffer.toByteArray());
+        return digest.digest(code);
     }
+
+    private String read(String filename) {
+        try {
+            String message;
+            FileInputStream fileInputStream = this.context.openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((message = bufferedReader.readLine()) != null) {
+                stringBuffer.append(message);
+            }
+            return stringBuffer.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
+    }
+
     /*
     public static String encrytData(String text) throws Exception {
 

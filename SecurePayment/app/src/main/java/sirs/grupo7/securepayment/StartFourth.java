@@ -18,10 +18,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
-import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -34,8 +34,8 @@ public class StartFourth extends Activity {
 
     private static final String ACTION_SCAN = "com.google.zxing.client.android.SCAN";
     //private String MYIBAN;
-    private byte[] MYCODE;
-    private byte[] IV;
+    private String MYCODE;
+    private String IV;
     private String code;
     private String qr_input;
 
@@ -111,17 +111,18 @@ public class StartFourth extends Activity {
 
     private void goToNextActivity() {
 
-        AESFileEncryption aes = new AESFileEncryption();
+        AESFileEncryption aes = new AESFileEncryption(getApplicationContext());
 
         try {
-            write(ReadWriteInfo.IV, IV);
-            write(ReadWriteInfo.KEY, aes.encrypt(code.getBytes(), MYCODE));
+            write(ReadWriteInfo.IV, IV.getBytes());
+            byte[] o = aes.encrypt(makeHash(code), MYCODE.getBytes());
+            write(ReadWriteInfo.KEY, Base64.encode(o, Base64.NO_WRAP));
             String r = read(ReadWriteInfo.KEY);
             byte[] sb = r.getBytes();
             //System.out.println("BEFORE");
             //System.out.println(aes.decrypt(code, sb));
             //System.out.println("AFTER");
-            System.out.println(Arrays.toString(aes.decrypt(code.getBytes(), read(ReadWriteInfo.KEY).getBytes())));
+            //System.out.println(Arrays.toString(aes.decrypt(code.getBytes(), read(ReadWriteInfo.KEY).getBytes())));
         } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidParameterSpecException | InvalidKeySpecException | IllegalBlockSizeException | InvalidKeyException e) {
             e.printStackTrace();
         }
@@ -134,6 +135,11 @@ public class StartFourth extends Activity {
 
         startActivity(intent);
         overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_left);
+    }
+
+    private byte[] makeHash(String code) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return digest.digest(code.getBytes());
     }
 
     public String read(String filename) {
@@ -167,8 +173,8 @@ public class StartFourth extends Activity {
         System.out.println("IV = " + bases[0] + "==");
         System.out.println("CODE = " + bases[1] + "==");
 
-        IV = Base64.decode(bases[0] + "==", Base64.DEFAULT);
-        MYCODE = Base64.decode(bases[1] + "==", Base64.DEFAULT);
+        IV = bases[0] + "==";
+        MYCODE = bases[1] + "==";
     }
 
     private void parseCode(String toParse) {
@@ -177,8 +183,8 @@ public class StartFourth extends Activity {
         System.out.println("IV = " + bases[0] + "==");
         System.out.println("CODE = " + bases[1] + "==");
 
-        IV = Base64.decode(bases[0] + "==", Base64.DEFAULT);
-        MYCODE = Base64.decode(bases[1] + "==", Base64.DEFAULT);
+        IV = bases[0] + "==";
+        MYCODE = bases[1] + "==";
     }
 
     @Override

@@ -16,6 +16,8 @@ public class Start extends Activity {
     private TextView toAsk1;
     private TextView toAsk2;
     private TextView toAsk3;
+    private String destIBAN;
+    private String moneyToTransfer;
     private String cod;
 
     @Override
@@ -32,9 +34,12 @@ public class Start extends Activity {
         toAsk1.setText((String) getIntent().getExtras().get("toAsk1"));
         toAsk2.setText((String) getIntent().getExtras().get("toAsk2"));
         toAsk3.setText((String) getIntent().getExtras().get("toAsk3"));
+        destIBAN = (String) getIntent().getExtras().get("destIBAN");
+        moneyToTransfer = (String) getIntent().getExtras().get("moneyToTransfer");
+
         final String tid = (String) getIntent().getExtras().get("tid");
 
-        submit = (Button) findViewById(R.id.button_start_third_next);
+        submit = (Button) findViewById(R.id.button_start_submit);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -44,11 +49,13 @@ public class Start extends Activity {
 
                 if (cod1.getText().length() == 1 && cod2.getText().length() == 1 && cod3.getText().length() == 1) {
                     Intent intent = new Intent(Start.this, MakingTransactionActivity.class);
-                    intent.putExtra("cod1", cod1.getText());
-                    intent.putExtra("cod2", cod2.getText());
-                    intent.putExtra("cod3", cod3.getText());
+                    intent.putExtra("cod1", "" + cod1.getText());
+                    intent.putExtra("cod2", "" + cod2.getText());
+                    intent.putExtra("cod3", "" + cod3.getText());
                     intent.putExtra("tid", tid);
                     intent.putExtra("cod", cod);
+                    intent.putExtra("destIBAN", destIBAN);
+                    intent.putExtra("moneyToTransfer", moneyToTransfer);
                     intent.putExtra("nowWhat", "cr");
                     startActivity(intent);
                 } else {

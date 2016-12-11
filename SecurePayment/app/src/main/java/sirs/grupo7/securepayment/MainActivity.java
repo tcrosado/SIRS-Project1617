@@ -60,26 +60,26 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             showCurrentBalance();
-            /*
+
             try {
                 //Context context = getApplicationContext();
                 //Toast toast = Toast.makeText(context, "START", Toast.LENGTH_SHORT);
                 //toast.show();
-                System.err.println("================== START");
+                //System.err.println("================== START");
 
-                String mode = "USE_SKIP_DH_PARAMS";
+                //String mode = "USE_SKIP_DH_PARAMS";
 
-                DHExchanger keyAgree = new DHExchanger();
+                //DHExchanger keyAgree = new DHExchanger();
 
-                keyAgree.run(mode);
-                System.err.println("================== STOP");
+                //keyAgree.run(mode);
+                //System.err.println("================== STOP");
 
                 //Toast toast2 = Toast.makeText(context, "STOP", Toast.LENGTH_SHORT);
                 //toast2.show();
             } catch (Exception e) {
                 System.err.println("Error: " + e);
             }
-            */
+
             return null;
         }
 
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             UDP udp = new UDP(read(ReadWriteInfo.IP), getApplicationContext());
 
             try {
-                CURRENT_BALANCE = udp.showBalance(MYIBAN);
+                CURRENT_BALANCE = udp.showBalance(MYIBAN, cod);
                 res = CURRENT_BALANCE + " €";
             } catch (IOException e) {
                 res = getResources().getString(R.string.errorGettingBalance);
@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         new CommunicationTask().execute();
 
         cod = (String) getIntent().getExtras().get("cod");
+        System.out.println("CODE = " + cod);
 
         buttonIBAN = (Button) findViewById(R.id.buttonShowIBAN);
         final Context context = this;
