@@ -9,6 +9,6 @@ public class InvalidOperationException extends ErrorMessageException {
 
     @Override
     public String getMessage(){
-        return "Unknown Operation";
+        return "IO";
     }
 }

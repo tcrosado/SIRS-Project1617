@@ -13,10 +13,17 @@ import java.util.UUID;
 public class OperationData {
     private UUID operationUid;
     private OperationService service;
+    private String phoneNumber;
 
-    public OperationData(UUID uid,OperationService service){
+    private OperationData(){}
+    public OperationData(String phoneNumber) {
+        this.phoneNumber=phoneNumber;
+    }
+
+    public OperationData(UUID uid, String phoneNumber, OperationService service){
         this.operationUid=uid;
         this.service=service;
+        this.phoneNumber=phoneNumber;
     }
 
     public void executeService() throws ErrorMessageException {
@@ -26,4 +33,9 @@ public class OperationData {
     public String getServiceResult(){
         return this.service.result();
     }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
 }

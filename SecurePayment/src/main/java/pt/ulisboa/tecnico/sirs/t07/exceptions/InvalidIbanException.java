@@ -13,6 +13,6 @@ public class InvalidIbanException extends ErrorMessageException {
 
     @Override
     public String getMessage() {
-        return "Iban: "+this.iban+" is invalid.";
+        return "II";
     }
 }

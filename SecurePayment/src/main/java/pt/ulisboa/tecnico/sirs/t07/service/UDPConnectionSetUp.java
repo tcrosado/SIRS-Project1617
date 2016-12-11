@@ -50,7 +50,7 @@ public class UDPConnectionSetUp extends AbstractService {
 
                 UDPEstablishService establish =  new UDPEstablishService(this.conn,packet,timeout);
                 establish.execute();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             // Assim que receber um pedido tem de criar uma thread ou mete em fila numa já existente para processar o pedido

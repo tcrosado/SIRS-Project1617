@@ -78,7 +78,7 @@ public class TransferService extends OperationService {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            logger.debug("Transaction added to pending");
+            logger.info("Transaction added to pending");
             return;
 
         }

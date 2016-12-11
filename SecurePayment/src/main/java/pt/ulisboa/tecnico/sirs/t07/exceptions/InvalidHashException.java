@@ -15,6 +15,6 @@ public class InvalidHashException extends ErrorMessageException {
     @Override
     public String getMessage(){
 
-        return "Invalid hash for operation id:"+tid.toString();
+        return "IH";
     }
 }

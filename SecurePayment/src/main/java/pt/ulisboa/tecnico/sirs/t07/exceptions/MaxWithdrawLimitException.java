@@ -13,6 +13,6 @@ public class MaxWithdrawLimitException extends ErrorMessageException {
 
     @Override
     public String getMessage() {
-        return "Iban: "+iban+" exceeded the value for daily transfers";
+        return "MD";
     }
 }

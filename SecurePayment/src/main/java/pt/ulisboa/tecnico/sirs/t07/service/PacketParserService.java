@@ -41,7 +41,7 @@ class PacketParserService extends OperationService {
 
     PacketParserService(DatagramPacket packet) throws Exception{
         setPacket(packet);
-        resultData = null;
+        resultData = new OperationData(this.getPhoneNumber());
         decriptedMessage = null;
     }
 
@@ -57,15 +57,15 @@ class PacketParserService extends OperationService {
         SecretKeyFactory factory = null;
         try {
             byte[] key = code;
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
+            MessageDigest sha = MessageDigest.getInstance("SHA-256");
             key = sha.digest(key);
-            key = Arrays.copyOf(key, 16);
-
+            logger.debug("hash key : {}",Arrays.toString(key));
+            logger.debug("msg received: {}",this.packet.getLength());
             SecretKey secret = new SecretKeySpec(key, "AES");
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secret,new IvParameterSpec(iv));
-            decriptedMessage = cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,105));
+            decriptedMessage = cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,this.packet.getLength()));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (InvalidKeyException e) {
@@ -89,23 +89,24 @@ class PacketParserService extends OperationService {
         logger.debug("Op: {}",operation);
 
         veryfyIntegrity();
-        verifyOriginIban();
-
+        logger.debug("msg: {}",Arrays.toString(decriptedMessage));
 
        switch (operation){
 
            case 'S':
+               verifyOriginIban();
                logger.debug("Operation: Balance");
                logger.debug("Account Iban : {}", this.getOriginIBAN());
-               this.resultData = new OperationData(tuid,new BalanceCheckService(this.getOriginIBAN()));
+               this.resultData = new OperationData(tuid,this.getPhoneNumber(),new BalanceCheckService(this.getOriginIBAN()));
 
                break;
            case 'T':
+               verifyOriginIban();
                logger.debug("Operation: Transfer");
                logger.debug("Origin Iban: {}",this.getOriginIBAN());
                logger.debug("Destination Iban: {}",this.getDestinationIBAN());
                logger.debug("Transfer Value: {}",this.getTransferValue());
-               this.resultData = new OperationData(tuid,new TransferService(tuid,this.getOriginIBAN(),this.getDestinationIBAN(),this.getTransferValue()));
+               this.resultData = new OperationData(tuid,this.getPhoneNumber(),new TransferService(tuid,this.getOriginIBAN(),this.getDestinationIBAN(),this.getTransferValue()));
                break;
            case 'H':
                //TODO definir serviço de historico
@@ -117,7 +118,7 @@ class PacketParserService extends OperationService {
         	   logger.debug("Value 1 : {}", this.getMatrixResponseValues().get(0));
         	   logger.debug("Value 2 : {}", this.getMatrixResponseValues().get(1));
         	   logger.debug("Value 3 : {}", this.getMatrixResponseValues().get(2));
-               this.resultData = new OperationData(tuid,new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValues()));
+               this.resultData = new OperationData(tuid,this.getPhoneNumber(),new ConfirmTransactionService(this.getConfirmationTid(),this.getMatrixResponseValues()));
         	   break;
            default:
               throw new InvalidOperationException();
@@ -219,18 +220,14 @@ class PacketParserService extends OperationService {
     private AbstractList<Integer> getMatrixResponseValues(){
         final int RESPOS = 49;
         Vector<Integer> vector = new Vector<Integer>();
-        byte[] value1 = Arrays.copyOfRange(decriptedMessage,RESPOS,RESPOS+4);
-        byte[] value2 = Arrays.copyOfRange(decriptedMessage,RESPOS+4,RESPOS+8);
-        byte[] value3 = Arrays.copyOfRange(decriptedMessage,RESPOS+8,RESPOS+12);
+        String value1 = new String(Arrays.copyOfRange(decriptedMessage,RESPOS,RESPOS+1));
+        String value2 = new String(Arrays.copyOfRange(decriptedMessage,RESPOS+1,RESPOS+2));
+        String value3 = new String(Arrays.copyOfRange(decriptedMessage,RESPOS+2,RESPOS+3));
 
-        ByteBuffer b = ByteBuffer.wrap(value1);
-        vector.add(b.getInt());
+        vector.add(Integer.parseInt(value1));
+        vector.add(Integer.parseInt(value2));
+        vector.add(Integer.parseInt(value3));
 
-        b = ByteBuffer.wrap(value2);
-        vector.add(b.getInt());
-
-        b = ByteBuffer.wrap(value3);
-        vector.add(b.getInt());
         return vector;
     }
     

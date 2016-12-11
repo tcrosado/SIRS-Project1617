@@ -10,6 +10,6 @@ public class ReplayException extends ErrorMessageException {
 
     @Override
     public String getMessage(){
-        return "Operation already executed";
+        return "MR";
     }
 }
