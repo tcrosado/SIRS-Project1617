@@ -116,9 +116,9 @@ public class UDPEstablishService extends AbstractService implements Runnable{
 
 
     private void sendMessage(String phoneNumber,byte[] message) throws IOException, NoSuchAlgorithmException {
-        byte [] iv = "1234567812345678".getBytes();
         CustomerData cd = new CustomerData();
         byte[] key = cd.getBankCode(phoneNumber);
+        byte [] iv = cd.getIV(phoneNumber);
 
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         key = sha.digest(key);

@@ -46,7 +46,7 @@ public class ConfirmTransactionService extends OperationService {
                 this.result = "TC";
             } else {
                 pending.abortTransaction(tid.toString());
-                this.result = "AB";
+                this.result = "TA";
             }
 
 

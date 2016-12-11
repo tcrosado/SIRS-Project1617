@@ -53,7 +53,7 @@ class PacketParserService extends OperationService {
         CustomerData cd = new CustomerData();
 
         byte[] code = cd.getBankCode(this.getPhoneNumber());
-        byte [] iv = "1234567812345678".getBytes();
+        byte [] iv = cd.getIV(this.getPhoneNumber());
         SecretKeyFactory factory = null;
         try {
             byte[] key = code;
@@ -89,7 +89,6 @@ class PacketParserService extends OperationService {
         logger.debug("Op: {}",operation);
 
         veryfyIntegrity();
-        logger.debug("msg: {}",Arrays.toString(decriptedMessage));
 
        switch (operation){
 

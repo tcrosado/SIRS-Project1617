@@ -77,7 +77,28 @@ public class CustomerData extends AbstractData {
         return !(result.isEmpty());
     }
 
-    public byte[] getBankCode(String phoneNumber){
+    public byte[] getIV(String phoneNumber) {
+        byte[] iv = new byte[0];
+        try {
+            String ivEnc = "";
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM customers WHERE phoneNumber=?");
+            stmt.setString(1, phoneNumber);
+
+            ResultSet rs = stmt.executeQuery();
+
+
+            while (rs.next()) {
+                ivEnc = rs.getString("iv");
+                iv = Base64.getDecoder().decode(ivEnc);
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return iv;
+    }
+        public byte[] getBankCode(String phoneNumber){
         byte[] key = new byte[0];
         try {
             String result = "";
