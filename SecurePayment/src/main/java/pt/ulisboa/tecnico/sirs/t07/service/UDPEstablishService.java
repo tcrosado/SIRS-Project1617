@@ -15,13 +15,11 @@ import javax.xml.crypto.Data;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.PriorityQueue;
@@ -114,11 +112,20 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         }
     }
 
+    public static byte[] getRandomIV(int blockSize) throws NoSuchAlgorithmException, IOException {
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        byte[] iv = new byte[blockSize-1];
+        byte[] init = {1};
+        random.nextBytes(iv);
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        b.write(init);
+        b.write(iv);
+        return  b.toByteArray();
+    }
 
     private void sendMessage(String phoneNumber,byte[] message) throws IOException, NoSuchAlgorithmException {
         CustomerData cd = new CustomerData();
         byte[] key = cd.getBankCode(phoneNumber);
-        byte [] iv = cd.getIV(phoneNumber);
 
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         key = sha.digest(key);
@@ -126,8 +133,10 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         SecretKey secret = new SecretKeySpec(key, "AES");
 
         Cipher cipher = null;
+        byte [] iv = null;
         try {
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            iv = getRandomIV(cipher.getBlockSize());
         } catch (NoSuchPaddingException e) {
             e.printStackTrace();
         }
@@ -163,7 +172,10 @@ public class UDPEstablishService extends AbstractService implements Runnable{
         } catch (BadPaddingException e) {
             e.printStackTrace();
         }
-        this.conn.sendData(cipheredData,this.packet.getAddress(),this.packet.getPort());
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        b.write(Arrays.copyOfRange(iv,1,iv.length));
+        b.write(cipheredData);
+        this.conn.sendData(b.toByteArray(),this.packet.getAddress(),this.packet.getPort());
 
     }
 

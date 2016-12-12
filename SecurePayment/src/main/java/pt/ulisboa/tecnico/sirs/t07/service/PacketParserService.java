@@ -53,19 +53,23 @@ class PacketParserService extends OperationService {
         CustomerData cd = new CustomerData();
 
         byte[] code = cd.getBankCode(this.getPhoneNumber());
-        byte [] iv = cd.getIV(this.getPhoneNumber());
+        byte [] iv = new byte[0];
+        try {
+            iv = this.getIV();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         SecretKeyFactory factory = null;
         try {
             byte[] key = code;
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
             key = sha.digest(key);
-            logger.debug("hash key : {}",Arrays.toString(key));
             logger.debug("msg received: {}",this.packet.getLength());
             SecretKey secret = new SecretKeySpec(key, "AES");
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secret,new IvParameterSpec(iv));
-            decriptedMessage = cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),9,this.packet.getLength()));
+            decriptedMessage = cipher.doFinal(Arrays.copyOfRange(this.packet.getData(),24,this.packet.getLength()));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (InvalidKeyException e) {
@@ -151,6 +155,14 @@ class PacketParserService extends OperationService {
      * **/
 
     private String getPhoneNumber(){ return new String(Arrays.copyOf(this.packet.getData(),9));}
+
+    private byte[] getIV() throws IOException {
+        byte[] init = {1};
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        b.write(init);
+        b.write(Arrays.copyOfRange(this.packet.getData(),9,24));
+        return b.toByteArray();
+    }
 
     private byte[] getHash(){
         return Arrays.copyOf(decriptedMessage,16);
