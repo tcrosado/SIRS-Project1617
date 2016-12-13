@@ -1,9 +1,9 @@
 package sirs.grupo7.securepayment.encryption;
 
 import android.content.Context;
-import android.util.Base64;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +11,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Arrays;
@@ -23,8 +24,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import sirs.grupo7.securepayment.readwrite.ReadWriteInfo;
-
 // TO SAVE FILES ON ANDROID
 // https://developer.android.com/guide/topics/data/data-storage.html#filesInternal
 
@@ -36,19 +35,19 @@ public class AESFileEncryption {
         this.context = context;
     }
 
-    public byte[] encrypt(byte[] code, byte[] value) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
-        return encrypt_decrypt(code, value, Cipher.ENCRYPT_MODE);
+    public byte[] encrypt(byte[] code, byte[] value, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
+        return encrypt_decrypt(code, value, Cipher.ENCRYPT_MODE, iv);
     }
 
-    public byte[] decrypt(byte[] code, byte[] value) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
-        return encrypt_decrypt(code, value, Cipher.DECRYPT_MODE);
+    public byte[] decrypt(byte[] code, byte[] value, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException, BadPaddingException, IllegalBlockSizeException, InvalidParameterSpecException, InvalidKeyException, InvalidKeySpecException {
+        return encrypt_decrypt(code, value, Cipher.DECRYPT_MODE, iv);
     }
 
-    private byte[] encrypt_decrypt(byte[] code, byte[] value, int mode) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
+    private byte[] encrypt_decrypt(byte[] code, byte[] value, int mode, byte[] iv) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, BadPaddingException, IllegalBlockSizeException {
         byte[] key = makeHash(code);
         System.out.println("THE REAL KEY = " + Arrays.toString(key));
         SecretKey secret = new SecretKeySpec(key, "AES");
-        byte [] iv = Base64.decode(read(ReadWriteInfo.IV).getBytes(), Base64.NO_WRAP);
+        //byte [] iv = Base64.decode(read(ReadWriteInfo.IV).getBytes(), Base64.NO_WRAP);
         System.out.println("IV = " + Arrays.toString(iv));
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         try {
@@ -79,6 +78,17 @@ public class AESFileEncryption {
             e.printStackTrace();
         }
         return "ERROR";
+    }
+
+    public byte[] getRandomIV() throws NoSuchAlgorithmException, IOException {
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        byte[] iv = new byte[15];
+        byte[] init = {1};
+        random.nextBytes(iv);
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        b.write(init);
+        b.write(iv);
+        return b.toByteArray();
     }
 
     /*

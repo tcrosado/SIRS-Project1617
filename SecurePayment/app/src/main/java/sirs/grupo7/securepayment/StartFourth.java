@@ -115,7 +115,7 @@ public class StartFourth extends Activity {
 
         try {
             write(ReadWriteInfo.IV, IV.getBytes());
-            byte[] o = aes.encrypt(makeHash(code), MYCODE.getBytes());
+            byte[] o = aes.encrypt(makeHash(code), MYCODE.getBytes(), Base64.decode(IV.getBytes(), Base64.NO_WRAP));
             write(ReadWriteInfo.KEY, Base64.encode(o, Base64.NO_WRAP));
             String r = read(ReadWriteInfo.KEY);
             byte[] sb = r.getBytes();

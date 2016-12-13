@@ -273,23 +273,28 @@ public class UDP {
 
         DataOutputStream toSend = new DataOutputStream(toSendBuffer);
 
-        toSend.writeBytes(read(ReadWriteInfo.NUMBER));
-        //toSend.write(cappedHash);
-        byte[] cy;
-
         System.out.println("LEN = " + Arrays.toString(messageStream.toByteArray()));
 
         try {
+            byte [] random_iv = aes.getRandomIV();
+
+            toSend.writeBytes(read(ReadWriteInfo.NUMBER));
+            toSend.write(Arrays.copyOfRange(random_iv, 1, random_iv.length));
+            //toSend.write(cappedHash);
+            byte[] cy;
             //byte[] key = Base64.decode("vqJhHWzM6KtF4YUIZmbxng==",Base64.NO_WRAP);
 
 
             //byte[] key = {118, 113, 74, 104, 72, 87, 122, 77, 54, 75, 116, 70, 52, 89, 85, 73, 90, 109, 98, 120, 110, 103, 61, 61};
             //System.out.println("Print Key decoded  ---- " + Arrays.toString(key));
-            byte[] key = aes.decrypt(makeHash(code), Base64.decode(read(ReadWriteInfo.KEY), Base64.NO_WRAP));
+            byte [] iv = Base64.decode(read(ReadWriteInfo.IV).getBytes(), Base64.NO_WRAP);
+
+            byte[] key = aes.decrypt(makeHash(code), Base64.decode(read(ReadWriteInfo.KEY), Base64.NO_WRAP), iv);
             System.out.println("BEFORE");
             System.out.println(Arrays.toString(key));
             System.out.println("AFTER");
-            cy = aes.encrypt(key, messageStream.toByteArray());
+
+            cy = aes.encrypt(key, messageStream.toByteArray(), random_iv);
             System.out.println("++++ " + new String(cy));
             toSend.write(cy);
         } catch (InvalidKeySpecException | NoSuchPaddingException | InvalidParameterSpecException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
@@ -326,9 +331,16 @@ public class UDP {
         System.out.println("RECEBIDO = " + Arrays.toString(receivePacket.getData()));
 
         try {
-            byte[] key = aes.decrypt(makeHash(code), Base64.decode(read(ReadWriteInfo.KEY), Base64.NO_WRAP));
+            byte[] key = aes.decrypt(makeHash(code), Base64.decode(read(ReadWriteInfo.KEY), Base64.NO_WRAP), Base64.decode(read(ReadWriteInfo.IV), Base64.NO_WRAP));
 
-            byte[] recv = aes.decrypt(key, Arrays.copyOf(receivePacket.getData(), receivePacket.getLength()));
+            byte[] iv = Arrays.copyOf(receivePacket.getData(), 15);
+
+            byte[] init = {1};
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            b.write(init);
+            b.write(iv);
+
+            byte[] recv = aes.decrypt(key, Arrays.copyOfRange(receivePacket.getData(), 15, receivePacket.getLength()), b.toByteArray());
 
             System.out.println("RECEBIDO LIMPO = " + Arrays.toString(recv));
 
