@@ -6,4 +6,3 @@ Project made for the Network and Computer Security Course
 database name : bank
 username: bank
 password: bank
-

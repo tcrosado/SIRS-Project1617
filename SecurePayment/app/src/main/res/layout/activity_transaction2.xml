@@ -1,0 +1,90 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                tools:context="sirs.grupo7.securepayment.Transaction2Activity">
+    <!--
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/editTextCurrencyInput"
+        android:layout_marginTop="26dp"
+        android:textSize="25dp"
+        android:gravity="center"
+        android:numeric="integer"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:maxLength="11"/>
+    -->
+
+    <com.blackcat.currencyedittext.CurrencyEditText
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:id="@+id/editTextCurrencyInput"
+        android:layout_marginTop="26dp"
+        android:textSize="25dp"
+        android:gravity="center"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:maxLength="12"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/transaction2_transfer"
+        android:id="@+id/textView2"
+        android:layout_marginTop="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/transfer2_to"
+        android:id="@+id/textView3"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/editTextCurrencyInput"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="320dp"
+        android:layout_height="35dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/transactionTextViewDestIBAN"
+        android:textSize="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView3"
+        android:layout_marginTop="20dp"
+        android:gravity="center"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_transaction2_confirm"
+        android:text="@string/transaction2_confirm"
+        android:layout_below="@+id/transactionTextViewDestIBAN"
+        android:layout_marginTop="25dp"
+        android:layout_toStartOf="@+id/textView2"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/transaction2_cancel"
+        android:id="@+id/button_transaction2_cancel"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/transactionTextViewDestIBAN"
+        android:layout_toRightOf="@id/button_transaction2_confirm"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="25dp"
+        android:layout_toEndOf="@+id/textView2"/>
+
+</RelativeLayout>

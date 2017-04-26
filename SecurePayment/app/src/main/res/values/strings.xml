@@ -1,0 +1,89 @@
+<resources>
+    <string name="app_name" translatable="false">Secure Payment</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="buttonTransaction">Make Transaction</string>
+    <string name="buttonBalance">Account History</string>
+    <string name="title_activity_balance">Account Balance</string>
+
+    <string name="hello_world" translatable="false">Hello world!</string>
+    <string name="title_activity_transaction" translatable="false">Transaction</string>
+
+    <string name="initial_activity_button_login">Login</string>
+    <string name="dummy_content" translatable="false">DUMMY\nCONTENT</string>
+    <string name="initial_1" translatable="false">1</string>
+    <string name="initial_2" translatable="false">2</string>
+    <string name="initial_3" translatable="false">3</string>
+    <string name="initial_4" translatable="false">4</string>
+    <string name="initial_5" translatable="false">5</string>
+    <string name="initial_6" translatable="false">6</string>
+    <string name="initial_7" translatable="false">7</string>
+    <string name="initial_8" translatable="false">8</string>
+    <string name="initial_9" translatable="false">9</string>
+
+    <string name="title_activity_fullscreen" translatable="false">FullscreenActivity</string>
+    <string name="dummy_button" translatable="false">Dummy Button</string>
+    <string name="title_activity_login" translatable="false">Login</string>
+    <string name="transaction_qrcode">Scan IBAN with QRCode</string>
+    <string name="transactionWrite">Write IBAN</string>
+    <string name="login_clear_text">Clear Key</string>
+    <string name="button_submit_transaction">Submit</string>
+    <string name="my_qrcode">Show my IBAN</string>
+    <string name="title_activity_show_qrcode">My IBAN</string>
+    <string name="title_activity_qr">My IBAN</string>
+    <string name="title_activity_transaction2">Transaction2Activity</string>
+    <string name="transaction2_transfer">Transfer</string>
+    <string name="transfer2_to">to account</string>
+    <string name="transaction2_confirm">Confirm</string>
+    <string name="transaction2_cancel">Cancel</string>
+    <string name="title_activity_transaction_confirmation">Transaction Confirmation</string>
+    <string name="transaction_confirmaton_confirm">Yes</string>
+    <string name="transaction_confirmaton_cancel">No</string>
+    <string name="transaction_confirmaton_confirm_message1">Do you want to send\n</string>
+    <string name="transaction_confirmaton_confirm_message2">to the account\n</string>
+    <string name="transaction_confirmaton_cancel_message1">Do you want to\ncancel the transaction?</string>
+    <string name="transaction2_input_no_money">Error\nYou cannot transfer 0</string>
+    <string name="title_activity_making_transaction">Making Transaction</string>
+    <string name="go_back">Go Back</string>
+    <string name="transaction_canceled">Transaction Canceled</string>
+    <string name="transaction_done">Continue</string>
+    <string name="text_transaction_done">\t\t\t\t\t\t TODO\nTransaction Done!</string>
+    <string name="errorMakingTransaction">Transfer canceled\nThere was an error making your transfer\nCheck your network settings and try again</string>
+    <string name="transferSuccess"> was transfered to the account </string>
+    <string name="errorGettingBalance">Error requesting balance</string>
+    <string name="errorGettingHistory">Error requesting history</string>
+    <string name="title_activity_start" translatable="false">Start</string>
+    <string name="pref_previously_started" translatable="false">false</string>
+    <string name="title_activity_start2" translatable="false">Start2</string>
+    <string name="title_activity_start_first" translatable="false">StartFirst</string>
+    <string name="title_activity_start_second" translatable="false">StartSecond</string>
+    <string name="title_activity_start_third" translatable="false">StartThird</string>
+    <string name="button_next">Next</string>
+    <string name="start_welcome_message">Welcome to</string>
+    <string name="start_welcome_message2">Click Next to setup your aplication</string>
+    <string name="button_prev">Previous</string>
+    <string name="start_welcome_message1" translatable="false">Secure Payment</string>
+    <string name="start_setup1">Type your IBAN</string>
+    <string name="button_finish">Finish</string>
+    <string name="title_activity_start_fourth" translatable="false">StartFourth</string>
+    <string name="start_setup2">Type your Secret Code</string>
+    <string name="secret_qrcode">Scan Secret Code</string>
+    <string name="start_setup_completed">Your app is configured correctly</string>
+    <string name="start_setup_completed2">Start using it now</string>
+    <string name="start_welcome_message3">Click Finish to close setup</string>
+    <string name="title_activity_start_fifth" translatable="false">StartFifth</string>
+    <string name="start_two_steps">Two steps authentication</string>
+    <string name="start_two_steps2">Please enter the correct numbers of your personal matrix card</string>
+    <string name="start_login_main">Please choose a password</string>
+    <string name="login_password_less">Your password must contain 4 digits</string>
+    <string name="start_login_main2">Retype you password</string>
+    <string name="start_login_main3">Passwords do not match\\nTry again</string>
+    <string name="start_third_error">Setup cancelled</string>
+    <string name="start_third_error2">Press Next do it again</string>
+    <string name="login_confirm1">Choose password</string>
+    <string name="login_confirm2">Confirm password</string>
+    <string name="login_confirm3">Confirm transfer</string>
+    <string name="login_confirm4">Transfer Confirmation</string>
+
+</resources>
